@@ -1,0 +1,25 @@
+.frame { position: relative; border-radius: 30px; background: #dee6f3; padding: 5px; }
+.viewport { overflow: hidden; border-radius: 30px; touch-action: pan-y pinch-zoom; cursor: grab; }
+.viewport:active { cursor: grabbing; }
+.track { display: flex; transition: transform 550ms cubic-bezier(.22,1,.36,1); }
+.track[data-dragging="true"] { transition: none; }
+.slide { position: relative; flex: 0 0 100%; min-width: 0; aspect-ratio: 344 / 257; user-select: none; }
+.slide .original { top: -41.72% !important; left: -13.49% !important; height: 208.28% !important; width: 116.68% !important; max-width: none; pointer-events: none; }
+.slide .photo { object-fit: cover; object-position: center 32%; pointer-events: none; }
+.arrow { position: absolute; top: 45%; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; transition: scale 150ms; }
+.arrow::before { content: ""; position: absolute; inset: 5px; border-radius: inherit; background: #002869; }
+.arrow img { position: relative; }
+.previous { left: -17px; }
+.previous img { rotate: 180deg; }
+.next { right: -17px; }
+.arrow:active { scale: .92; }
+.arrow[aria-disabled="true"]::before { opacity: .75; }
+.arrow:focus-visible, .dots button:focus-visible { outline: 2px solid #064a9b; outline-offset: 2px; }
+.caption { position: relative; margin: -40px auto -25px; width: 90%; border-radius: 32px; background: #002869; border: 2px solid #b9c9de; padding: 14px 8px; text-align: center; font-size: 12px; line-height: 1.4; color: white; box-shadow: 0 3px 5px rgb(0 0 0 / 20%); pointer-events: none; }
+.caption p + p { color: #c6d5e9; }
+.dots { display: flex; justify-content: center; padding-top: 25px; }
+.dots button { width: 24px; height: 44px; display: grid; place-items: center; cursor: pointer; }
+.dots span { width: 7px; height: 7px; border-radius: 50%; background: #b7c6dc; transition: background-color 250ms, scale 250ms; }
+.dots button[aria-pressed="true"] span { background: #002869; scale: 1.1; }
+@media (min-width: 1024px) { .frame { padding: 8px; border-radius: 32px; background: white; box-shadow: 0 16px 48px rgb(21 61 117 / 9%); } .caption { width: 82%; font-size: 13px; } }
+@media (prefers-reduced-motion: reduce) { .track, .arrow, .dots span { transition: none; } .arrow:active, .dots button[aria-pressed="true"] span { scale: 1; } }

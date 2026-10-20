@@ -5,6 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "@/lib/motion";
+import styles from "./Navigation.module.css";
+
+const mobileLinks = [
+  { label: "Beranda", href: "/" },
+  { label: "Tentang Sagara", href: "/#tentang-sagara" },
+  { label: "Layanan & Paket", href: "/layanan" },
+  { label: "Galeri", href: "/galeri" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Lokasi & Kontak", href: "/kontak" },
+];
 
 const links = [
   { label: "Beranda", href: "/", icon: "imgVector1.svg" },
@@ -19,6 +29,18 @@ export function Header() {
   const pathname = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLElement>(null);
+  const swipe = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const close = () => setOpen(false);
+    window.addEventListener("popstate", close);
+    window.addEventListener("hashchange", close);
+    return () => { window.removeEventListener("popstate", close); window.removeEventListener("hashchange", close); };
+  }, []);
+
+  // A route change also closes menus opened immediately before browser navigation.
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) { setMenuPath(pathname); setOpen(false); }
 
   function closeMenu() {
     setOpen(false);
@@ -29,7 +51,7 @@ export function Header() {
     if (!open) return;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    menu.current?.querySelector<HTMLAnchorElement>("a")?.focus({ preventScroll: true });
+    const focusTimer = window.setTimeout(() => menu.current?.querySelector<HTMLAnchorElement>("a")?.focus({ preventScroll: true }), 50);
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") { setOpen(false); toggle.current?.focus({ preventScroll: true }); }
       if (event.key === "Tab") {
@@ -44,6 +66,7 @@ export function Header() {
     desktop.addEventListener("change", onResize);
     document.addEventListener("keydown", onKey);
     return () => {
+      window.clearTimeout(focusTimer);
       document.body.style.overflow = overflow;
       desktop.removeEventListener("change", onResize);
       document.removeEventListener("keydown", onKey);
@@ -62,9 +85,16 @@ export function Header() {
         const content = <><Image src={`/images/figma/${link.icon}`} alt="" width={18} height={18} /><span>{link.label}</span></>;
         return link.href ? <Link key={link.label} href={link.href} aria-current={active ? "page" : undefined} className={classes}>{content}</Link> : <span key={link.label} aria-disabled="true" title="Segera hadir" className={`${classes} cursor-not-allowed opacity-55`}>{content}<span className="sr-only"> — segera hadir</span></span>;
       })}</nav>
-      <button ref={toggle} type="button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className="flex size-11 items-center justify-center text-navy lg:hidden">{open ? <span aria-hidden="true" className="text-[27px] leading-none">×</span> : <Image src="/images/figma/menu.svg" alt="" width={24} height={24} />}</button>
+      <button ref={toggle} type="button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className={`flex size-11 items-center justify-center text-navy lg:hidden ${styles.toggle}`} data-open={open}><span aria-hidden="true" className={styles.lines}><span /><span /><span /></span></button>
     </div>
-    <nav ref={menu} id="mobile-menu" aria-label="Menu seluler" aria-hidden={!open} inert={!open} data-open={open} className="mobile-menu absolute inset-x-0 top-14 grid gap-1 border-t border-line bg-white p-4 shadow-lg lg:hidden">{links.map(link => link.href ? <Link key={link.label} href={link.href} aria-current={pathname === link.href ? "page" : undefined} onClick={closeMenu} className={`rounded-lg p-3 text-sm font-bold text-primary ${pathname === link.href ? "bg-soft" : ""}`}>{link.label}</Link> : <span key={link.label} aria-disabled="true" className="p-3 text-sm text-muted">Galeri — segera hadir</span>)}</nav>
+    <nav ref={menu} id="mobile-menu" aria-label="Menu seluler" aria-hidden={!open} inert={!open} data-open={open} className={`${styles.menu} lg:hidden`} onTouchStart={event => { const touch = event.touches[0]; swipe.current = { x: touch.clientX, y: touch.clientY }; }} onTouchEnd={event => {
+        const start = swipe.current;
+        swipe.current = null;
+        if (!start) return;
+        const touch = event.changedTouches[0];
+        const dy = touch.clientY - start.y;
+        if (dy < -60 && Math.abs(dy) > Math.abs(touch.clientX - start.x) * 1.5 && (menu.current?.scrollTop ?? 0) === 0) closeMenu();
+      }} onTouchCancel={() => { swipe.current = null; }}>{mobileLinks.map((link, index) => <Link key={link.label} href={link.href} aria-current={pathname === link.href ? "page" : undefined} onClick={closeMenu} style={{ transitionDelay: open ? `${index * 20}ms` : "0ms" }}>{link.label}</Link>)}</nav>
   </header>;
 }
 
