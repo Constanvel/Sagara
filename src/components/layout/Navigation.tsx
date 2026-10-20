@@ -33,7 +33,7 @@ export function Header() {
         <span><span className="block text-[15px] leading-[25px] font-extrabold tracking-[-0.5px] text-navy">SAGARA</span><span className="block text-[8px] leading-4 font-bold tracking-[0.55px] text-[#db322f]">RUMAH SUNAT MODERN</span></span>
       </Link>
       <nav aria-label="Navigasi utama" className="hidden items-center gap-8 text-sm font-bold text-primary lg:flex">{links.map(link => <Link key={link.label} href={link.href}>{link.label}</Link>)}</nav>
-      <button ref={toggle} type="button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className="flex size-11 items-center justify-center text-navy lg:hidden"><span aria-hidden="true" className="text-[27px] leading-none">{open ? "×" : "☰"}</span></button>
+      <button ref={toggle} type="button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className="flex size-11 items-center justify-center text-navy lg:hidden">{open ? <span aria-hidden="true" className="text-[27px] leading-none">×</span> : <Image src="/images/figma/menu.svg" alt="" width={24} height={24} />}</button>
     </div>
     {open && <nav ref={menu} id="mobile-menu" aria-label="Menu seluler" className="absolute inset-x-0 top-14 grid gap-1 border-t border-line bg-white p-4 shadow-lg lg:hidden">{links.map(link => <Link key={link.label} href={link.href} onClick={() => setOpen(false)} className="rounded-lg p-3 text-sm font-bold text-primary">{link.label}</Link>)}<span aria-disabled="true" className="p-3 text-sm text-muted">Galeri — segera hadir</span></nav>}
   </header>;
@@ -49,7 +49,7 @@ export function MobileBottomNav() {
   ];
   return <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_0_4px_rgba(0,0,0,0.25)] lg:hidden"><div className="mx-auto grid h-[69px] max-w-[600px] grid-cols-4">{items.map(item => {
     const content = <><Image src={`/images/figma/${item.icon}`} alt="" width={19} height={19} className="h-[19px] w-auto" /><span>{item.label}</span></>;
-    const classes = `relative flex flex-col items-center justify-center gap-1 text-[10px] ${item.active ? "font-extrabold text-primary before:absolute before:top-0 before:h-px before:w-12 before:bg-primary" : "font-medium text-[#687e97]"}`;
+    const classes = `relative flex flex-col items-center justify-center gap-1 text-[10px] ${item.active ? "font-extrabold text-primary before:absolute before:top-0 before:h-px before:w-12 before:bg-primary" : "font-medium text-[#5d718b]"}`;
     return item.href ? <Link key={item.label} href={item.href} aria-current={item.active ? "page" : undefined} className={classes}>{content}</Link> : <span key={item.label} aria-disabled="true" aria-label="Galeri — segera hadir" title="Segera hadir" className={classes}>{content}</span>;
   })}</div></nav>;
 }

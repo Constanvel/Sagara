@@ -1,6 +1,7 @@
 import { Asset } from "@/components/ui/Asset";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { benefits, methods, needs } from "@/data/home";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { FAQAccordion } from "./FAQAccordion";
 import { DecorativeRibbon } from "./HeroSection";
 
@@ -60,9 +61,9 @@ export function NeedsSection() {
         <SectionIntro label="Layanan SAGARA" title="Setiap jagoan punya kebutuhan berbeda." description="Mulai dari kebutuhan Anda. Kelayakan tindakan dan pilihan metode ditentukan setelah konsultasi." />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {needs.map((need) => (
-            <article key={need.title} className="flex min-w-0 flex-col gap-[14px] rounded-[20px] border border-line bg-white p-5 shadow-[0_6px_24px_rgba(21,61,117,0.06)]">
+            <article key={need.title} className="relative flex min-w-0 flex-col gap-[14px] rounded-[20px] border border-line bg-white p-5 shadow-[0_6px_24px_rgba(21,61,117,0.06)]">
               <div className="flex items-center justify-between"><span className="flex size-[42px] items-center justify-center rounded-xl bg-soft"><Asset name={need.icon} width={22} height={22} /></span><Asset name="imgArrowUpRight.svg" width={18} height={18} /></div>
-              <h3 className="text-[19px] leading-[1.23] font-extrabold text-ink">{need.title}</h3>
+              <h3 className="text-[19px] leading-[1.23] font-extrabold text-ink"><a href={whatsappUrl(`Halo admin SAGARA, saya ingin konsultasi layanan ${need.title}.`) ?? undefined} target="_blank" rel="noopener noreferrer" className="after:absolute after:inset-0 after:rounded-[20px]">{need.title}<span className="sr-only"> — konsultasi WhatsApp (tab baru)</span></a></h3>
               <p className="text-[13px] leading-[1.65] text-muted">{need.description}</p>
             </article>
           ))}
