@@ -10,7 +10,7 @@ const links = [
   { label: "Beranda", href: "/", icon: "imgVector1.svg" },
   { label: "Layanan", href: "/layanan", icon: "imgVector2.svg" },
   { label: "Paket Khitan", href: "/paket", icon: "imgVector2.svg" },
-  { label: "Galeri", href: null, icon: "imgVector3.svg" },
+  { label: "Galeri", href: "/galeri", icon: "imgVector3.svg" },
   { label: "Kontak", href: "/kontak", icon: "imgGroup1.svg" },
 ];
 
