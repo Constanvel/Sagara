@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { Asset } from "@/components/ui/Asset";
+import styles from "./HeroSection.module.css";
 
 const highlights = [
   { title: "Tanpa Jahit", icon: "imgGroup.svg", copy: "Metode Klem & Biological Glue canggih, hasil luka tertutup presisi tanpa benang jahit." },
@@ -11,25 +12,10 @@ const highlights = [
 ];
 
 export function DecorativeRibbon() {
-  return <div aria-hidden="true" className="pointer-events-none relative h-[30px] w-full overflow-hidden lg:hidden">
-    <div className="absolute top-0 left-1/2 h-[30px] w-[412px] -translate-x-1/2">
-      <div className="absolute top-[6.4px] left-[-0.5px] h-[14.46px] w-[412.965px] rotate-[-1.78deg] skew-x-[-0.58deg] bg-[#003d9f]" />
-      {[
-        { left: 323.06, top: -54.76, mask: "imgWaveRibbon6.svg", position: "-97.4px 54.758px", size: "186.903px 20.258px" },
-        { left: 215.64, top: -49.29, mask: "imgWaveRibbon6.svg", position: "10.022px 49.293px", size: "186.903px 20.258px" },
-        { left: -3.16, top: -41.75, mask: "imgWaveRibbon3.svg", position: "-6.535px 50.943px", size: "206.924px 20.88px" },
-        { left: 121.77, top: -45.85, mask: "imgWaveRibbon3.svg", position: "-131.467px 55.046px", size: "206.924px 20.88px" },
-      ].map(tile => <div key={tile.left} className="absolute flex h-[120.616px] w-[120.596px] items-center justify-center" style={{ left: tile.left, top: tile.top }}>
-        <div className="h-[85.569px] w-[85.36px] shrink-0 rotate-[41.25deg]" style={{ maskImage: `url(/images/figma/${tile.mask})`, maskPosition: tile.position, maskSize: tile.size, maskRepeat: "no-repeat" }}>
-          <Asset name="imgWaveRibbon7.png" width={86} height={86} className="h-full w-full object-cover opacity-60" />
-        </div>
-      </div>)}
-      <div className="absolute top-[6.41px] left-[-0.5px] h-[14.461px] w-[412.947px] rotate-[1.53deg] skew-x-[0.5deg] bg-[#002869]" />
-      <span className="absolute top-[9px] left-[196px] rotate-[1.52deg] text-[5px] leading-[8px] font-extrabold tracking-[-0.5px] text-white">SAGARA</span>
-    </div>
+  return <div aria-hidden="true" className={`pointer-events-none relative w-full overflow-hidden lg:hidden ${styles.ribbon}`}>
+    <Image src="/images/figma/hero-ribbon.png" alt="" width={412} height={31} unoptimized className="block h-auto w-full" />
   </div>;
 }
-
 export function HeroSection() {
   return <section aria-labelledby="hero-title" className="hero-section relative pb-[110px] lg:bg-[#f4f7fc] lg:pt-3 lg:pb-10">
     <div className="mx-auto max-w-[1200px] lg:grid lg:grid-cols-[1.08fr_1fr] lg:items-center lg:gap-12 lg:px-8 lg:pt-10 lg:pb-9">
@@ -39,9 +25,15 @@ export function HeroSection() {
           <h1 id="hero-title" className="mt-[18px] max-w-[364px] text-[32px] leading-[1.23] font-extrabold text-ink lg:max-w-[560px] lg:text-[clamp(2.75rem,4vw,3.5rem)] lg:leading-[1.1] lg:tracking-[-0.045em]"><span className="block lg:inline">Langkah berani si </span><span className="block lg:inline">jagoan, dimulai di </span><span className="block lg:inline">sini.</span></h1>
           <p className="mt-[18px] text-[15px] leading-[1.65] text-muted lg:mt-5 lg:max-w-[460px] lg:text-base lg:leading-7">Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p>
         </div>
-        <div className="mt-[-5px] flex flex-wrap gap-[15px] px-[22px] hero-actions lg:mt-7 lg:gap-3 lg:px-0 lg:[&>a]:min-h-12 lg:[&>a]:rounded-xl lg:[&>a]:px-5! lg:[&>a]:text-xs!">
-          <ContactAction className="min-h-11 rounded-[8px] bg-primary !px-[13px] !text-[11px] text-white uppercase">Daftar khitan <span aria-hidden="true">→</span></ContactAction>
-          <Link href="/paket" className="inline-flex min-h-11 items-center rounded-[8px] bg-[#e7eeff] px-[14px] text-[11px] font-extrabold text-navy uppercase">Lihat paket</Link>
+        <div className={`hero-actions ${styles.actions}`}>
+          <ContactAction className={styles.register}>
+            <span className={styles.registerLabel}>Daftar khitan</span>
+            <Asset name="hero-arrow-right.svg" width={21} height={21} className={styles.arrow} />
+          </ContactAction>
+          <Link href="/paket" className={`cta-motion ${styles.packages}`}>
+            <span className={styles.packageLabel}>Lihat paket</span>
+            <Asset name="hero-package.svg" width={24} height={24} className={styles.packageIcon} />
+          </Link>
         </div>
       </div>
       <div className="hero-visual mx-auto mt-6 w-[calc(100%-58px)] max-w-[480px] lg:mt-0 lg:w-full lg:max-w-none">

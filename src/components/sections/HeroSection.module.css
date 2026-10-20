@@ -1,0 +1,45 @@
+/* Figma Home 9:360–363, 9:396–402, 9:667. Scoped to hero CTAs. */
+.actions {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 15px;
+  margin-top: -15px;
+  padding: 0 22px 23px;
+}
+.actions > a {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 31px;
+  min-height: 31px;
+  padding: 0;
+  gap: 0;
+  border-radius: 100px;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+/* Extend the hit area without enlarging the Figma button artwork. */
+.actions > a::after { content: ""; position: absolute; inset: -6.5px 0; }
+.actions .register { width: 129px; background: #002869; color: white; }
+.actions .packages { width: 113px; border: 1px solid #002869; background: white; color: #002869; }
+.registerLabel { margin-left: 13px; }
+.packageLabel { margin-left: 13px; }
+.arrow { position: absolute; right: 5px; top: 5px; }
+.packageIcon { position: absolute; right: 6px; top: 2px; }
+.ribbon { aspect-ratio: 412 / 31; }
+
+@media (min-width: 1024px) {
+  .actions { margin-top: 28px; padding: 0; gap: 12px; }
+  .actions > a { height: 48px; min-height: 48px; font-size: 12px; }
+  .actions .register { width: 156px; }
+  .actions .packages { width: 140px; }
+  .registerLabel, .packageLabel { margin-left: 20px; }
+  .arrow { top: 13.5px; right: 12px; }
+  .packageIcon { top: 11px; right: 12px; }
+}
