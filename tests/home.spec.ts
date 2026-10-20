@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 for (const width of [320, 360, 375, 390, 412, 768, 1024, 1280, 1440]) {
   for (const route of ["/", "/paket"]) {
     test(`${route} has no overflow at ${width}px`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.setViewportSize({ width, height: 900 });
       const errors: string[] = [];
       page.on("pageerror", error => errors.push(error.message));
@@ -16,6 +17,7 @@ for (const width of [320, 360, 375, 390, 412, 768, 1024, 1280, 1440]) {
         await image.scrollIntoViewIfNeeded();
         await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
       }
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       await page.screenshot({ path: `test-results/${route === "/" ? "home" : "paket"}-${width}.png`, fullPage: true });
     });
   }

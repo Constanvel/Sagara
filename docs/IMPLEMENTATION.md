@@ -63,7 +63,10 @@ Screenshots are generated under ignored `test-results/`. Desktop is a conservati
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
 - `npm run build`: exited successfully.
-- `npx playwright test`: 21 passed; nine widths on both routes plus interaction and automated accessibility checks.
+- `npx playwright test`: 24 passed; nine widths on both routes plus interaction, navigation, reduced-motion, and automated accessibility checks.
+- Desktop revision: navigation matches mobile destinations (Beranda, Layanan, disabled Galeri, Kontak); Paket is accessed through the Lihat paket CTA, not the header menu. Hero, section spacing, method cards, benefits, and homecare use a denser desktop composition.
+- Motion: one-time entrance animations using IntersectionObserver and the Web Animations API; hover/press feedback uses CSS. No animation dependency. Content remains visible without JavaScript, and reduced-motion preferences disable movement. Screenshot and contrast checks disable motion for deterministic results.
+- The development indicator is disabled because it overlapped mobile controls during local testing.
 - `npm audit --omit=dev`: zero vulnerabilities.
 - Manual screenshot inspection: Home at 412 and 1440 px; Paket at 412 px. Exact pixel parity is not certified. Decorative ribbon folds/textures and the third method badge colors still need final comparison with the approved Figma frame.
 
