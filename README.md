@@ -1,8 +1,2 @@
 # Sunatan
 Nyunatin orang
-
-# ANDREW GRAIN SIMANJUTAK 
-# SUJAT TUKIYAH
-# GATOTT
-# AJII 
-# HERII
