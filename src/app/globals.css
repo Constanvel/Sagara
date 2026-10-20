@@ -94,6 +94,38 @@ video {
   }
 }
 
+.mobile-menu {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 180ms ease-out, transform 180ms ease-out, visibility 180ms;
+}
+
+.mobile-menu[data-open="true"] {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .service-card:hover,
+  .contact-card:hover {
+    transform: translateY(-3px);
+    border-color: #9cb8df;
+  }
+
+  .service-card:hover .card-arrow,
+  .service-card:focus-within .card-arrow {
+    transform: translate(2px, -2px);
+  }
+}
+
+.card-arrow {
+  transition: transform 180ms ease-out;
+}
+
 /* Motion enhances interaction without hiding content before hydration. */
 @media (prefers-reduced-motion: no-preference) {
   a,

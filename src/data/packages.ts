@@ -1,18 +1,20 @@
-export type KhitanPackage = {
+export type KhitanPackage = Readonly<{
   id: string;
   name: string;
   price: number;
+  priceStatus: "pending-business-verification";
   features: readonly string[];
   tone: "blue" | "gold";
   actionLabel: string;
   message: string;
-};
+}>;
 
 export const packages: readonly KhitanPackage[] = [
   {
     id: "modern",
     name: "Paket Modern",
     price: 1100000,
+    priceStatus: "pending-business-verification",
     features: [
       "Metode modern (Tekhnoklamp)",
       "Pembiusan dikonfirmasi saat konsultasi",
@@ -23,8 +25,9 @@ export const packages: readonly KhitanPackage[] = [
   },
   {
     id: "top-sealer",
-    name: "Top Sealer",
+    name: "Paket Top Sealer",
     price: 900000,
+    priceStatus: "pending-business-verification",
     features: [
       "Metode Top Sealer",
       "Pembiusan dikonfirmasi saat konsultasi",

@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-for (const route of ["/", "/paket"]) {
+for (const route of ["/", "/layanan", "/paket", "/kontak"]) {
   test(`${route} passes automated WCAG checks`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 412, height: 900 });

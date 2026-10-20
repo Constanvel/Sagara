@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-for (const width of [320, 360, 375, 390, 412, 768, 1024, 1280, 1440]) {
-  for (const route of ["/", "/paket"]) {
+for (const width of [320, 375, 390, 412, 768, 1024, 1280, 1440, 1920]) {
+  for (const route of ["/", "/layanan", "/paket", "/kontak"]) {
     test(`${route} has no overflow at ${width}px`, async ({ page }) => {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.setViewportSize({ width, height: 900 });
@@ -18,7 +18,7 @@ for (const width of [320, 360, 375, 390, 412, 768, 1024, 1280, 1440]) {
         await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
       }
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-      await page.screenshot({ path: `test-results/${route === "/" ? "home" : "paket"}-${width}.png`, fullPage: true });
+      await page.screenshot({ path: `test-results/${route === "/" ? "home" : route.slice(1)}-${width}.png`, fullPage: true });
     });
   }
 }
