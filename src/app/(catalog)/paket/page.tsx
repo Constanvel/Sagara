@@ -8,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function PaketPage() {
-  return (
-    <main id="main-content" className="min-h-[calc(100dvh-56px)] bg-soft">
-      <PackagesSection />
-    </main>
-  );
+  return <PackagesSection />;
 }

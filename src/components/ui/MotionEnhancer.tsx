@@ -2,42 +2,41 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { motion } from "@/lib/motion";
 
-/** Progressive enhancement: content remains visible without JavaScript. */
+/** Progressive enhancement: no hidden content, route blocking, or animation dependency. */
 export function MotionEnhancer() {
   const pathname = usePathname();
-
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (preference.matches || !("IntersectionObserver" in window)) return;
     const animations = new Set<Animation>();
-    const isCatalog = pathname !== "/";
-    const reveal = (element: Element, delay = 0) => {
-      const animation = element.animate(
-        [{ opacity: 0.25, transform: "translateY(18px)" }, { opacity: 1, transform: "translateY(0)" }],
-        { duration: isCatalog ? 420 : 600, delay, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
-      );
+    const play = (element: Element, distance: number, duration: number, delay = 0) => {
+      const animation = element.animate([
+        { opacity: 0, translate: `0 ${distance}px` },
+        { opacity: 1, translate: "0 0" },
+      ], { duration, delay, easing: motion.ease });
       animations.add(animation);
       animation.onfinish = () => animations.delete(animation);
     };
-    if (isCatalog) {
-      const intro = document.querySelector("main h1");
-      if (intro) reveal(intro);
-    }
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
+    const page = document.querySelector("[data-page-content]") ?? document.querySelector("main");
+    if (page) play(page, 10, motion.page);
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
         observer.unobserve(entry.target);
-        if (preference.matches) return;
+        // Initial viewport is handled by page entrance, not a second reveal.
+        if (preference.matches || entry.time < started + motion.page) continue;
         const siblings = Array.from(entry.target.parentElement?.children ?? []);
-        const delay = isCatalog ? (siblings.indexOf(entry.target) % 3) * 65 : 0;
-        reveal(entry.target, delay);
-      });
+        play(entry.target, 18, motion.reveal, (siblings.indexOf(entry.target) % 3) * motion.stagger);
+      }
     }, { threshold: 0.08 });
-    const selector = isCatalog
-      ? "main article, main [data-reveal]"
-      : ".hero-copy, .hero-visual, .feature-grid, main > section:not(:first-child) > div, main article";
-    document.querySelectorAll(selector).forEach(element => observer.observe(element));
+    const started = performance.now();
+    document.querySelectorAll("main article, main [data-reveal], main h2, [data-faq-item], .contact-card").forEach(element => {
+      // Animate the card or its heading, never both.
+      if (element.matches("h2") && element.closest("article, [data-faq-item], .contact-card")) return;
+      observer.observe(element);
+    });
     const stop = () => { if (preference.matches) animations.forEach(animation => animation.cancel()); };
     preference.addEventListener("change", stop);
     return () => {
@@ -46,6 +45,5 @@ export function MotionEnhancer() {
       animations.forEach(animation => animation.cancel());
     };
   }, [pathname]);
-
   return null;
 }

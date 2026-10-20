@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LayananPage() {
-  return (
-    <main id="main-content" className="min-h-[calc(100dvh-56px)] bg-soft">
-      <ServicesSection />
-    </main>
-  );
+  return <ServicesSection />;
 }

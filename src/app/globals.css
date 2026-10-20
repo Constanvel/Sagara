@@ -109,53 +109,44 @@ video {
   pointer-events: auto;
 }
 
+.bottom-nav-indicator { transition-property: transform; }
+.bottom-nav-item { transition: color 220ms ease, background-color 120ms ease; }
+.bottom-nav-icon { transition: translate 220ms ease, scale 120ms ease; }
+.bottom-nav-icon[data-active="true"] { translate: 0 -2px; }
+.bottom-nav-item[href]:active { background-color: #eef5ff; }
+.bottom-nav-item[href]:active .bottom-nav-icon { scale: 0.94; }
+
+.faq-panel {
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 280ms ease, visibility 280ms;
+}
+.faq-panel[data-open="true"] { grid-template-rows: 1fr; visibility: visible; }
+.faq-symbol-vertical { rotate: 90deg; transition: rotate 220ms ease, opacity 220ms ease; }
+.faq-symbol[data-open="true"] .faq-symbol-vertical { rotate: 0deg; opacity: 0; }
+
+.cta-motion[href], button, .desktop-nav-item {
+  transition: scale 120ms ease, transform 220ms ease, box-shadow 220ms ease,
+    border-color 220ms ease, background-color 220ms ease, color 220ms ease, filter 180ms ease;
+}
+.card-arrow { transition: transform 180ms ease; }
+.cta-motion[href]:active { scale: 0.98; }
+.service-card[href]:active { scale: 0.985; }
+.service-card:active .card-arrow, .service-card:focus-visible .card-arrow { transform: translate(2px, -2px); }
+button:active { scale: 0.98; }
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .service-card:hover,
-  .contact-card:hover {
+  .desktop-nav-item:not([aria-disabled]):hover {
+    background: #fff;
+    box-shadow: 0 4px 14px rgb(6 74 155 / 8%);
+  }
+  .cta-motion[href]:hover { transform: translateY(-2px); }
+  .service-card[href]:hover {
     transform: translateY(-3px);
     border-color: #9cb8df;
+    box-shadow: 0 8px 20px rgb(16 45 80 / 9%);
   }
-
-  .service-card:hover .card-arrow,
-  .service-card:focus-within .card-arrow {
-    transform: translate(2px, -2px);
-  }
-}
-
-.card-arrow {
-  transition: transform 180ms ease-out;
-}
-
-/* Motion enhances interaction without hiding content before hydration. */
-@media (prefers-reduced-motion: no-preference) {
-  a,
-  button,
-  .desktop-nav-item,
-  main article {
-    transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease, color 220ms ease;
-  }
-
-  a:active,
-  button:active {
-    transform: translateY(1px);
-  }
-
-  @media (hover: hover) {
-    .desktop-nav-item:not([aria-disabled]):hover {
-      background: #fff;
-      box-shadow: 0 4px 14px rgb(6 74 155 / 8%);
-    }
-
-    main article:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgb(16 45 80 / 9%);
-    }
-
-    a.inline-flex:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgb(6 74 155 / 12%);
-    }
-  }
+  .service-card:hover .card-arrow { transform: translate(2px, -2px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -166,6 +157,8 @@ video {
   *,
   *::before,
   *::after {
+    scale: none !important;
+    translate: none !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

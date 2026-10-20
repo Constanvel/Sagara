@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" className={jakarta.variable}>
+    <html lang="id" data-scroll-behavior="smooth" className={jakarta.variable}>
       <body>
         <a className="skip-link" href="#main-content">
           Lewati ke konten utama

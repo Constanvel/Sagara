@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "@/lib/motion";
 
 const links = [
   { label: "Beranda", href: "/", icon: "imgVector1.svg" },
@@ -71,10 +72,27 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   // Paket belongs to the Layanan catalog; its own link is in the menu and catalog tabs.
   const items = links.filter(item => item.href !== "/paket");
-  return <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_0_4px_rgba(0,0,0,0.25)] lg:hidden"><div className="mx-auto grid h-[69px] max-w-[600px] grid-cols-4">{items.map(item => {
+  const activeIndex = Math.max(0, items.findIndex(item => pathname === item.href || (pathname === "/paket" && item.href === "/layanan")));
+  const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const previousIndex = useRef(activeIndex);
+  useEffect(() => {
+    if (previousIndex.current === activeIndex) return;
+    previousIndex.current = activeIndex;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const element = iconRefs.current[activeIndex];
+    const animation = element?.animate([
+      { scale: "0.94", translate: "0 0" },
+      { scale: "1.06", translate: "0 -3px", offset: 0.55 },
+      { scale: "1", translate: "0 -2px" },
+    ], { duration: motion.icon, easing: motion.ease });
+    return () => animation?.cancel();
+  }, [activeIndex]);
+  return <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_0_4px_rgba(0,0,0,0.25)] lg:hidden"><div className="bottom-nav-track relative mx-auto grid h-[69px] max-w-[600px] grid-cols-4">
+    <span aria-hidden="true" data-testid="bottom-nav-indicator" className="bottom-nav-indicator pointer-events-none absolute top-0 left-0 h-px w-1/4" style={{ transform: `translateX(${activeIndex * 100}%)`, transitionDuration: `${motion.indicator}ms`, transitionTimingFunction: motion.spring }}><span className="mx-auto block h-px w-12 bg-primary" /></span>
+    {items.map((item, index) => {
     const active = pathname === item.href || (pathname === "/paket" && item.href === "/layanan");
-    const content = <><Image src={`/images/figma/${item.icon}`} alt="" width={19} height={19} className="h-[19px] w-auto" /><span>{item.label}</span></>;
-    const classes = `relative flex flex-col items-center justify-center gap-1 text-[10px] ${active ? "font-extrabold text-primary before:absolute before:top-0 before:h-px before:w-12 before:bg-primary" : "font-medium text-[#5d718b]"}`;
+    const content = <><span ref={element => { iconRefs.current[index] = element; }} aria-hidden="true" className="bottom-nav-icon relative block h-[19px] w-[19px]" data-active={active}><span className="nav-icon-layer absolute inset-0 block bg-current" style={{ maskImage: `url(/images/figma/${item.icon})`, maskSize: "contain", maskPosition: "center", maskRepeat: "no-repeat" }} /></span><span>{item.label}</span></>;
+    const classes = `bottom-nav-item relative flex flex-col items-center justify-center gap-1 text-[10px] ${active ? "font-extrabold text-primary" : "font-medium text-[#5d718b]"}`;
     return item.href ? <Link key={item.label} href={item.href} aria-current={active ? (pathname === item.href ? "page" : "true") : undefined} className={classes}>{content}</Link> : <span key={item.label} aria-disabled="true" aria-label="Galeri — segera hadir" title="Segera hadir" className={classes}>{content}</span>;
   })}</div></nav>;
 }

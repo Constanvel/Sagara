@@ -1,15 +1,11 @@
 import { Asset } from "@/components/ui/Asset";
-import { CatalogIntro } from "@/components/ui/CatalogIntro";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { ServiceCard } from "@/components/ui/ServiceCard";
-import { ServicePackageNav } from "@/components/ui/ServicePackageNav";
 import { services } from "@/data/services";
 
 export function ServicesSection() {
   return (
-    <section aria-labelledby="services-heading" className="mx-auto max-w-[1100px] px-6 pt-[25px] pb-7 md:py-12">
-      <CatalogIntro headingId="services-heading" />
-      <ServicePackageNav current="/layanan" />
+    <section data-page-content aria-labelledby="catalog-heading" className="flow-root pb-7 md:pb-12">
       <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => <ServiceCard key={service.id} service={service} />)}
       </div>

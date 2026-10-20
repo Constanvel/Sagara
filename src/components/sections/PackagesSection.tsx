@@ -1,13 +1,9 @@
-import { CatalogIntro } from "@/components/ui/CatalogIntro";
 import { PackageCard } from "@/components/ui/PackageCard";
-import { ServicePackageNav } from "@/components/ui/ServicePackageNav";
 import { packageCaveat, packages } from "@/data/packages";
 
 export function PackagesSection() {
   return (
-    <section aria-labelledby="packages-heading" className="mx-auto max-w-[1100px] px-6 pt-[25px] pb-5 md:py-12">
-      <CatalogIntro headingId="packages-heading" />
-      <ServicePackageNav current="/paket" />
+    <section data-page-content aria-labelledby="catalog-heading" className="flow-root pb-5 md:pb-12">
       <div className="mt-[25px] grid gap-[23px] md:grid-cols-2">
         {packages.map((item) => <PackageCard key={item.id} item={item} />)}
       </div>
