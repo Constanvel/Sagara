@@ -11,7 +11,7 @@ test("native scroll, keyboard, dots and captions stay synchronized across 20 pho
   // Next.js emits a preload link for the first image, not lazy loading.
   await expect(slides.first().locator("img")).not.toHaveAttribute("loading", "lazy");
   await expect(page.locator('link[rel="preload"][as="image"]')).not.toHaveCount(0);
-  await expect(slides.nth(19).locator("img")).toHaveAttribute("loading", "lazy");
+  await expect(slides.nth(19).locator("img")).toHaveCount(0);
   await viewport.focus();
   await page.keyboard.press("End");
   await expect(carousel.getByRole("button", { name: "Tampilkan foto 20", exact: true })).toHaveAttribute("aria-pressed", "true");

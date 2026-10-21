@@ -21,8 +21,8 @@ export function MotionEnhancer() {
       animation.onfinish = release;
       animation.oncancel = release;
     };
-    const page = document.querySelector("[data-page-content]") ?? document.querySelector("main");
-    if (page) play(page, 10, motion.page);
+    // Keep server-rendered first-viewport content painted during hydration;
+    // fading main restarts the LCP candidate after JavaScript loads.
 
     const selector = "main article, main [data-reveal], main h2, [data-faq-item], .contact-card";
     // Select the outermost candidate, never animate a container and its children.
@@ -44,8 +44,24 @@ export function MotionEnhancer() {
         if (!preference.matches) play(entry.target, 24, motion.reveal, Math.min(order.get(entry.target) ?? 0, 3) * motion.stagger);
       }
     }, { threshold: 0, rootMargin: "0px 0px -24px 0px" });
+    // Filters remove cards without changing pathname. Release detached targets
+    // instead of retaining their DOM through the observer and stagger maps.
+    const mutations = new MutationObserver(() => {
+      for (const element of order.keys()) {
+        if (element.isConnected) continue;
+        observer.unobserve(element);
+        order.delete(element);
+      }
+      for (const [group, items] of groups) {
+        const connected = items.filter(element => element.isConnected);
+        if (!group.isConnected || connected.length === 0) groups.delete(group);
+        else groups.set(group, connected);
+      }
+    });
+    const main = document.querySelector("main");
+    if (main) mutations.observe(main, { childList: true, subtree: true });
     // Snapshot the initial viewport instead of discarding entries by timestamp.
-    // Its content uses only the page entrance, avoiding competing animations.
+    // Initial content stays painted; only offscreen sections receive reveals.
     for (const element of candidates) {
       const bounds = element.getBoundingClientRect();
       if (bounds.top >= window.innerHeight || bounds.bottom <= 0) observer.observe(element);
@@ -53,12 +69,18 @@ export function MotionEnhancer() {
     const stop = () => {
       if (!preference.matches) return;
       observer.disconnect();
+      mutations.disconnect();
+      groups.clear();
+      order.clear();
       animations.forEach(animation => animation.cancel());
       animations.clear();
     };
     preference.addEventListener("change", stop);
     return () => {
       observer.disconnect();
+      mutations.disconnect();
+      groups.clear();
+      order.clear();
       preference.removeEventListener("change", stop);
       animations.forEach(animation => animation.cancel());
       animations.clear();

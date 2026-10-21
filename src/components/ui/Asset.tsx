@@ -26,7 +26,8 @@ const assetNames: Record<string, string> = {
   "imgMessageCircle1.svg": "faq-chat.svg",
   "imgMessageCircle2.svg": "consultation-chat.svg",
   "imgHouseHeart.svg": "homecare-house.svg",
-  "imgImage16.png": "sagara-homecare-vehicle.png",
+  "imgImage16.png": "sagara-homecare-vehicle.webp",
+  "sagara-homecare-vehicle.png": "sagara-homecare-vehicle.webp",
   "imgArtworkAsli.png": "sagara-footer-logo-artwork.png",
 };
 

@@ -42,8 +42,11 @@ export function HeroCarousel() {
     <div className={styles.frame}>
       <div ref={viewport} className={styles.viewport} tabIndex={0} aria-label="Geser foto jagoan" onScroll={event => {
         const element = event.currentTarget;
-        activeIndex.current = Math.max(0, Math.min(slides.length - 1, Math.round(element.scrollLeft / element.clientWidth)));
-        setIndex(activeIndex.current);
+        const nextIndex = Math.max(0, Math.min(slides.length - 1, Math.round(element.scrollLeft / element.clientWidth)));
+        if (nextIndex !== activeIndex.current) {
+          activeIndex.current = nextIndex;
+          setIndex(nextIndex);
+        }
       }} onPointerDown={event => {
         if (event.pointerType !== "mouse" || event.button !== 0) return;
         gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, left: event.currentTarget.scrollLeft, horizontal: false };
@@ -68,8 +71,8 @@ export function HeroCarousel() {
         }
         gesture.current = null;
       }} onPointerCancel={event => { delete event.currentTarget.dataset.dragging; gesture.current = null; }}>
-        {slides.map((slide, i) => <div key={slide.src} className={styles.slide} role="group" aria-roledescription="slide" aria-label={`${i + 1} dari ${slides.length}`} aria-hidden={i !== index}>
-          <Image src={slide.src} alt={slide.alt} fill preload={i === 0} loading={i === 0 ? undefined : "lazy"} draggable={false} sizes="(min-width: 1024px) 470px, (max-width: 412px) 85vw, 480px" className={styles.photo} />
+        {slides.map((slide, i) => <div key={slide.src} className={styles.slide} role="group" aria-roledescription="slide" aria-label={`${i + 1} dari ${slides.length}`} aria-hidden={i !== index} data-image-src={slide.src}>
+          {(i === 0 || Math.abs(i - index) <= 1) && <Image src={slide.src} alt={slide.alt} fill preload={i === 0} loading={i === 0 ? undefined : "lazy"} draggable={false} sizes="(min-width: 1200px) 507px, (min-width: 1024px) calc((100vw - 164px) / 2.08), (min-width: 548px) 470px, calc(100vw - 68px)" className={styles.photo} />}
         </div>)}
       </div>
       <button type="button" className={`${styles.arrow} ${styles.previous}`} aria-label="Foto sebelumnya" aria-disabled={index === 0} onClick={() => go(index - 1)}><Image src="/images/figma/hero-arrow-right.svg" width={21} height={21} alt="" /></button>

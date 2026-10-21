@@ -125,7 +125,7 @@ for (const width of widths) {
     const hero = page.getByRole("region", { name: "Cerita jagoan Sagara" });
     const slides = hero.locator('[aria-roledescription="slide"]');
     await expect(slides).toHaveCount(20);
-    const sources = await slides.locator("img").evaluateAll(images => images.map(image => image.getAttribute("src")));
+    const sources = await slides.evaluateAll(elements => elements.map(element => element.getAttribute("data-image-src")));
     expect(new Set(sources).size).toBe(20);
     const captions: string[] = [];
     // Jump directly to representative slides; do not animate through all 19 transitions.

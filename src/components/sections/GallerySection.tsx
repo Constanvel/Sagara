@@ -68,7 +68,7 @@ export function GallerySection() {
         <figure>
           <button type="button" aria-label={`${item.type === "video" ? "Putar video" : "Perbesar foto"}: ${item.title}. ${item.caption}`} aria-haspopup="dialog" onClick={event => { trigger.current = event.currentTarget; setSelected(index); }}>
             <span className={styles.image}>
-              <Image src={item.thumbnail} alt={item.alt} fill sizes="(min-width: 1024px) 380px, (min-width: 768px) 45vw, 90vw" loading={index === 0 ? "eager" : "lazy"} style={{ objectPosition: item.height > item.width ? "center 35%" : "center" }} />
+              <Image src={item.thumbnail} alt={item.alt} fill sizes={index === 0 ? "(min-width: 1200px) 455px, (min-width: 1024px) calc((100vw - 112px) * .412), (min-width: 768px) calc((100vw - 88px) / 2), calc(100vw - 70px)" : "(min-width: 1200px) 325px, (min-width: 1024px) calc((100vw - 112px) * .294), (min-width: 768px) calc((100vw - 88px) / 2), calc((100vw - 98px) / 2)"} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} style={{ objectPosition: item.height > item.width ? "center 35%" : "center" }} />
               {item.type === "video" && <span className={styles.playBadge} aria-hidden="true">▶ Video</span>}
             </span>
           </button>
