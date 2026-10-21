@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Asset } from "@/components/ui/Asset";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { benefits, methods, needs } from "@/data/home";
@@ -137,7 +138,10 @@ export function ConsultationSection() {
           <h2 className="text-[30px] leading-[1.23] font-extrabold">Siap merencanakan khitan bersama SAGARA?</h2>
           <p className="text-sm leading-[1.65]">Konsultasikan kebutuhan, pilihan metode, dan biaya bersama admin Sagara.</p>
         </div>
-        <ContactAction className={`${action} w-full shrink-0 border-white bg-white text-primary md:w-auto`}><Asset name="imgMessageCircle2.svg" width={19} height={19} className="shrink-0" />Mulai konsultasi</ContactAction>
+        <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto">
+          <Link href="/pendaftaran" className={`cta-motion ${action} inline-flex w-full items-center justify-center gap-3 border-white bg-white text-primary`}><Asset name="imgArrowRight.svg" width={19} height={19} className="shrink-0" />Daftar khitan</Link>
+          <ContactAction className={`${action} w-full border-white bg-transparent text-white`}><Asset name="imgMessageCircle2.svg" width={19} height={19} className="shrink-0" />Mulai konsultasi</ContactAction>
+        </div>
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Asset } from "@/components/ui/Asset";
 import { ContactAction } from "@/components/ui/ContactAction";
 import type { KhitanService } from "@/data/services";
@@ -15,6 +16,10 @@ export function ServiceCard({ service }: { service: KhitanService }) {
         </span>
         <Asset name="service-arrow.svg" width={14} height={14} className="card-arrow absolute top-[18px] right-[18px]" />
       </ContactAction>
+      <Link href={{ pathname: "/pendaftaran", query: { layanan: service.id } }} className="cta-motion mt-2 inline-flex min-h-11 items-center gap-2 rounded-[10px] px-3 py-2 text-[13px] font-semibold text-primary underline underline-offset-4">
+        Daftar layanan<span className="sr-only"> {service.title}</span>
+        <Asset name="service-arrow.svg" width={14} height={14} className="shrink-0" />
+      </Link>
     </article>
   );
 }

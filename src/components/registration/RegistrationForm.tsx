@@ -1,0 +1,98 @@
+"use client";
+
+import Link from "next/link";
+import { useRef, useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
+import { Asset } from "@/components/ui/Asset";
+import { packages, packageCaveat } from "@/data/packages";
+import { services } from "@/data/services";
+import { whatsappUrl } from "@/lib/whatsapp";
+import { formatDate, jakartaToday, timeSlots, validateRegistration, type RegistrationData, type RegistrationErrors } from "./validation";
+import styles from "./RegistrationForm.module.css";
+
+const registrationServices = services.filter((item, index, all) => all.findIndex(other => other.title === item.title) === index);
+const price = new Intl.NumberFormat("id-ID");
+const initial: RegistrationData = { service: "anak-anak", package: "", date: "", time: "", guardian: "", patient: "", age: "", whatsapp: "", consent: false };
+
+export function RegistrationForm() {
+  const params = useSearchParams();
+  const [data, setData] = useState(() => {
+    const requestedService = params.get("layanan");
+    const serviceId = requestedService === "kebutuhan-khusus-pendampingan" ? "kebutuhan-khusus" : requestedService;
+    const packageId = params.get("paket");
+    return { ...initial,
+      service: registrationServices.some(item => item.id === serviceId) ? serviceId! : initial.service,
+      package: packages.some(item => item.id === packageId) ? packageId! : initial.package,
+    };
+  });
+  const [errors, setErrors] = useState<RegistrationErrors>({});
+  const [step, setStep] = useState(1);
+  const [today, setToday] = useState(() => jakartaToday());
+  const title = useRef<HTMLHeadingElement>(null);
+  const form = useRef<HTMLFormElement>(null);
+  const service = registrationServices.find(item => item.id === data.service);
+  const selectedPackage = packages.find(item => item.id === data.package);
+
+  function update<K extends keyof RegistrationData>(key: K, value: RegistrationData[K]) {
+    setData(previous => ({ ...previous, [key]: value }));
+    setErrors(previous => ({ ...previous, [key]: undefined }));
+  }
+  function moveTo(next: number) {
+    setStep(next);
+    requestAnimationFrame(() => { title.current?.focus({ preventScroll: true }); title.current?.scrollIntoView({ block: "start", behavior: "instant" }); });
+  }
+  function review(event: FormEvent) {
+    event.preventDefault();
+    setToday(jakartaToday());
+    const nextErrors = validateRegistration(data, registrationServices.map(item => item.id), packages.map(item => item.id));
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) {
+      requestAnimationFrame(() => form.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
+      return;
+    }
+    moveTo(2);
+  }
+  const message = step > 1 ? `Halo Admin SAGARA! Saya ingin mengajukan pendaftaran layanan khitan.\n\nLayanan: ${service?.title}\nPaket: ${selectedPackage?.name}\nTanggal yang diinginkan: ${formatDate(data.date)}\nWaktu yang diinginkan: ${data.time} WIB\n\nMohon informasi mengenai ketersediaan jadwal, biaya, dan langkah selanjutnya. Terima kasih.` : "";
+  const href = whatsappUrl(message);
+  const error = (key: keyof RegistrationData) => errors[key] ? <p id={`error-${key}`} className={styles.error}>{errors[key]}</p> : null;
+  const attrs = (key: keyof RegistrationData) => ({ "aria-invalid": Boolean(errors[key]), "aria-describedby": errors[key] ? `error-${key}` : undefined });
+  const fields = [
+    { key: "guardian", label: "Nama orang tua / wali", placeholder: "Nama Lengkap", type: "text", autoComplete: "name" },
+    { key: "patient", label: "Nama pasien", placeholder: "Nama Lengkap", type: "text", autoComplete: "off" },
+    { key: "age", label: "Usia (tahun)", placeholder: "Contoh: 7", type: "number", autoComplete: "off" },
+    { key: "whatsapp", label: "Nomor WhatsApp", placeholder: "08XXXXXXXXX", type: "tel", autoComplete: "tel" },
+  ] as const;
+
+  return <main id="main-content" className={styles.main}>
+    <div className={styles.container}>
+      <div className={styles.topline}><span className={styles.eyebrow}>PENDAFTARAN</span><Link href="/" className={styles.home}>Kembali Beranda <Asset name="registration/arrow.svg" width={14} height={14} /></Link></div>
+      <header className={styles.intro}>
+        <h1 ref={title} tabIndex={-1}>{step === 1 ? <>Atur waktu<br />untuk langkah berani.</> : step === 2 ? "Tinjau pendaftaran Anda." : "Lanjutkan bersama admin."}</h1>
+        <p>{step === 1 ? "Pilih jadwal yang diinginkan. Ketersediaan akhir dikonfirmasi oleh admin." : step === 2 ? "Periksa kembali pilihan dan data sebelum membuka WhatsApp admin." : "WhatsApp telah dibuka. Permintaan belum otomatis terkirim dan jadwal belum dikonfirmasi."}</p>
+      </header>
+      <ol className={styles.stepper} aria-label="Tahap pendaftaran">{["Jadwal & data", "Tinjau", "Selesai"].map((label, index) => <li key={label} data-state={step === index + 1 ? "active" : step > index + 1 ? "completed" : "upcoming"} aria-current={step === index + 1 ? "step" : undefined}><span className={styles.stepNumber}>{step > index + 1 ? "✓" : index + 1}</span><span>{label}</span></li>)}</ol>
+      {step === 1 && <form ref={form} noValidate onSubmit={review} className={styles.form}>
+        <div className={styles.field}><label htmlFor="service">Layanan</label><div className={styles.selectWrap}><select id="service" name="service" value={data.service} onChange={event => update("service", event.target.value)} {...attrs("service")}>{registrationServices.map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select><Asset name="registration/chevron.svg" width={24} height={24} /></div>{error("service")}</div>
+        <fieldset className={styles.packageField}><legend>Pilih paket khitan</legend><p className={styles.helper}>Pilih satu paket yang ingin Anda tanyakan.</p>
+          <div className={styles.packages}>{packages.map(item => <article key={item.id} className={styles.package} data-selected={data.package === item.id} data-price-status={item.priceStatus}>
+            <h2 className={styles.badge} data-tone={item.tone}>{item.name}</h2><p className={styles.price}>Rp{price.format(item.price)}</p><p className={styles.perPatient}>per pasien</p>
+            <ul>{item.features.map(feature => <li key={feature}><Asset name="registration/tick.svg" width={15} height={15} /><span>{feature}</span></li>)}</ul>
+            <button type="button" aria-pressed={data.package === item.id} aria-label={`Pilih ${item.name}`} onClick={() => update("package", item.id)} {...attrs("package")}>{data.package === item.id ? "Paket dipilih ✓" : "Pilih paket"}</button>
+          </article>)}</div>{error("package")}<p className={styles.caveat} id="package-price-status">Harga referensi, belum terverifikasi. {packageCaveat}</p>
+        </fieldset>
+        <div className={styles.details}>
+          <section className={styles.schedule} aria-label="Preferensi jadwal">
+            <div className={styles.field}><label htmlFor="date">Tanggal yang diinginkan</label><div className={styles.dateWrap}><input id="date" name="date" type="date" min={today} value={data.date} onFocus={() => setToday(jakartaToday())} onChange={event => update("date", event.target.value)} required {...attrs("date")} /><Asset name="registration/calendar.svg" width={16} height={18} /></div>{error("date")}</div>
+            <fieldset className={styles.timeField}><legend>Pilihan waktu</legend><div className={styles.times}>{timeSlots.map(time => <button key={time} type="button" aria-pressed={data.time === time} onClick={() => update("time", time)} {...attrs("time")}>{time}</button>)}</div>{error("time")}<p className={styles.caveat}>Waktu dalam WIB, sebagai preferensi. Ketersediaan dikonfirmasi admin, bukan jadwal real-time.</p></fieldset>
+          </section>
+          <section className={styles.personal} aria-label="Data pendaftar">{fields.map(field => <div key={field.key} className={styles.field} data-field={field.key}><label htmlFor={field.key}>{field.label}</label><input id={field.key} name={field.key} type={field.type} placeholder={field.placeholder} autoComplete={field.autoComplete} maxLength={field.type === "text" ? 100 : undefined} min={field.key === "age" ? 0 : undefined} max={field.key === "age" ? 120 : undefined} step={field.key === "age" ? 1 : undefined} inputMode={field.key === "age" ? "numeric" : field.key === "whatsapp" ? "tel" : "text"} value={data[field.key]} onChange={event => update(field.key, event.target.value)} required {...attrs(field.key)} />{error(field.key)}</div>)}</section>
+        </div>
+        <div className={styles.consent}><label><input type="checkbox" checked={data.consent} onChange={event => update("consent", event.target.checked)} {...attrs("consent")} /><span>Saya memahami ini permintaan konsultasi, bukan konfirmasi jadwal. Data identitas hanya tersimpan selama halaman terbuka dan tidak dikirim ke klinik melalui formulir ini.</span></label>{error("consent")}</div>
+        {Object.keys(errors).some(key => errors[key as keyof RegistrationData]) && <p role="alert" className={styles.error}>Periksa isian yang ditandai sebelum melanjutkan.</p>}
+        <button type="submit" className={styles.primary}>Tinjau Pendaftaran <Asset name="registration/submit-arrow.svg" width={14} height={14} /></button>
+      </form>}
+      {step === 2 && <section className={styles.review} aria-label="Ringkasan pendaftaran"><h2>Ringkasan pilihan & data</h2><dl>{[["Layanan", service?.title], ["Paket", selectedPackage?.name], ["Harga referensi", `Rp${price.format(selectedPackage?.price ?? 0)} — perlu konfirmasi admin`], ["Preferensi tanggal", formatDate(data.date)], ["Preferensi waktu", `${data.time} WIB`], ["Orang tua / wali", data.guardian], ["Pasien", data.patient], ["Usia", `${data.age} tahun`], ["WhatsApp", data.whatsapp]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><div className={styles.notice}><h3>Belum dikirim ke klinik</h3><p>WhatsApp hanya membawa layanan, paket, tanggal, dan waktu. Nama, usia, dan nomor WhatsApp tidak dimasukkan ke tautan. Anda tetap perlu menekan Kirim di WhatsApp. Jadwal dan biaya baru berlaku setelah dikonfirmasi admin.</p></div><div className={styles.actions}><button type="button" className={styles.secondary} onClick={() => moveTo(1)}>Kembali & perbaiki</button>{href ? <a className={styles.primary} href={href} target="_blank" rel="noopener noreferrer" onClick={() => moveTo(3)}>Setujui & buka WhatsApp <span aria-hidden="true">↗</span></a> : <p role="alert">WhatsApp admin belum dikonfigurasi. Permintaan belum dikirim.</p>}</div></section>}
+      {step === 3 && <section className={styles.review} aria-label="Langkah berikutnya"><span className={styles.status}>Menunggu tindakan & konfirmasi admin</span><h2>Silakan kirim pesan di WhatsApp.</h2><p>Jika WhatsApp tidak terbuka, gunakan tombol di bawah. Tidak ada pendaftaran yang dikirim otomatis. Admin akan mengonfirmasi ketersediaan jadwal, rincian biaya, dan langkah berikutnya.</p><div className={styles.actions}>{href && <a href={href} target="_blank" rel="noopener noreferrer" className={styles.secondary}>Buka WhatsApp kembali ↗</a>}<Link href="/" className={styles.primary}>Kembali ke Beranda</Link></div><button type="button" className={styles.textButton} onClick={() => moveTo(2)}>Lihat ringkasan kembali</button></section>}
+    </div>
+  </main>;
+}

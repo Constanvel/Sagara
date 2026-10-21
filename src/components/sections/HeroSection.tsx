@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { preload } from "react-dom";
 import Link from "next/link";
-import { ContactAction } from "@/components/ui/ContactAction";
 import { Asset } from "@/components/ui/Asset";
 import styles from "./HeroSection.module.css";
 import { HeroCarousel } from "./HeroCarousel";
@@ -30,10 +29,10 @@ export function HeroSection() {
           <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
         </div>
         <div className={`hero-actions ${styles.actions}`}>
-          <ContactAction className={styles.register}>
+          <Link href="/pendaftaran" className={`cta-motion ${styles.register}`}>
             <span className={styles.registerLabel}>Daftar khitan</span>
             <Asset name="hero-arrow-right.svg" width={21} height={21} className={styles.arrow} />
-          </ContactAction>
+          </Link>
           <Link href="/paket" className={`cta-motion ${styles.packages}`}>
             <span className={styles.packageLabel}>Lihat paket</span>
             <Asset name="hero-package.svg" width={24} height={24} className={styles.packageIcon} />
