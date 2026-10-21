@@ -18,13 +18,14 @@ export function DecorativeRibbon() {
   </div>;
 }
 export function HeroSection() {
-  return <section aria-labelledby="hero-title" className="hero-section relative pb-[110px] lg:bg-[#f4f7fc] lg:pt-3 lg:pb-10">
+  return <section aria-labelledby="hero-title" className="hero-section relative pb-[88px] lg:bg-[#f4f7fc] lg:pt-3 lg:pb-10">
     <div className="mx-auto max-w-[1200px] lg:grid lg:grid-cols-[1.08fr_1fr] lg:items-center lg:gap-12 lg:px-8 lg:pt-10 lg:pb-9">
-      <div id="tentang-sagara" className="hero-copy scroll-mt-24 lg:py-4">
-        <div className="bg-soft px-6 pt-6 pb-7 lg:bg-transparent lg:p-0">
-          <p className="flex items-center gap-2 text-[11px] font-extrabold text-primary uppercase"><span className="h-[3px] w-[18px] rounded-sm bg-red" />Khitan modern . Banteran</p>
-          <h1 id="hero-title" className="mt-[18px] max-w-[364px] text-[32px] leading-[1.23] font-extrabold text-ink lg:max-w-[560px] lg:text-[clamp(2.75rem,4vw,3.5rem)] lg:leading-[1.1] lg:tracking-[-0.045em]"><span className="block lg:inline">Langkah berani si </span><span className="block lg:inline">jagoan, dimulai di </span><span className="block lg:inline">sini.</span></h1>
-          <p className="mt-[18px] text-[15px] leading-[1.65] text-muted lg:mt-5 lg:max-w-[460px] lg:text-base lg:leading-7">Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p>
+      <div className={`hero-copy ${styles.copy}`}>
+        <div className={styles.intro}>
+          <p className={styles.eyebrow}><span aria-hidden="true" />Khitan modern . Banteran</p>
+          <div aria-hidden="true" className={styles.mascot}><Image src="/images/figma/hero-mascot-outline.png" alt="" width={80} height={64} unoptimized /><Image src="/images/figma/hero-mascot.png" alt="" width={76} height={61} unoptimized /></div>
+          <h1 id="hero-title" className={styles.title}><span>Langkah berani si</span>{" "}<span>jagoan, dimulai di sini.</span></h1>
+          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
         </div>
         <div className={`hero-actions ${styles.actions}`}>
           <ContactAction className={styles.register}>

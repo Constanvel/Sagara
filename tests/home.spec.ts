@@ -31,11 +31,11 @@ test("mobile navigation, FAQ and approved contact links", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Buka menu" })).toBeFocused();
   const question = page.getByRole("button", { name: "Metode mana yang cocok untuk saya atau anak saya?" });
-  await expect(question).toHaveAttribute("aria-expanded", "true");
-  await question.click();
   await expect(question).toHaveAttribute("aria-expanded", "false");
-  await question.press("Enter");
+  await question.click();
   await expect(question).toHaveAttribute("aria-expanded", "true");
+  await question.press("Enter");
+  await expect(question).toHaveAttribute("aria-expanded", "false");
   expect(await page.locator('a[href="#"]').count()).toBe(0);
   const contacts = page.locator('a[href^="https://wa.me/"]');
   expect(await contacts.count()).toBeGreaterThan(0);

@@ -1,0 +1,17 @@
+.section { scroll-margin-top: 80px; background: white; }
+.container { max-width: 1200px; margin: auto; padding: 32px 24px 18px; }
+.label { display: flex; align-items: center; gap: 8px; color: #064a9b; font-size: 11px; font-weight: 800; line-height: 14px; }
+.label span { height: 3px; width: 18px; border-radius: 2px; background: #ba1a1a; }
+.title { margin-top: 5px; color: #102d50; font-size: clamp(28px, 7.767vw, 32px); line-height: 1.23; font-weight: 800; }
+.title span { display: inline-block; padding: 0 7px; border-radius: 5px; color: white; background: #064a9b; }
+.content { margin-top: 24px; }
+.media { width: calc(100% + 2px); margin-left: 1px; aspect-ratio: 366 / 216; border: 2px solid #102d50; border-radius: 20px; background: #102d50; }
+.description { margin-top: 9px; color: #435974; font-size: 15px; line-height: 1.65; }
+.description h3 { font-size: 24px; font-weight: 700; line-height: 1.65; color: #102d50; }
+.description p + p { margin-top: 24.75px; }
+.card { display: flex; align-items: center; gap: 12px; margin-top: 11px; min-height: 71px; padding: 10px 17px; border-radius: 10px; background: #e6effc; }
+.card img { flex: none; height: auto; }
+.card p { font-size: 16px; font-weight: 700; color: #064a9b; line-height: 1.65; }
+.card p + p { margin-top: 0; font-size: 13px; font-weight: 400; line-height: 1.4; color: #435974; }
+@media (min-width: 768px) { .container { padding: 48px 32px; } .content { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 32px; } .description { margin-top: 0; } }
+@media (min-width: 1024px) { .container { padding-top: 64px; padding-bottom: 64px; } .title { font-size: 36px; } .content { gap: 48px; } .card { margin-top: 20px; } }

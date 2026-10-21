@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-for (const width of [375, 390, 412, 768, 1024, 1440]) {
+for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
   test(`hero CTA and original ribbon at ${width}px`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width, height: 900 });
@@ -19,7 +19,7 @@ for (const width of [375, 390, 412, 768, 1024, 1440]) {
       expect(first!.height).toBe(31);
       expect(second!.x - first!.x - first!.width).toBe(15);
     }
-    if (width === 412) expect(Math.abs(first!.y - 339)).toBeLessThan(0.1);
+    if (width === 412) expect(Math.abs(first!.y - 317)).toBeLessThan(0.1);
     const style = await buttons.nth(1).evaluate(el => {
       const css = getComputedStyle(el);
       return { border: css.borderTopWidth, background: css.backgroundColor, radius: css.borderRadius };

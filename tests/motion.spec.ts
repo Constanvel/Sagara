@@ -39,12 +39,26 @@ test("FAQ animates while preserving accessible state", async ({ page }) => {
   await page.goto("/");
   const button = page.locator('[aria-controls="faq-answer-0"]');
   await button.scrollIntoViewIfNeeded();
-  await button.click();
+  const panel = page.locator("#faq-answer-0");
   await expect(button).toHaveAttribute("aria-expanded", "false");
-  await expect(page.locator("#faq-answer-0")).toHaveAttribute("inert", "");
+  const duration = await panel.evaluate(el => {
+    const style = getComputedStyle(el);
+    const index = style.transitionProperty.split(", ").indexOf("grid-template-rows");
+    return Number.parseFloat(style.transitionDuration.split(", ")[index]);
+  });
+  expect(duration).toBeGreaterThanOrEqual(0.25);
+  expect(duration).toBeLessThanOrEqual(0.35);
   await button.click();
   await expect(button).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator("#faq-answer-0")).toBeVisible();
+  await expect(panel).toHaveAttribute("aria-hidden", "false");
+  await expect(panel).not.toHaveAttribute("inert");
+  await expect(panel).toBeVisible();
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  await expect(panel).toHaveAttribute("aria-hidden", "true");
+  await expect(panel).toHaveAttribute("inert", "");
+  await expect(panel).toBeHidden();
+  await expect.poll(() => panel.evaluate(el => el.getBoundingClientRect().height)).toBe(0);
 });
 
 test("reduced motion removes movement and reveals remain visible", async ({ page }) => {
