@@ -1,7 +1,5 @@
 .root { position: fixed; z-index: 45; right: max(16px, env(safe-area-inset-right)); bottom: calc(85px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
 .root[hidden] { display: none; }
-/* Collapse only the prompt when a tall footer leaves little usable viewport. */
-.root[data-compact="true"] .bubble { display: none; }
 .button { display: grid; place-items: center; width: 54px; height: 54px; flex-shrink: 0; border-radius: 50%; background: #002869; color: white; box-shadow: 0 4px 14px rgb(0 40 105 / 18%); pointer-events: auto; transition: transform 180ms ease, background-color 180ms ease; }
 .button:hover { background: #064a9b; transform: translateY(-2px); }
 .button:focus-visible, .close:focus-visible { outline: 3px solid #3982da; outline-offset: 4px; }

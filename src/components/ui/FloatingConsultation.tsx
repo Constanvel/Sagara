@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { whatsappUrl } from "@/lib/whatsapp";
 import styles from "./FloatingConsultation.module.css";
@@ -10,8 +9,6 @@ const storageKey = "sagara_consultation_dismissed";
 export const consultationMessage = "Halo, Admin SAGARA! 👋 Saya ingin berkonsultasi mengenai layanan khitan di SAGARA Rumah Sunat Modern. Boleh saya mendapatkan informasi mengenai pilihan layanan, persiapan, jadwal yang tersedia, dan estimasi biaya? Terima kasih.";
 
 export function FloatingConsultation() {
-  const pathname = usePathname();
-  const isRegistration = pathname === "/pendaftaran" || pathname.startsWith("/pendaftaran/");
   const [visible, setVisible] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const link = useRef<HTMLAnchorElement>(null);
@@ -47,30 +44,7 @@ export function FloatingConsultation() {
     observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open", "data-open"] });
     update();
     return () => observer.disconnect();
-  }, [isRegistration]);
-
-  useEffect(() => {
-    let frame = 0;
-    const position = () => {
-      frame = 0;
-      const element = root.current;
-      const footer = document.querySelector("footer");
-      if (!element || !footer) return;
-      element.style.removeProperty("bottom");
-      const base = Number.parseFloat(getComputedStyle(element).bottom);
-      const footerTop = footer.getBoundingClientRect().top;
-      // Lift the entire widget above the footer rather than cover its links.
-      const desired = Math.max(base, window.innerHeight - footerTop + 12);
-      element.dataset.compact = String(footerTop < element.offsetHeight + 100);
-      const available = window.innerHeight - element.offsetHeight - 64;
-      element.style.bottom = `${Math.max(base, Math.min(desired, available))}px`;
-    };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(position); };
-    schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); };
-  }, [visible, isRegistration]);
+  }, []);
 
   function dismiss() {
     dismissed.current = true;
@@ -79,7 +53,7 @@ export function FloatingConsultation() {
     link.current?.focus({ preventScroll: true });
   }
 
-  if (!href || isRegistration) return null;
+  if (!href) return null;
   return <div ref={root} data-testid="floating-consultation" className={styles.root}>
     {visible && <section aria-label="Konsultasi SAGARA" className={styles.bubble}>
       <Image src="/images/media/sagara-consultation-mascot.webp" width={64} height={64} alt="" className={styles.mascot} />

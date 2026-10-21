@@ -54,6 +54,10 @@
 .consent input { width: 18px; height: 18px; margin: 3px 0 0; flex: 0 0 18px; accent-color: var(--color-primary); }
 .primary, .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; min-height: 44px; padding: 11px 18px; border: 1px solid #073374; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
 .primary { background: #073374; color: white; }
+.primary:disabled { opacity: .55; cursor: not-allowed; }
+.review details { margin: 18px 0; }
+.review summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: var(--color-primary); font-weight: 700; }
+.message { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 13px; line-height: 1.7; padding: 16px; background: var(--color-soft); border-radius: 12px; }
 .secondary { color: #073374; background: white; }
 .error { color: #a41414; font-size: 12px; margin: 4px 0 0; }
 .form [aria-invalid="true"] { border-color: #a41414 !important; }

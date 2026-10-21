@@ -26,7 +26,7 @@ for (const width of [360, 390, 412, 768, 1280, 1440, 1920]) {
     for (const image of await page.locator("main img").all()) {
       await expect.poll(() => image.evaluate((item: HTMLImageElement) => item.complete && item.naturalWidth > 0)).toBe(true);
     }
-    await expect(page.getByTestId("floating-consultation")).toHaveCount(0);
+    await expect(page.getByTestId("floating-consultation")).toBeVisible();
     await page.screenshot({ path: `test-results/registration-${width}.png`, fullPage: true });
     const results = await new AxeBuilder({ page }).include("main").analyze();
     expect(results.violations).toEqual([]);
@@ -38,7 +38,7 @@ test("registration CTAs preselect options and widget returns outside form", asyn
   await page.goto("/");
   await page.getByRole("link", { name: "Daftar khitan", exact: true }).first().click();
   await expect(page).toHaveURL(/\/pendaftaran$/);
-  await expect(page.getByTestId("floating-consultation")).toHaveCount(0);
+  await expect(page.getByTestId("floating-consultation")).toBeVisible();
   await page.getByRole("link", { name: "Kembali Beranda", exact: true }).click();
   await expect(page.getByTestId("floating-consultation")).toBeVisible();
   for (const [route, key, ids] of [["/paket", "paket", ["modern", "top-sealer"]], ["/layanan", "layanan", ["anak-anak", "bayi", "dewasa", "kebutuhan-khusus", "kebutuhan-khusus-pendampingan"]]] as const) {
@@ -50,8 +50,9 @@ test("registration CTAs preselect options and widget returns outside form", asyn
   await expect(page.getByRole("button", { name: "Pilih Paket Modern" })).toHaveAttribute("aria-pressed", "true");
 });
 
-test("three-step flow preserves data and excludes patient identity from WhatsApp", async ({ page, context }) => {
-  await page.setViewportSize({ width: 390, height: 850 });
+for (const width of [360, 390, 412, 768, 1280, 1440, 1920]) {
+test(`three-step flow shares all latest data only after explicit consent at ${width}px`, async ({ page, context }) => {
+  await page.setViewportSize({ width, height: 850 });
   await page.goto("/pendaftaran?paket=top-sealer&layanan=bayi");
   await expect(page.getByLabel("Layanan", { exact: true })).toHaveValue("bayi");
   await expect(page.getByRole("button", { name: "Pilih Paket Top Sealer" })).toHaveAttribute("aria-pressed", "true");
@@ -73,18 +74,38 @@ test("three-step flow preserves data and excludes patient identity from WhatsApp
   await page.getByLabel("Nomor WhatsApp", { exact: true }).fill(valid.whatsapp);
   await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
   await expect(page.getByRole("heading", { name: "Tinjau pendaftaran Anda." })).toBeVisible();
-  const link = page.getByRole("link", { name: "Setujui & buka WhatsApp" });
+  const link = page.getByRole("link", { name: "Kirim Pendaftaran via WhatsApp" });
+  await expect(page.getByRole("button", { name: "Kirim Pendaftaran via WhatsApp" })).toBeDisabled();
+  await expect(page.locator('main a[href*="wa.me"]')).toHaveCount(0);
+  for (const value of [valid.guardian, valid.patient, valid.whatsapp, "7 tahun", "Khitan bayi", "Paket Modern", "1 Desember 2099", "10.00 WIB"]) await expect(page.locator("dd").filter({ hasText: value })).toBeVisible();
+  await page.getByRole("checkbox").check();
+  expect(new URL((await link.getAttribute("href"))!).searchParams.get("text")).toContain(valid.patient);
+  await page.getByRole("button", { name: "Kembali & perbaiki" }).click();
+  await expect(page.getByLabel("Nama pasien", { exact: true })).toHaveValue(valid.patient);
+  await expect(page.getByRole("button", { name: "10.00", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await page.getByLabel("Nama pasien", { exact: true }).fill("Pasien Baru & Putra + / é");
+  await page.getByLabel("Nama orang tua / wali").fill("Wali Baru & Ibu");
+  await page.getByLabel("Usia (tahun)").fill("8");
+  await page.getByLabel("Nomor WhatsApp", { exact: true }).fill("+62 812-9999-8888");
+  await page.getByLabel("Layanan", { exact: true }).selectOption("dewasa");
+  await page.getByRole("button", { name: "Pilih Paket Top Sealer" }).click();
+  await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-02");
+  await page.getByRole("button", { name: "14.00", exact: true }).click();
+  await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
+  await expect(page.getByRole("checkbox")).not.toBeChecked();
+  await expect(link).toHaveCount(0);
+  await page.getByRole("checkbox").check();
   const url = new URL((await link.getAttribute("href"))!);
   expect(url.hostname).toBe("wa.me");
   expect(url.pathname).toBe("/6287899777219");
   const message = url.searchParams.get("text")!;
-  expect(message).toContain("Paket Modern");
-  for (const identity of [valid.patient, valid.guardian, valid.whatsapp]) expect(message).not.toContain(identity);
-  await page.getByRole("button", { name: "Kembali & perbaiki" }).click();
-  await expect(page.getByLabel("Nama pasien", { exact: true })).toHaveValue(valid.patient);
-  await expect(page.getByRole("button", { name: "10.00", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
+  for (const value of ["Halo Admin SAGARA! 👋", "📋 INFORMASI PENDAFTARAN", "👤 DATA PENDAFTAR", "Layanan: Khitan dewasa", "Paket: Paket Top Sealer", "Tanggal yang diinginkan: 2 Desember 2099", "Waktu yang diinginkan: 14.00 WIB", "Nama Orang Tua/Wali: Wali Baru & Ibu", "Nama Pasien: Pasien Baru & Putra + / é", "Usia Pasien: 8 tahun", "Nomor WhatsApp: +6281299998888", "Terima kasih! 🙏"]) expect(message).toContain(value);
+  for (const value of [valid.patient, valid.guardian, valid.whatsapp, "undefined", "null"]) expect(message).not.toContain(value);
+  expect(page.url()).not.toContain("Pasien");
   await context.route("https://wa.me/**", route => route.fulfill({ status: 200, body: "WhatsApp mock" }));
+  await page.getByText("Tinjau pesan WhatsApp lengkap", { exact: true }).click();
+  await expect(page.locator("pre")).toHaveText(message);
+  await page.screenshot({ path: `test-results/registration-review-${width}.png`, fullPage: true });
   const popup = page.waitForEvent("popup");
   await link.click();
   await (await popup).close();
@@ -93,3 +114,4 @@ test("three-step flow preserves data and excludes patient identity from WhatsApp
   await expect(page.getByRole("link", { name: "Kembali ke Beranda", exact: true })).toHaveAttribute("href", "/");
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /patient|registration|pendaftaran/i.test(key)))).toEqual([]);
 });
+}

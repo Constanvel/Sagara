@@ -8,6 +8,7 @@ import { packages, packageCaveat } from "@/data/packages";
 import { services } from "@/data/services";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { formatDate, jakartaToday, timeSlots, validateRegistration, type RegistrationData, type RegistrationErrors } from "./validation";
+import { normalizeRegistration, registrationMessage } from "./message";
 import styles from "./RegistrationForm.module.css";
 
 const registrationServices = services.filter((item, index, all) => all.findIndex(other => other.title === item.title) === index);
@@ -27,6 +28,7 @@ export function RegistrationForm() {
   });
   const [errors, setErrors] = useState<RegistrationErrors>({});
   const [step, setStep] = useState(1);
+  const [shareConsent, setShareConsent] = useState(false);
   const [today, setToday] = useState(() => jakartaToday());
   const title = useRef<HTMLHeadingElement>(null);
   const form = useRef<HTMLFormElement>(null);
@@ -34,6 +36,7 @@ export function RegistrationForm() {
   const selectedPackage = packages.find(item => item.id === data.package);
 
   function update<K extends keyof RegistrationData>(key: K, value: RegistrationData[K]) {
+    setShareConsent(false);
     setData(previous => ({ ...previous, [key]: value }));
     setErrors(previous => ({ ...previous, [key]: undefined }));
   }
@@ -50,10 +53,23 @@ export function RegistrationForm() {
       requestAnimationFrame(() => form.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
       return;
     }
+    setData(normalizeRegistration(data));
+    setShareConsent(false);
     moveTo(2);
   }
-  const message = step > 1 ? `Halo Admin SAGARA! Saya ingin mengajukan pendaftaran layanan khitan.\n\nLayanan: ${service?.title}\nPaket: ${selectedPackage?.name}\nTanggal yang diinginkan: ${formatDate(data.date)}\nWaktu yang diinginkan: ${data.time} WIB\n\nMohon informasi mengenai ketersediaan jadwal, biaya, dan langkah selanjutnya. Terima kasih.` : "";
-  const href = whatsappUrl(message);
+  const message = step > 1 && service && selectedPackage ? registrationMessage(data, service.title, selectedPackage.name) : "";
+  // Do not expose personal data in an external URL until the user explicitly agrees.
+  const href = shareConsent && message ? whatsappUrl(message) : null;
+  function openWhatsApp(event: React.MouseEvent<HTMLAnchorElement>) {
+    const nextErrors = validateRegistration(data, registrationServices.map(item => item.id), packages.map(item => item.id));
+    if (!shareConsent || !href || Object.keys(nextErrors).length) {
+      event.preventDefault();
+      setErrors(nextErrors);
+      if (Object.keys(nextErrors).length) moveTo(1);
+      return;
+    }
+    moveTo(3);
+  }
   const error = (key: keyof RegistrationData) => errors[key] ? <p id={`error-${key}`} className={styles.error}>{errors[key]}</p> : null;
   const attrs = (key: keyof RegistrationData) => ({ "aria-invalid": Boolean(errors[key]), "aria-describedby": errors[key] ? `error-${key}` : undefined });
   const fields = [
@@ -68,7 +84,7 @@ export function RegistrationForm() {
       <div className={styles.topline}><span className={styles.eyebrow}>PENDAFTARAN</span><Link href="/" className={styles.home}>Kembali Beranda <Asset name="registration/arrow.svg" width={14} height={14} /></Link></div>
       <header className={styles.intro}>
         <h1 ref={title} tabIndex={-1}>{step === 1 ? <>Atur waktu<br />untuk langkah berani.</> : step === 2 ? "Tinjau pendaftaran Anda." : "Lanjutkan bersama admin."}</h1>
-        <p>{step === 1 ? "Pilih jadwal yang diinginkan. Ketersediaan akhir dikonfirmasi oleh admin." : step === 2 ? "Periksa kembali pilihan dan data sebelum membuka WhatsApp admin." : "WhatsApp telah dibuka. Permintaan belum otomatis terkirim dan jadwal belum dikonfirmasi."}</p>
+        <p>{step === 1 ? "Pilih jadwal yang diinginkan. Ketersediaan akhir dikonfirmasi oleh admin." : step === 2 ? "Periksa kembali pilihan dan data sebelum membuka WhatsApp admin." : "Lanjutkan pengiriman di WhatsApp. Permintaan belum otomatis terkirim dan jadwal belum dikonfirmasi."}</p>
       </header>
       <ol className={styles.stepper} aria-label="Tahap pendaftaran">{["Jadwal & data", "Tinjau", "Selesai"].map((label, index) => <li key={label} data-state={step === index + 1 ? "active" : step > index + 1 ? "completed" : "upcoming"} aria-current={step === index + 1 ? "step" : undefined}><span className={styles.stepNumber}>{step > index + 1 ? "✓" : index + 1}</span><span>{label}</span></li>)}</ol>
       {step === 1 && <form ref={form} noValidate onSubmit={review} className={styles.form}>
@@ -87,12 +103,12 @@ export function RegistrationForm() {
           </section>
           <section className={styles.personal} aria-label="Data pendaftar">{fields.map(field => <div key={field.key} className={styles.field} data-field={field.key}><label htmlFor={field.key}>{field.label}</label><input id={field.key} name={field.key} type={field.type} placeholder={field.placeholder} autoComplete={field.autoComplete} maxLength={field.type === "text" ? 100 : undefined} min={field.key === "age" ? 0 : undefined} max={field.key === "age" ? 120 : undefined} step={field.key === "age" ? 1 : undefined} inputMode={field.key === "age" ? "numeric" : field.key === "whatsapp" ? "tel" : "text"} value={data[field.key]} onChange={event => update(field.key, event.target.value)} required {...attrs(field.key)} />{error(field.key)}</div>)}</section>
         </div>
-        <div className={styles.consent}><label><input type="checkbox" checked={data.consent} onChange={event => update("consent", event.target.checked)} {...attrs("consent")} /><span>Saya memahami ini permintaan konsultasi, bukan konfirmasi jadwal. Data identitas hanya tersimpan selama halaman terbuka dan tidak dikirim ke klinik melalui formulir ini.</span></label>{error("consent")}</div>
+        <div className={styles.consent}><label><input type="checkbox" checked={data.consent} onChange={event => update("consent", event.target.checked)} {...attrs("consent")} /><span>Saya memahami ini permintaan konsultasi, bukan konfirmasi jadwal. Data hanya tersimpan selama halaman terbuka. Saya dapat meninjau dan menyetujui pembagian data melalui WhatsApp pada langkah berikutnya.</span></label>{error("consent")}</div>
         {Object.keys(errors).some(key => errors[key as keyof RegistrationData]) && <p role="alert" className={styles.error}>Periksa isian yang ditandai sebelum melanjutkan.</p>}
         <button type="submit" className={styles.primary}>Tinjau Pendaftaran <Asset name="registration/submit-arrow.svg" width={14} height={14} /></button>
       </form>}
-      {step === 2 && <section className={styles.review} aria-label="Ringkasan pendaftaran"><h2>Ringkasan pilihan & data</h2><dl>{[["Layanan", service?.title], ["Paket", selectedPackage?.name], ["Harga referensi", `Rp${price.format(selectedPackage?.price ?? 0)} — perlu konfirmasi admin`], ["Preferensi tanggal", formatDate(data.date)], ["Preferensi waktu", `${data.time} WIB`], ["Orang tua / wali", data.guardian], ["Pasien", data.patient], ["Usia", `${data.age} tahun`], ["WhatsApp", data.whatsapp]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><div className={styles.notice}><h3>Belum dikirim ke klinik</h3><p>WhatsApp hanya membawa layanan, paket, tanggal, dan waktu. Nama, usia, dan nomor WhatsApp tidak dimasukkan ke tautan. Anda tetap perlu menekan Kirim di WhatsApp. Jadwal dan biaya baru berlaku setelah dikonfirmasi admin.</p></div><div className={styles.actions}><button type="button" className={styles.secondary} onClick={() => moveTo(1)}>Kembali & perbaiki</button>{href ? <a className={styles.primary} href={href} target="_blank" rel="noopener noreferrer" onClick={() => moveTo(3)}>Setujui & buka WhatsApp <span aria-hidden="true">↗</span></a> : <p role="alert">WhatsApp admin belum dikonfigurasi. Permintaan belum dikirim.</p>}</div></section>}
-      {step === 3 && <section className={styles.review} aria-label="Langkah berikutnya"><span className={styles.status}>Menunggu tindakan & konfirmasi admin</span><h2>Silakan kirim pesan di WhatsApp.</h2><p>Jika WhatsApp tidak terbuka, gunakan tombol di bawah. Tidak ada pendaftaran yang dikirim otomatis. Admin akan mengonfirmasi ketersediaan jadwal, rincian biaya, dan langkah berikutnya.</p><div className={styles.actions}>{href && <a href={href} target="_blank" rel="noopener noreferrer" className={styles.secondary}>Buka WhatsApp kembali ↗</a>}<Link href="/" className={styles.primary}>Kembali ke Beranda</Link></div><button type="button" className={styles.textButton} onClick={() => moveTo(2)}>Lihat ringkasan kembali</button></section>}
+      {step === 2 && <section className={styles.review} aria-label="Ringkasan pendaftaran"><h2>Ringkasan pilihan & data</h2><dl>{[["Layanan", service?.title], ["Paket", selectedPackage?.name], ["Harga referensi", `Rp${price.format(selectedPackage?.price ?? 0)} — perlu konfirmasi admin`], ["Preferensi tanggal", formatDate(data.date)], ["Preferensi waktu", `${data.time} WIB`], ["Orang tua / wali", data.guardian], ["Pasien", data.patient], ["Usia", `${data.age} tahun`], ["WhatsApp", data.whatsapp]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><div className={styles.notice}><h3>Belum dikirim ke klinik</h3><p>Seluruh data di atas, termasuk identitas pasien anak, akan diteruskan ke admin SAGARA melalui WhatsApp setelah Anda menyetujui. Pesan pra-isi berada di parameter tautan WhatsApp. Anda tetap perlu menekan Kirim di WhatsApp. Jadwal dan biaya baru berlaku setelah dikonfirmasi admin.</p></div><details><summary>Tinjau pesan WhatsApp lengkap</summary><pre className={styles.message}>{message}</pre></details><div className={styles.consent}><label><input type="checkbox" checked={shareConsent} onChange={event => setShareConsent(event.target.checked)} /><span>Saya menyetujui pembagian seluruh data pendaftaran di atas, termasuk nama dan usia pasien anak serta nomor WhatsApp wali, kepada admin SAGARA melalui WhatsApp.</span></label></div><div className={styles.actions}><button type="button" className={styles.secondary} onClick={() => { setShareConsent(false); moveTo(1); }}>Kembali & perbaiki</button>{href ? <a className={styles.primary} href={href} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" onClick={openWhatsApp}>Kirim Pendaftaran via WhatsApp <span aria-hidden="true">↗</span></a> : shareConsent ? <p role="alert">WhatsApp admin belum dikonfigurasi. Permintaan belum dikirim.</p> : <button type="button" className={styles.primary} disabled>Kirim Pendaftaran via WhatsApp</button>}</div></section>}
+      {step === 3 && <section className={styles.review} aria-label="Langkah berikutnya"><span className={styles.status}>Menunggu tindakan & konfirmasi admin</span><h2>Silakan kirim pesan di WhatsApp.</h2><p>Jika WhatsApp tidak terbuka, gunakan tombol di bawah. Tidak ada pendaftaran yang dikirim otomatis. Admin akan mengonfirmasi ketersediaan jadwal, rincian biaya, dan langkah berikutnya.</p><div className={styles.actions}>{href && <a href={href} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" className={styles.secondary} onClick={openWhatsApp}>Buka WhatsApp kembali ↗</a>}<Link href="/" className={styles.primary}>Kembali ke Beranda</Link></div><button type="button" className={styles.textButton} onClick={() => moveTo(2)}>Lihat ringkasan kembali</button></section>}
     </div>
   </main>;
 }
