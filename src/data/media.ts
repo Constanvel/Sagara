@@ -318,26 +318,26 @@ export const galleryMedia: MediaItem[] = [
 // Twenty distinct, owner-approved photographs; captions describe the pictured moment.
 const heroPhotoIndexes = [2, 0, 8, 1, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 const heroCaptions = [
-  ["Cerita berani bersama pendamping", "Sertifikat di depan latar merah Sagara."],
-  ["Sertifikat dan hadiah", "Anak dan pendamping menunjukkan sertifikat serta bingkisan."],
-  ["Sertifikat berlatar merah", "Foto bersama dengan sertifikat dan bingkisan bermotif kotak."],
-  ["Bingkisan untuk si jagoan", "Anak berpeci memegang bingkisan biru di depan latar merah."],
-  ["Sertifikat bersama pendamping", "Anak berpeci dan pendamping berbaju merah menunjukkan sertifikat serta mainan."],
-  ["Momen di ruang kuning", "Anak dan pendamping menunjukkan sertifikat di dalam ruangan."],
-  ["Momen bersama pendamping", "Sertifikat dan bingkisan ditunjukkan bersama di depan latar merah."],
-  ["Bingkisan bersama pendamping", "Anak berbaju putih dan berpeci memegang mainan bersama pendamping berbaju gelap."],
-  ["Kebersamaan di ruang tamu", "Anak berpeci menunjukkan sertifikat bersama dua pendamping."],
-  ["Momen bersama petugas", "Anak berbaju putih dan pendamping berbaju hijau berfoto bersama."],
-  ["Kebersamaan dua pendamping", "Anak membawa bingkisan di tengah para pendamping."],
-  ["Sertifikat di dekat pintu", "Anak berpeci dan pendamping berbaju ungu menunjukkan sertifikat."],
-  ["Sertifikat bersama petugas", "Sertifikat dan bingkisan ditunjukkan di depan latar merah Sagara."],
-  ["Sertifikat di ruang kuning berlatar merah", "Anak berbaju putih membawa bingkisan bersama pendamping."],
-  ["Kebersamaan anak dan pendamping", "Dua anak dan tiga pendamping berfoto di depan latar merah Sagara."],
-  ["Anak berpeci bersama dua pendamping", "Anak membawa bingkisan dengan dua pendamping di sisinya."],
-  ["Sertifikat dan bingkisan", "Anak berpeci dan pendamping berbaju merah menunjukkan sertifikat serta mainan."],
-  ["Momen sertifikat bersama pendamping", "Anak berbaju putih berfoto bersama pendamping."],
-  ["Cerita berani berlatar merah", "Anak berbaju gelap dan pendamping berbaju merah berfoto bersama."],
-  ["Anak berbaju hitam bersama pendamping", "Anak berbaju hitam berfoto di depan latar merah Sagara."]
+  ["Setiap anak punya cerita beraninya.", "Kami hadir untuk menemani langkahnya."],
+  ["Satu langkah besar menuju dewasa.", "Kami pastikan momen ini penuh tawa dan cerita indah."],
+  ["Keberanian hari ini adalah kebanggaan esok hari.", "Terima kasih telah mempercayakan momen berharganya pada kami."],
+  ["Di balik senyumnya, ada keberanian yang luar biasa.", "Kami bangga bisa menjadi bagian dari sejarah kecilnya."],
+  ["Rasa takut berganti menjadi senyum kebanggaan.", "Kami di sini untuk membuat setiap prosesnya terasa mudah."],
+  ["Setiap jagoan punya momen hebatnya masing-masing.", "Tugas kami adalah memastikan ia melewatinya dengan gembira."],
+  ["Bukan sekadar tindakan, tapi pengalaman yang menyenangkan.", "Kami hadir dengan sepenuh hati untuk kenyamanan sang buah hati."],
+  ["Mengubah rasa cemas menjadi senyum ceria.", "Sentuhan ramah kami selalu siap mendampingi setiap prosesnya."],
+  ["Nyaman prosesnya, bahagia hasilnya.", "Kami ciptakan suasana terbaik agar jagoan kecil tetap tenang."],
+  ["Senyum tenangnya adalah prioritas utama kami.", "Kami mendampingi dengan sabar, ramah, dan penuh kasih."],
+  ["Pengalaman sunat yang seru dan bebas rasa takut.", "Kami hadir memberikan kenyamanan terbaik untuk jagoan Ayah dan Bunda."],
+  ["Hari ini ia belajar arti keberanian yang sesungguhnya.", "Kami siap mengawal langkah awalnya menuju masa depan yang sehat."],
+  ["Tumbuh sehat, tumbuh berani.", "Kami hadir mendukung langkah penting dalam perjalanan hidupnya."],
+  ["Momen bersejarah bagi sang jagoan kecil.", "Kami mengabadikan keberaniannya dengan pelayanan yang tulus."],
+  ["Langkah kecil hari ini untuk kesehatan masa depannya.", "Kami pastikan ia melewatinya dengan rasa aman dan nyaman."],
+  ["Babak baru pertumbuhan jagoan kesayangan.", "Kami menemani setiap detiknya dengan pelayanan yang menenangkan."],
+  ["Kebahagiaan Ayah dan Bunda dimulai dari senyumnya.", "Kami hadir memastikan jagoan kecil pulang dengan hati gembira."],
+  ["Hadiah terbaik untuk keberanian yang hebat.", "Kami senang bisa melihatnya tersenyum bangga hari ini."],
+  ["Tak ada yang lebih indah dari senyum leganya.", "Kami hadir sebagai sahabat terbaik di momen spesialnya."],
+  ["Kepercayaan Ayah dan Bunda adalah amanah bagi kami.", "Kami berikan pengalaman paling berkesan untuk sang buah hati."]
 ];
 export const heroSlides = heroPhotoIndexes.map((photoIndex, index) => ({ ...galleryMedia[photoIndex], heading: heroCaptions[index][0], description: heroCaptions[index][1] }));
 

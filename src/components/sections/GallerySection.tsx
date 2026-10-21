@@ -9,6 +9,22 @@ import styles from "./GallerySection.module.css";
 const filters = ["Semua", "Foto", "Video"] as const;
 type Filter = typeof filters[number];
 
+const photos = galleryMedia.filter(item => item.type === "photo");
+const videos = galleryMedia.filter(item => item.type === "video");
+// Keep the overview varied without changing the source collection or filtered order.
+const overviewMedia = Array.from({ length: Math.max(Math.ceil(photos.length / 5), videos.length) }, (_, index) => [
+  ...photos.slice(index * 5, (index + 1) * 5),
+  ...(videos[index] ? [videos[index]] : []),
+]).flat();
+
+function imageSizes(filter: Filter, index: number) {
+  if (filter === "Video") return "(min-width: 1200px) 556px, (min-width: 768px) calc((100vw - 88px) / 2), calc(100vw - 70px)";
+  if (filter === "Foto") return "(min-width: 1200px) 362px, (min-width: 1024px) calc((100vw - 112px) / 3), (min-width: 768px) calc((100vw - 88px) / 2), calc((100vw - 98px) / 2)";
+  return index === 0
+    ? "(min-width: 1200px) 446px, (min-width: 1024px) calc((100vw - 112px) * .412), (min-width: 768px) calc((100vw - 88px) / 2), calc(100vw - 70px)"
+    : "(min-width: 1200px) 318px, (min-width: 1024px) calc((100vw - 112px) * .294), (min-width: 768px) calc((100vw - 88px) / 2), calc((100vw - 98px) / 2)";
+}
+
 function GalleryVideo({ src, poster, title }: { src: string; poster: string; title: string }) {
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
 
@@ -29,7 +45,7 @@ export function GallerySection() {
   const [selected, setSelected] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement | null>(null);
-  const visibleMedia = galleryMedia.filter(item => filter === "Semua" || item.type === (filter === "Foto" ? "photo" : "video"));
+  const visibleMedia = filter === "Semua" ? overviewMedia : filter === "Foto" ? photos : videos;
   const selectedMedia = selected === null ? null : visibleMedia[selected];
   const photoCount = visibleMedia.filter(item => item.type === "photo").length;
   const videoCount = visibleMedia.filter(item => item.type === "video").length;
@@ -63,12 +79,13 @@ export function GallerySection() {
       </div>
       <p className="sr-only" role="status">{filter}: {photoCount} foto, {videoCount} video.</p>
     </div>
-    {visibleMedia.length === 0 ? <p className={styles.empty} role="status">Belum ada media untuk filter ini.</p> : <div className={styles.grid} data-reveal-group>
-      {visibleMedia.map((item, index) => <article key={item.id} className={`${styles.card} ${index === 0 ? styles.featured : ""}`} data-reveal data-media-id={item.id} data-media-type={item.type}>
+    {filter === "Video" && <p className={styles.videoIntro}>{videos.length} video cerita dan suasana Sagara. Pilih video untuk menonton.</p>}
+    {visibleMedia.length === 0 ? <p className={styles.empty} role="status">Belum ada media untuk filter ini.</p> : <div className={`${styles.grid} ${filter === "Foto" ? styles.photoGrid : filter === "Video" ? styles.videoGrid : styles.overviewGrid}`} data-gallery-mode={filter} data-reveal-group>
+      {visibleMedia.map((item, index) => <article key={item.id} className={`${styles.card} ${filter === "Semua" && index === 0 ? styles.featured : ""}`} data-reveal data-media-id={item.id} data-media-type={item.type}>
         <figure>
           <button type="button" aria-label={`${item.type === "video" ? "Putar video" : "Perbesar foto"}: ${item.title}. ${item.caption}`} aria-haspopup="dialog" onClick={event => { trigger.current = event.currentTarget; setSelected(index); }}>
             <span className={styles.image}>
-              <Image src={item.thumbnail} alt={item.alt} fill sizes={index === 0 ? "(min-width: 1200px) 455px, (min-width: 1024px) calc((100vw - 112px) * .412), (min-width: 768px) calc((100vw - 88px) / 2), calc(100vw - 70px)" : "(min-width: 1200px) 325px, (min-width: 1024px) calc((100vw - 112px) * .294), (min-width: 768px) calc((100vw - 88px) / 2), calc((100vw - 98px) / 2)"} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} style={{ objectPosition: item.height > item.width ? "center 35%" : "center" }} />
+              <Image src={item.thumbnail} alt={item.alt} fill sizes={imageSizes(filter, index)} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} style={{ objectPosition: item.height > item.width ? "center 35%" : "center" }} />
               {item.type === "video" && <span className={styles.playBadge} aria-hidden="true">▶ Video</span>}
             </span>
           </button>

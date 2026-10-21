@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const widths = [360, 390, 412, 768, 1280, 1440, 1920];
 const routes = ["/", "/layanan", "/paket", "/galeri", "/kontak"];
-const footerSource = "/images/media/sagara-rumah-sunat-modern-banteran-logo.webp";
+const footerSource = "/images/media/sagara-footer-logo-transparan.webp";
 const footerAlt = "Logo SAGARA Rumah Sunat Modern Banteran";
 
 for (const width of widths) {
@@ -25,8 +25,8 @@ for (const width of widths) {
       await expect(logo).toHaveCount(1);
       await logo.scrollIntoViewIfNeeded();
       await expect(logo).toBeVisible();
-      await expect(logo).toHaveAttribute("width", "340");
-      await expect(logo).toHaveAttribute("height", "152");
+      await expect(logo).toHaveAttribute("width", "1920");
+      await expect(logo).toHaveAttribute("height", "819");
       const source = await logo.getAttribute("src");
       expect(source).not.toBeNull();
       // next/image may wrap the exact asset path in its optimizer URL.
@@ -49,8 +49,8 @@ for (const width of widths) {
       });
       expect(geometry.width).toBeGreaterThan(0);
       expect(geometry.height).toBeGreaterThan(0);
-      expect(geometry.width / geometry.height).toBeCloseTo(340 / 152, 2);
-      expect(geometry.naturalRatio).toBeCloseTo(340 / 152, 2);
+      expect(geometry.width / geometry.height).toBeCloseTo(1920 / 819, 2);
+      expect(geometry.naturalRatio).toBeCloseTo(1920 / 819, 2);
       expect(geometry.objectFit).toBe("contain");
       expect(geometry.clippingAncestors, "footer logo must not be clipped by its containers").toEqual([]);
       await expect(headerLogo).toHaveAttribute("src", originalHeader!);
