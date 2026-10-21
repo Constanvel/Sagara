@@ -7,8 +7,8 @@
 .title > span { display: block; white-space: nowrap; }
 .mascot { position: absolute; top: 16px; right: 16px; width: 80px; height: 64px; pointer-events: none; }
 .mascot { overflow: hidden; }
-.mascot img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; max-width: none; }
-.mascot img + img { top: 3px; left: 2px; width: 76px; height: 75.73px; }
+.mascot img { position: absolute; top: 0; left: 0; width: 100%; height: auto; max-width: none; }
+.mascot img + img { top: 3px; left: 2px; width: 76px; height: auto; }
 .description { position: relative; margin: 22.28125px 20px 0 -7px; padding: 10px 12px 12px; border-radius: 10px; background: #98c3dc; font-size: 14px; line-height: 23px; color: #102d50; }
 .quoteStart, .quoteEnd { position: absolute; font-size: 48px; line-height: 1.23; font-weight: 800; color: white; text-shadow: 0 2px 4px rgb(0 0 0 / 25%); }
 .quoteStart { top: -17px; right: -8px; }

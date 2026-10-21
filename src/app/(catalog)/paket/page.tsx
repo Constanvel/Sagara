@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { PackagesSection } from "@/components/sections/PackagesSection";
 
-export const metadata: Metadata = {
-  title: "Paket Khitan",
-  description:
-    "Pilihan Paket Modern dan Top Sealer. Tanyakan rincian biaya dan fasilitas paket khitan kepada admin Sagara sebelum menentukan pilihan.",
-};
+export const metadata = pageMetadata(
+  "Paket Khitan",
+  "Pilihan Paket Modern dan Top Sealer. Tanyakan rincian biaya dan fasilitas paket khitan kepada admin Sagara sebelum menentukan pilihan.",
+  "/paket",
+);
 
 export default function PaketPage() {
   return <PackagesSection />;

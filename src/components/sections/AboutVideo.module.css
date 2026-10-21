@@ -1,0 +1,15 @@
+.poster { display: block; position: relative; width: 100%; aspect-ratio: 366 / 216; overflow: hidden; border-radius: 20px; border: 2px solid #102d50; background: #102d50; cursor: pointer; }
+.poster > img:first-child { object-fit: cover; }
+.poster .play { position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 66px; height: 66px; transition: scale 180ms ease; }
+.poster:hover .play { scale: 1.06; }
+.poster:active .play { scale: .96; }
+.poster:focus-visible, .close:focus-visible { outline: 3px solid #064a9b; outline-offset: 4px; }
+.dialog { margin: auto; width: min(92vw, 760px); max-height: 92dvh; border: 0; border-radius: 20px; padding: 20px; background: white; color: #102d50; overflow: auto; }
+.dialog::backdrop { background: rgb(0 15 40 / 80%); }
+.content { display: flex; flex-direction: column; gap: 12px; }
+.content h2 { font-size: 20px; font-weight: 800; }
+.content video { display: block; width: 100%; height: min(65dvh, 640px); object-fit: contain; background: #102d50; border-radius: 12px; }
+.content p { font-size: 13px; line-height: 1.6; }
+.content a { text-decoration: underline; }
+.close { align-self: flex-end; min-height: 44px; padding: 8px 12px; border-radius: 8px; background: #e6effc; font-weight: 700; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .poster .play { transition: none; } .poster:hover .play, .poster:active .play { scale: 1; } }

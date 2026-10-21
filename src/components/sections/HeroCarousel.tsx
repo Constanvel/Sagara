@@ -4,10 +4,7 @@ import Image from "next/image";
 import { useRef, useState, type PointerEvent } from "react";
 import styles from "./HeroCarousel.module.css";
 
-const slides = [
-  { src: "/images/figma/hero.png", alt: "Seorang anak bersama pendamping memegang sertifikat dan hadiah SAGARA.", original: true },
-  { src: "/images/figma/gallery-family.png", alt: "Seorang anak bersama pendamping berfoto di Sagara setelah khitan.", original: false },
-];
+import { heroSlides as slides } from "@/data/media";
 
 export function HeroCarousel() {
   const [index, setIndex] = useState(0);
@@ -46,13 +43,13 @@ export function HeroCarousel() {
       }} onPointerMove={move} onPointerUp={event => end(event)} onPointerCancel={event => end(event, true)} onLostPointerCapture={event => { if (event.target === event.currentTarget) { gesture.current = null; setDrag(0); } }}>
         <div className={styles.track} data-dragging={drag !== 0} style={{ transform: `translateX(calc(-${index * 100}% + ${drag}px))` }}>
           {slides.map((slide, i) => <div key={slide.src} className={styles.slide} role="group" aria-roledescription="slide" aria-label={`${i + 1} dari ${slides.length}`} aria-hidden={i !== index}>
-            <Image src={slide.src} alt={slide.alt} fill priority={i === 0} draggable={false} sizes="(min-width: 1024px) 470px, (max-width: 412px) 85vw, 480px" className={slide.original ? styles.original : styles.photo} />
+            <Image src={slide.src} alt={slide.alt} fill priority={i === 0} draggable={false} sizes="(min-width: 1024px) 470px, (max-width: 412px) 85vw, 480px" className={styles.photo} />
           </div>)}
         </div>
       </div>
       <button type="button" className={`${styles.arrow} ${styles.previous}`} aria-label="Foto sebelumnya" aria-disabled={index === 0} onClick={() => go(index - 1)}><Image src="/images/figma/hero-arrow-right.svg" width={21} height={21} alt="" /></button>
       <button type="button" className={`${styles.arrow} ${styles.next}`} aria-label="Foto berikutnya" aria-disabled={index === slides.length - 1} onClick={() => go(index + 1)}><Image src="/images/figma/hero-arrow-right.svg" width={21} height={21} alt="" /></button>
-      <div className={styles.caption}><p className="font-extrabold">Setiap anak punya cerita beraninya.</p><p>Kami hadir untuk menemani langkahnya.</p></div>
+      <div className={styles.caption} aria-live="polite" aria-atomic="true"><div key={index} className={styles.captionText}><p className="font-extrabold">{slides[index].heading}</p><p>{slides[index].description}</p></div></div>
     </div>
     <div className={styles.dots} role="group" aria-label="Pilih foto hero">{slides.map((_, i) => <button type="button" key={i} aria-label={`Tampilkan foto ${i + 1}`} aria-pressed={i === index} onClick={() => go(i)}><span /></button>)}</div>
     <p className="sr-only" aria-live="polite" aria-atomic="true">Foto {index + 1} dari {slides.length}</p>

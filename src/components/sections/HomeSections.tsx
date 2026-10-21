@@ -36,7 +36,7 @@ export function MethodsSection() {
               <div>
                 <div className="mb-4 flex min-h-10 items-center justify-between gap-2">
                   {method.badge ? <span className={`rounded-full px-3 py-1 text-[11px] leading-4 font-bold tracking-[0.44px] ${index === 0 ? "bg-[#ffdad6] text-[#b7131a]" : "bg-[#dae2ff] text-navy"}`}>{method.badge}</span> : <span />}
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#e7eeff]"><Asset name={method.icon} width={19} height={19} /></span>
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#e7eeff]"><Asset name={method.icon} width={19} height={index === 0 ? 24 : index === 1 ? 16 : 19} /></span>
                 </div>
                 <h3 className="max-w-[280px] text-xl leading-7 font-bold text-navy">{method.title}</h3>
                 <p className="mt-2 text-sm leading-5 text-muted">{method.description}</p>
@@ -104,7 +104,7 @@ export function HomecareSection() {
         <div className="homecare-visual relative mx-auto min-h-[226px] w-full max-w-[342px] rounded-[28px] bg-soft p-6 lg:min-h-[280px] lg:max-w-[440px] lg:bg-white lg:p-7 lg:shadow-[0_8px_28px_rgba(21,61,117,0.05)]">
           <p className="flex items-center gap-2 text-[15px] font-extrabold text-primary"><Asset name="imgHouseHeart.svg" width={22} height={22} className="shrink-0" />SAGARA datang ke rumah</p>
           <div className="absolute top-[69px] right-[10px] left-[7px] h-[133px] overflow-hidden lg:top-[86px] lg:right-4 lg:left-4 lg:h-[170px]" role="img" aria-label="Kendaraan layanan homecare SAGARA">
-            <Asset name="imgImage16.png" width={325} height={163} className="absolute -top-[12.03%] left-0 !h-[122.15%] w-full max-w-none" />
+            <Asset name="imgImage16.png" sizes="(min-width: 1024px) 408px, 325px" width={1774} height={887} className="absolute -top-[12.03%] left-0 h-auto w-full max-w-none" />
           </div>
         </div>
       </div>
@@ -147,12 +147,12 @@ export function Footer() {
       <div className={`${container} flex flex-col gap-6`}>
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex max-w-[440px] flex-col items-start gap-3">
-            <div className="relative h-[58px] w-[180px] overflow-hidden" role="img" aria-label="SAGARA Rumah Sunat Modern"><Asset name="imgArtworkAsli.png" width={218} height={218} className="absolute -top-[108.21px] -left-[19.07px] !h-[217.11px] w-[217.11px] max-w-none" /></div>
+            <div className="relative h-[58px] w-[180px] overflow-hidden" role="img" aria-label="SAGARA Rumah Sunat Modern"><Asset name="imgArtworkAsli.png" sizes="218px" width={1254} height={1254} className="absolute -top-[108.21px] -left-[19.07px] h-auto w-[217.11px] !max-w-none" /></div>
             <p className="text-xs leading-[1.65] text-muted">Rumah Sunat Modern Banteran, Sumbang. Teman keluarga dalam merencanakan khitan.</p>
           </div>
           <div className="flex flex-col items-start gap-3 text-[13px]">
             <nav aria-label="Tautan penutup" className="flex flex-wrap items-center gap-x-2 gap-y-1 font-bold text-primary">
-              <a href="#layanan">Layanan</a><span aria-hidden="true">·</span><button type="button" disabled title="Segera hadir" className="text-muted">Galeri <span className="text-[10px] font-normal">(segera hadir)</span></button><span aria-hidden="true">·</span><a href="#kontak">Lokasi &amp; Kontak</a>
+              <a href="/layanan">Layanan</a><span aria-hidden="true">·</span><a href="/galeri">Galeri</a><span aria-hidden="true">·</span><a href="/kontak">Lokasi &amp; Kontak</a>
             </nav>
             <ContactAction className="!min-h-0 !rounded-none !p-0 !text-[13px] !font-normal text-ink">WhatsApp 0878 9977 7219</ContactAction>
           </div>

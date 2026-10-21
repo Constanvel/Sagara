@@ -5,7 +5,7 @@
 .title { margin-top: 5px; color: #102d50; font-size: clamp(28px, 7.767vw, 32px); line-height: 1.23; font-weight: 800; }
 .title span { display: inline-block; padding: 0 7px; border-radius: 5px; color: white; background: #064a9b; }
 .content { margin-top: 24px; }
-.media { width: calc(100% + 2px); margin-left: 1px; aspect-ratio: 366 / 216; border: 2px solid #102d50; border-radius: 20px; background: #102d50; }
+.media { width: 100%; min-width: 0; aspect-ratio: 366 / 216; }
 .description { margin-top: 9px; color: #435974; font-size: 15px; line-height: 1.65; }
 .description h3 { font-size: 24px; font-weight: 700; line-height: 1.65; color: #102d50; }
 .description p + p { margin-top: 24.75px; }

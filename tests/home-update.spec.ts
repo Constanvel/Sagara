@@ -11,8 +11,7 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
     const about = page.locator("#tentang-sagara");
     await expect(about).toHaveAttribute("aria-labelledby", "about-title");
     await expect(about.getByRole("heading", { level: 2 })).toHaveText("Sagara RumahSunat Modern.");
-    await expect(about.getByRole("img", { name: "Media Sagara — video belum tersedia" })).toBeVisible();
-    await expect(about.getByRole("button")).toHaveCount(0);
+    await expect(about.getByRole("button", { name: "Putar video cerita layanan Sagara" })).toBeVisible();
     await expect(about.getByText("Tidak perlu menemukan semuanya sendiri")).toBeVisible();
     for (const name of ["hero-mascot.png", "hero-mascot-outline.png", "about-chat.svg"]) {
       const image = page.locator(`img[src$="${name}"]`);
@@ -25,7 +24,7 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
     });
     expect(geometry.color).toBe("rgb(255, 255, 255)");
     expect(geometry.width).toBeLessThanOrEqual(geometry.client);
-    const media = await about.getByRole("img").boundingBox();
+    const media = await about.getByRole("button", { name: "Putar video cerita layanan Sagara" }).boundingBox();
     expect(Math.abs(media!.width / media!.height - 366 / 216)).toBeLessThan(.01);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await about.scrollIntoViewIfNeeded();

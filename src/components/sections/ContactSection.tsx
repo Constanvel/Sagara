@@ -44,7 +44,7 @@ export function ContactSection() {
         <div className="rounded-[20px] bg-white px-[12.5px] pt-[18px] pb-4 lg:col-start-2 lg:row-span-3 lg:row-start-1">
           <div className="px-[11px]">
             <h2 className="flex items-center gap-[6px] text-sm leading-[22px] font-bold text-primary">
-              <Asset name="contact-location.svg" width={16.64} height={22.1} />
+              <Asset name="contact-location.svg" width={17} height={23} />
               Lokasi Sagara
             </h2>
             <p className="mt-[10px] text-base leading-5 font-extrabold text-primary">{contact.location}</p>
@@ -52,7 +52,7 @@ export function ContactSection() {
           </div>
           <div aria-hidden="true" className="mt-[17px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 p-[10px]">
             <div className="relative aspect-[295/113] overflow-hidden rounded-[20px]">
-              <Asset name="contact-map.png" width={295} height={339} className="absolute top-[-62.69%] left-0 h-[299.43%]! w-full max-w-none" />
+              <Asset name="contact-map.png" loading="eager" sizes="(min-width: 1024px) 455px, (max-width: 389px) calc(100vw - 93px), 297px" width={1280} height={1468} className="absolute top-[-62.69%] left-0 h-auto w-full max-w-none" />
             </div>
           </div>
           <button type="button" disabled aria-disabled="true" aria-describedby="location-verification" className="mt-3 flex h-[52px] w-full cursor-not-allowed items-center justify-center gap-[7px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 text-base font-medium text-[#727780]">

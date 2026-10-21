@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { siteUrl } from "@/lib/seo";
 import { Header, MobileBottomNav } from "@/components/layout/Navigation";
 import { MotionEnhancer } from "@/components/ui/MotionEnhancer";
 
@@ -12,6 +13,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "SAGARA — Rumah Sunat Modern Banteran",
     template: "%s | SAGARA",

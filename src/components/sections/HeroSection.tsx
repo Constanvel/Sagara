@@ -23,7 +23,7 @@ export function HeroSection() {
       <div className={`hero-copy ${styles.copy}`}>
         <div className={styles.intro}>
           <p className={styles.eyebrow}><span aria-hidden="true" />Khitan modern . Banteran</p>
-          <div aria-hidden="true" className={styles.mascot}><Image src="/images/figma/hero-mascot-outline.png" alt="" width={80} height={64} unoptimized /><Image src="/images/figma/hero-mascot.png" alt="" width={76} height={61} unoptimized /></div>
+          <div aria-hidden="true" className={styles.mascot}><Image src="/images/figma/hero-mascot-outline.png" alt="" width={80} height={80} unoptimized /><Image src="/images/figma/hero-mascot.png" alt="" width={76} height={76} unoptimized /></div>
           <h1 id="hero-title" className={styles.title}><span>Langkah berani si</span>{" "}<span>jagoan, dimulai di sini.</span></h1>
           <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
         </div>

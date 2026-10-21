@@ -4,8 +4,7 @@
 .track { display: flex; transition: transform 550ms cubic-bezier(.22,1,.36,1); }
 .track[data-dragging="true"] { transition: none; }
 .slide { position: relative; flex: 0 0 100%; min-width: 0; aspect-ratio: 344 / 257; user-select: none; }
-.slide .original { top: -41.72% !important; left: -13.49% !important; height: 208.28% !important; width: 116.68% !important; max-width: none; pointer-events: none; }
-.slide .photo { object-fit: cover; object-position: center 32%; pointer-events: none; }
+.slide .photo { object-fit: cover; object-position: center 40%; pointer-events: none; }
 .arrow { position: absolute; top: 45%; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; transition: scale 150ms; }
 .arrow::before { content: ""; position: absolute; inset: 5px; border-radius: inherit; background: #002869; }
 .arrow img { position: relative; }
@@ -15,7 +14,7 @@
 .arrow:active { scale: .92; }
 .arrow[aria-disabled="true"]::before { opacity: .75; }
 .arrow:focus-visible, .dots button:focus-visible { outline: 2px solid #064a9b; outline-offset: 2px; }
-.caption { position: relative; margin: -40px auto -25px; width: 90%; border-radius: 32px; background: #002869; border: 2px solid #b9c9de; padding: 14px 8px; text-align: center; font-size: 12px; line-height: 1.4; color: white; box-shadow: 0 3px 5px rgb(0 0 0 / 20%); pointer-events: none; }
+.caption { position: relative; margin: -40px auto -25px; width: 90%; border-radius: 32px; background: #002869; border: 2px solid #b9c9de; padding: 14px 8px; min-height: 76px; display: grid; align-items: center; text-align: center; font-size: 12px; line-height: 1.4; color: white; box-shadow: 0 3px 5px rgb(0 0 0 / 20%); pointer-events: none; }
 .caption p + p { color: #c6d5e9; }
 .dots { display: flex; justify-content: center; padding-top: 25px; }
 .dots button { width: 24px; height: 44px; display: grid; place-items: center; cursor: pointer; }

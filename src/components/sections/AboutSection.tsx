@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { DecorativeRibbon } from "./HeroSection";
 import styles from "./AboutSection.module.css";
+import { AboutVideo } from "./AboutVideo";
 
 export function AboutSection() {
   return <section id="tentang-sagara" aria-labelledby="about-title" className={styles.section}>
@@ -10,8 +11,7 @@ export function AboutSection() {
         <h2 id="about-title" className={styles.title}><span>Sagara Rumah</span><br />Sunat Modern.</h2>
       </header>
       <div className={styles.content}>
-        {/* The current Figma node 25:8 has no image fill or approved video source. */}
-        <div data-reveal className={styles.media} role="img" aria-label="Media Sagara — video belum tersedia" />
+        <div data-reveal className={styles.media}><AboutVideo /></div>
         <div className={styles.description} data-reveal-group>
           <div data-reveal>
             <h3>Sagara Rumah Sunat Modern</h3>

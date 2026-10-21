@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ContactSection } from "@/components/sections/ContactSection";
 
-export const metadata: Metadata = {
-  title: "Lokasi & Kontak",
-  description:
-    "Hubungi tim Sagara melalui WhatsApp untuk konsultasi khitan, konfirmasi lokasi Banteran, Sumbang, jam layanan, dan layanan khitan di rumah.",
-};
+export const metadata = pageMetadata(
+  "Lokasi & Kontak",
+  "Hubungi tim Sagara melalui WhatsApp untuk konsultasi khitan, konfirmasi lokasi Banteran, Sumbang, jam layanan, dan layanan khitan di rumah.",
+  "/kontak",
+);
 
 export default function KontakPage() {
   return (
