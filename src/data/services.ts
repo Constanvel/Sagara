@@ -14,7 +14,8 @@ export const services: readonly KhitanService[] = [
     title: "Khitan anak-anak",
     description: "Dampingi jagoan memahami proses dan persiapannya.",
     icon: "service-security.svg",
-    iconWidth: 39,
+    // The exported 39×30 frame had empty right/top space; use the centered SVG viewport.
+    iconWidth: 24,
     iconHeight: 30,
     message: "Halo admin Sagara, saya ingin berkonsultasi tentang khitan anak-anak dan persiapannya.",
   },
@@ -45,7 +46,8 @@ export const services: readonly KhitanService[] = [
     iconHeight: 24,
     message: "Halo admin Sagara, saya ingin membahas kebutuhan khusus dan pendampingan untuk khitan.",
   },
-  // The repeated entry is intentional in the approved Layanan design.
+  // Figma Layanan 25:892 repeats this title at 25:950 and 25:959.
+  // Preserve both until their distinct business intent is confirmed; do not invent a service.
   {
     id: "kebutuhan-khusus-pendampingan",
     title: "Kebutuhan khusus",

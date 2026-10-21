@@ -13,8 +13,8 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
     await expect(about.getByRole("heading", { level: 2 })).toHaveText("Sagara RumahSunat Modern.");
     await expect(about.getByRole("button", { name: "Putar video cerita layanan Sagara" })).toBeVisible();
     await expect(about.getByText("Tidak perlu menemukan semuanya sendiri")).toBeVisible();
-    for (const name of ["hero-mascot.png", "hero-mascot-outline.png", "about-chat.svg"]) {
-      const image = page.locator(`img[src$="${name}"]`);
+    for (const name of ["sagara-hero-mascot.webp", "sagara-hero-mascot-outline.webp", "about-chat.svg"]) {
+      const image = page.locator(`img[src*="${name}"]`);
       await expect(image).toBeVisible();
       expect(await image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
     }

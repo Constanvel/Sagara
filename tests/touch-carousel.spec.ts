@@ -13,12 +13,12 @@ test("native touch swipe changes slides; vertical touch scroll preserves slide",
   await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 280, y }] });
   for (let x = 260; x >= 100; x -= 20) await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y }] });
   await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2" })).toHaveAttribute("aria-pressed", "true");
+  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true })).toHaveAttribute("aria-pressed", "true");
   const before = await page.evaluate(() => scrollY);
   await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 180, y: y + 100 }] });
   for (let delta = 20; delta <= 100; delta += 20) await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 182, y: y + 100 - delta }] });
   await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
-  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2" })).toHaveAttribute("aria-pressed", "true");
+  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true })).toHaveAttribute("aria-pressed", "true");
   await context.close();
 });

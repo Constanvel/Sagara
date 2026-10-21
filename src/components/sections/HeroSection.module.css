@@ -1,5 +1,5 @@
 /* Latest Home 25:3, 25:12–15, 25:305–306; existing CTA dimensions preserved. */
-.copy { position: relative; min-height: 359px; background: url('/images/figma/hero-landscape.png') center bottom / 100% 100% no-repeat; padding-bottom: 44px; }
+.copy { position: relative; min-height: 359px; background: url('/images/media/sagara-hero-landscape.webp') center bottom / 100% 100% no-repeat; padding-bottom: 44px; }
 .intro { position: relative; padding: 18px 24px 0; }
 .eyebrow { display: flex; align-items: center; gap: 6px; font-size: 11px; line-height: 14px; font-weight: 800; text-transform: uppercase; color: white; }
 .eyebrow > span { width: 18px; height: 3px; border-radius: 3px; background: #002869; }

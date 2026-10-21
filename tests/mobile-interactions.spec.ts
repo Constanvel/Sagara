@@ -6,17 +6,17 @@ for (const width of [320, 375, 390, 412, 768, 1440]) {
     await page.goto("/");
     const carousel = page.getByRole("region", { name: "Cerita jagoan Sagara" });
     await carousel.getByRole("button", { name: "Foto berikutnya" }).click();
-    await expect(carousel.getByRole("button", { name: "Tampilkan foto 2" })).toHaveAttribute("aria-pressed", "true");
+    await expect(carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true })).toHaveAttribute("aria-pressed", "true");
     await carousel.getByRole("button", { name: "Foto sebelumnya" }).click();
-    await expect(carousel.getByRole("button", { name: "Tampilkan foto 1" })).toHaveAttribute("aria-pressed", "true");
-    await carousel.getByRole("button", { name: "Tampilkan foto 2" }).click();
+    await expect(carousel.getByRole("button", { name: "Tampilkan foto 1", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true }).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.screenshot({ path: `test-results/carousel-${width}.png`, fullPage: true });
   });
 }
 
-test("mobile menu links, anchors, focus, history and swipe close", async ({ page }) => {
+test("mobile menu links, anchors, focus, history and vertical scroll gesture",  async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 700 });
   await page.goto("/");
   const toggle = page.locator('[aria-controls="mobile-menu"]');
@@ -47,7 +47,9 @@ test("mobile menu links, anchors, focus, history and swipe close", async ({ page
     Object.defineProperty(end, "changedTouches", { value: [{ clientX: 250, clientY: 70 }] });
     element.dispatchEvent(end);
   });
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  // Vertical gestures scroll the menu; they must not dismiss it at its scroll boundary.
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("Escape");
   await page.goBack();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await page.goForward();
@@ -64,10 +66,10 @@ test("mouse drag changes slides while vertical gestures do not", async ({ page }
   await page.mouse.down();
   await page.mouse.move(x - 140, y + 3, { steps: 12 });
   await page.mouse.up();
-  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2" })).toHaveAttribute("aria-pressed", "true");
+  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.mouse.move(x, y);
   await page.mouse.down();
   await page.mouse.move(x + 5, y + 100, { steps: 10 });
   await page.mouse.up();
-  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2" })).toHaveAttribute("aria-pressed", "true");
+  await expect(carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true })).toHaveAttribute("aria-pressed", "true");
 });

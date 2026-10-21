@@ -24,9 +24,9 @@ export function PackageCard({ item }: { item: KhitanPackage }) {
           </li>
         ))}
       </ul>
-      <ContactAction message={item.message} className={`relative z-0 mt-auto w-full !gap-0 !rounded-[10px] !p-0 !text-[12px] !font-semibold before:absolute before:inset-x-0 before:top-1/2 before:-z-10 before:h-8 before:-translate-y-1/2 before:rounded-[10px] ${isModern ? "text-white before:bg-[#1a5aa6]" : "text-primary before:bg-[#eef4fd]"}`}>
+      <ContactAction message={item.message} className={`mt-5 flex min-h-11 w-full items-center justify-center gap-3 rounded-[10px] px-3 py-2.5 text-[12px] font-semibold ${isModern ? "bg-[#1a5aa6] text-white" : "bg-[#eef4fd] text-primary"}`}>
         {item.actionLabel}
-        <Asset name={isModern ? "package-arrow-white.svg" : "package-arrow-blue.svg"} width={14} height={14} className="absolute right-[18%] shrink-0" />
+        <Asset name={isModern ? "package-arrow-white.svg" : "package-arrow-blue.svg"} width={14} height={14} className="shrink-0" />
       </ContactAction>
     </article>
   );

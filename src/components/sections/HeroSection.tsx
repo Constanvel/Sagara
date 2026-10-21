@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { preload } from "react-dom";
 import Link from "next/link";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { Asset } from "@/components/ui/Asset";
@@ -18,12 +19,13 @@ export function DecorativeRibbon() {
   </div>;
 }
 export function HeroSection() {
+  preload("/images/media/sagara-hero-landscape.webp", { as: "image", fetchPriority: "high", media: "(max-width: 1023px)" });
   return <section aria-labelledby="hero-title" className="hero-section relative pb-[88px] lg:bg-[#f4f7fc] lg:pt-3 lg:pb-10">
     <div className="mx-auto max-w-[1200px] lg:grid lg:grid-cols-[1.08fr_1fr] lg:items-center lg:gap-12 lg:px-8 lg:pt-10 lg:pb-9">
       <div className={`hero-copy ${styles.copy}`}>
         <div className={styles.intro}>
           <p className={styles.eyebrow}><span aria-hidden="true" />Khitan modern . Banteran</p>
-          <div aria-hidden="true" className={styles.mascot}><Image src="/images/figma/hero-mascot-outline.png" alt="" width={80} height={80} unoptimized /><Image src="/images/figma/hero-mascot.png" alt="" width={76} height={76} unoptimized /></div>
+          <div aria-hidden="true" className={styles.mascot}><Image src="/images/media/sagara-hero-mascot-outline.webp" alt="" width={80} height={80} sizes="80px" /><Image src="/images/media/sagara-hero-mascot.webp" alt="" width={76} height={76} sizes="76px" /></div>
           <h1 id="hero-title" className={styles.title}><span>Langkah berani si</span>{" "}<span>jagoan, dimulai di sini.</span></h1>
           <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
         </div>

@@ -1,7 +1,9 @@
+import Image from "next/image";
 import { Asset } from "@/components/ui/Asset";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { benefits, methods, needs } from "@/data/home";
 import { whatsappUrl } from "@/lib/whatsapp";
+import { contact } from "@/data/contact";
 import { FAQAccordion } from "./FAQAccordion";
 import { DecorativeRibbon } from "./HeroSection";
 
@@ -147,14 +149,15 @@ export function Footer() {
       <div className={`${container} flex flex-col gap-6`}>
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex max-w-[440px] flex-col items-start gap-3">
-            <div className="relative h-[58px] w-[180px] overflow-hidden" role="img" aria-label="SAGARA Rumah Sunat Modern"><Asset name="imgArtworkAsli.png" sizes="218px" width={1254} height={1254} className="absolute -top-[108.21px] -left-[19.07px] h-auto w-[217.11px] !max-w-none" /></div>
+            <Image src="/images/media/sagara-rumah-sunat-modern-banteran-logo.webp" alt="Logo SAGARA Rumah Sunat Modern Banteran" width={340} height={152} unoptimized sizes="(min-width: 768px) 240px, 210px" className="h-auto w-[210px] max-w-full rounded-lg object-contain md:w-[240px]" />
             <p className="text-xs leading-[1.65] text-muted">Rumah Sunat Modern Banteran, Sumbang. Teman keluarga dalam merencanakan khitan.</p>
           </div>
           <div className="flex flex-col items-start gap-3 text-[13px]">
             <nav aria-label="Tautan penutup" className="flex flex-wrap items-center gap-x-2 gap-y-1 font-bold text-primary">
               <a href="/layanan">Layanan</a><span aria-hidden="true">·</span><a href="/galeri">Galeri</a><span aria-hidden="true">·</span><a href="/kontak">Lokasi &amp; Kontak</a>
             </nav>
-            <ContactAction className="!min-h-0 !rounded-none !p-0 !text-[13px] !font-normal text-ink">WhatsApp 0878 9977 7219</ContactAction>
+            <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-primary underline underline-offset-4">Lokasi SAGARA di Google Maps<span className="sr-only"> (dibuka di tab baru)</span></a>
+            <ContactAction className="!min-h-11 !rounded-none !p-0 !text-[13px] !font-normal text-ink">WhatsApp 0878 9977 7219</ContactAction>
           </div>
         </div>
         <div className="h-px bg-line" />

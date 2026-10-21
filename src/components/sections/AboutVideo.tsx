@@ -8,7 +8,7 @@ import styles from "./AboutVideo.module.css";
 export function AboutVideo() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const video = useRef<HTMLVideoElement>(null);
@@ -28,7 +28,7 @@ export function AboutVideo() {
     };
   }, [open]);
   return <>
-    <button ref={trigger} type="button" className={styles.poster} aria-label="Putar video cerita layanan Sagara" onClick={() => { setError(false); setLoading(true); setOpen(true); }}>
+    <button ref={trigger} type="button" className={styles.poster} aria-label="Putar video cerita layanan Sagara" onClick={() => { setError(false); setLoading(false); setOpen(true); }}>
       <Image src={serviceVideo.thumbnail} alt="Petugas Sagara mengenakan lampu kepala saat memberikan layanan." fill sizes="(min-width: 768px) 550px, 90vw" />
       <Image className={styles.play} src="/images/media/sagara-video-play.svg" alt="" width={66} height={66} />
     </button>
@@ -36,8 +36,8 @@ export function AboutVideo() {
       {open && <div className={styles.content}>
         <button type="button" autoFocus onClick={() => setOpen(false)} className={styles.close}>Tutup video ×</button>
         <h2 id="about-video-title">Cerita layanan Sagara</h2>
-        <video ref={video} controls playsInline preload="metadata" poster={serviceVideo.thumbnail} onLoadedData={() => setLoading(false)} onError={() => { setError(true); setLoading(false); }} aria-label="Video cerita layanan Sagara">
-          <source src={serviceVideo.src} type="video/mp4" />
+        <video ref={video} controls playsInline preload="none" poster={serviceVideo.thumbnail} onLoadStart={() => setLoading(true)} onWaiting={() => setLoading(true)} onCanPlay={() => setLoading(false)} onPlaying={() => setLoading(false)} onError={() => { setError(true); setLoading(false); }} aria-label="Video cerita layanan Sagara">
+          <source src={serviceVideo.src} type="video/mp4" onError={() => { setError(true); setLoading(false); }} />
           Browser Anda tidak mendukung video. <a href={serviceVideo.src}>Buka video</a>.
         </video>
         {loading && !error && <p role="status">Menyiapkan video…</p>}

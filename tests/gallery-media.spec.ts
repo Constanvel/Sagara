@@ -1,12 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { galleryMedia } from "../src/data/media";
+import { galleryMedia, heroSlides } from "../src/data/media";
 
 const photos = galleryMedia.filter(item => item.type === "photo");
 const videos = galleryMedia.filter(item => item.type === "video");
 
-test("gallery data has 24 unique photos and one playable video", () => {
+test("gallery data has 24 unique photos, five videos and 20 unique hero photos", () => {
   expect(photos).toHaveLength(24);
-  expect(videos).toHaveLength(1);
+  expect(videos).toHaveLength(5);
+  expect(heroSlides).toHaveLength(20);
+  expect(new Set(heroSlides.map(item => item.src)).size).toBe(20);
+  expect(heroSlides.every(item => item.type === "photo")).toBe(true);
   expect(new Set(galleryMedia.map(item => item.id)).size).toBe(galleryMedia.length);
   expect(new Set(galleryMedia.map(item => item.src)).size).toBe(galleryMedia.length);
   expect(videos[0].src).toBe("/videos/sagara-cerita-layanan.mp4");
@@ -30,11 +33,19 @@ test("filters show accurate counts and lightbox navigates only the filtered coll
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Video", exact: true }).click();
   await expect(cards).toHaveCount(videos.length);
-  await expect(page.getByRole("status")).toHaveText("Video: 0 foto, 1 video.");
+  await expect(page.getByRole("status")).toHaveText(`Video: 0 foto, ${videos.length} video.`);
   await cards.first().getByRole("button").click();
   await expect(dialog.getByRole("heading")).toHaveText(videos[0].title);
   await expect(dialog.locator("video")).toHaveCount(1);
-  await expect(dialog.getByText("1 dari 1", { exact: true })).toBeVisible();
+  await expect(dialog.getByText(`1 dari ${videos.length}`, { exact: true })).toBeVisible();
+  for (let index = 0; index < videos.length; index++) {
+    await expect(dialog.locator("video")).toHaveAttribute("preload", "none");
+    await expect(dialog.locator("video")).not.toHaveAttribute("autoplay");
+    await expect(dialog.locator("source")).toHaveAttribute("src", videos[index].src);
+    await expect(dialog.locator("video")).toHaveAttribute("poster", videos[index].thumbnail);
+    await dialog.getByRole("button", { name: "Berikutnya" }).click();
+  }
+  await expect(dialog.getByRole("heading")).toHaveText(videos[0].title);
   await page.keyboard.press("Escape");
   await expect(cards.first().getByRole("button")).toBeFocused();
   await page.getByRole("button", { name: "Semua", exact: true }).click();
@@ -49,7 +60,7 @@ test("video uses native controls, loads on demand and plays when codec is suppor
   await page.goto("/galeri");
   await expect(page.locator("video")).toHaveCount(0);
   await page.getByRole("button", { name: "Video", exact: true }).click();
-  const trigger = page.locator("article[data-media-type='video'] button");
+  const trigger = page.locator("article[data-media-type='video'] button").first();
   await trigger.click();
   const dialog = page.getByRole("dialog");
   const video = dialog.locator("video");
@@ -88,7 +99,7 @@ test("video playback failure displays an accessible recovery link", async ({ pag
   await page.route("**/videos/sagara-cerita-layanan.mp4", route => route.abort());
   await page.goto("/galeri");
   await page.getByRole("button", { name: "Video", exact: true }).click();
-  await page.locator("article[data-media-type='video'] button").click();
+  await page.locator("article[data-media-type='video'] button").first().click();
   const dialog = page.getByRole("dialog");
   await dialog.locator("video").evaluate((el: HTMLVideoElement) => { void el.play().catch(() => {}); });
   await expect(dialog.getByRole("status")).toContainText("Video tidak dapat diputar", { timeout: 15000 });

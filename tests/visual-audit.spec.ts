@@ -1,6 +1,13 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 
-const widths = [360, 390, 412, 768, 1280, 1440];
+const auditDirectory = "C:/Users/IDEAPAD SLIM 3/AppData/Local/Temp/opencode/sagara-final-audit";
+const widths = [360, 390, 412, 768, 1280, 1440, 1920];
+
+test.beforeAll(async () => {
+  await mkdir(auditDirectory, { recursive: true });
+});
 const routes = ["/", "/layanan", "/paket", "/galeri", "/kontak"];
 test.setTimeout(300_000);
 
@@ -48,8 +55,34 @@ for (const width of widths) {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       const errors = watchErrors(page);
+      const videoRequests: string[] = [];
+      page.on("request", request => {
+        if (request.resourceType() === "media" || /\.(mp4|webm|mov|m3u8)(?:[?#]|$)/i.test(request.url())) videoRequests.push(request.url());
+      });
       const response = await page.goto(route, { waitUntil: "networkidle" });
       expect(response?.status()).toBe(200);
+      if (route === "/galeri") {
+        expect(videoRequests, "gallery must not request video before user interaction").toEqual([]);
+        expect(await page.locator("video").evaluateAll(videos => videos.flatMap(video => [video.getAttribute("src"), ...Array.from(video.querySelectorAll("source"), source => source.getAttribute("src"))]).filter(Boolean)), "gallery videos must have no initial source").toEqual([]);
+      }
+      const header = page.locator("header.site-header");
+      const bottomNav = page.getByRole("navigation", { name: "Navigasi bawah", exact: true });
+      for (const height of [900, 680]) {
+        await page.setViewportSize({ width, height });
+        await page.evaluate(() => window.scrollTo(0, 700));
+        await expect.poll(async () => Math.abs((await header.boundingBox())?.y ?? Infinity), { message: "header remains at viewport top after scrolling and resizing" }).toBeLessThanOrEqual(1);
+        if (width < 1024) {
+          await expect(bottomNav).toBeVisible();
+          await expect.poll(async () => {
+            const box = await bottomNav.boundingBox();
+            return box ? Math.abs(box.y + box.height - height) : Infinity;
+          }, { message: "mobile navigation remains at viewport bottom after scrolling and resizing" }).toBeLessThanOrEqual(1);
+        } else {
+          await expect(bottomNav).toBeHidden();
+          await expect(page.getByRole("navigation", { name: "Navigasi utama", exact: true })).toBeVisible();
+        }
+      }
+      await page.setViewportSize({ width, height: 900 });
       await scrollEntirePage(page);
       const media = await page.locator("img, video").evaluateAll(elements => elements.map(element => {
         const box = element.getBoundingClientRect();
@@ -68,8 +101,11 @@ for (const width of widths) {
         };
       }));
       const overflow = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
-      await page.screenshot({ path: `test-results/audit-${route === "/" ? "home" : route.slice(1)}-${width}.png`, fullPage: true, animations: "disabled" });
-      await testInfo.attach("audit-details", { body: JSON.stringify({ route, width, overflow, media, ...errors }, null, 2), contentType: "application/json" });
+      const artifactName = `audit-${route === "/" ? "home" : route.slice(1)}-${width}`;
+      await page.screenshot({ path: path.join(auditDirectory, `${artifactName}.png`), fullPage: true, animations: "disabled" });
+      const details = JSON.stringify({ route, width, overflow, media, ...errors }, null, 2);
+      await writeFile(path.join(auditDirectory, `${artifactName}.json`), details);
+      await testInfo.attach("audit-details", { body: details, contentType: "application/json" });
       expect.soft(media.filter(item => item.tag === "IMG" && (!item.complete || !item.naturalWidth)), "broken images").toEqual([]);
       expect.soft(media.filter(item => item.visible && (item.width <= 0 || item.height <= 0)), "collapsed visible media").toEqual([]);
       expect.soft(overflow.document, "document horizontal overflow").toBeLessThanOrEqual(width);
@@ -88,14 +124,15 @@ for (const width of widths) {
     await page.goto("/", { waitUntil: "networkidle" });
     const hero = page.getByRole("region", { name: "Cerita jagoan Sagara" });
     const slides = hero.locator('[aria-roledescription="slide"]');
-    await expect(slides).toHaveCount(3);
+    await expect(slides).toHaveCount(20);
     const sources = await slides.locator("img").evaluateAll(images => images.map(image => image.getAttribute("src")));
-    expect(new Set(sources).size).toBe(3);
+    expect(new Set(sources).size).toBe(20);
     const captions: string[] = [];
-    for (let index = 0; index < 3; index++) {
-      await hero.getByRole("button", { name: `Tampilkan foto ${index + 1}` }).click();
+    // Jump directly to representative slides; do not animate through all 19 transitions.
+    for (const index of [0, 10, 19]) {
+      await hero.getByRole("button", { name: `Tampilkan foto ${index + 1}`, exact: true }).click();
       await expect(slides.nth(index)).toHaveAttribute("aria-hidden", "false");
-      await expect(hero.getByRole("button", { name: `Tampilkan foto ${index + 1}` })).toHaveAttribute("aria-pressed", "true");
+      await expect(hero.getByRole("button", { name: `Tampilkan foto ${index + 1}`, exact: true })).toHaveAttribute("aria-pressed", "true");
       const caption = hero.locator('[aria-live="polite"]').first();
       await expect(caption).not.toBeEmpty();
       captions.push((await caption.innerText()).trim());
@@ -105,14 +142,18 @@ for (const width of widths) {
     const dialog = page.getByRole("dialog", { name: "Cerita layanan Sagara", exact: true });
     await expect(dialog).toBeVisible();
     const video = dialog.locator("video");
+    // preload=none intentionally leaves metadata unloaded until playback is requested.
+    await video.evaluate(async (element: HTMLVideoElement) => { element.muted = true; await element.play(); });
     await expect.poll(() => video.evaluate((element: HTMLVideoElement) => ({ ready: element.readyState >= 1, duration: element.duration > 0, error: element.error?.message ?? null })), { timeout: 60_000 }).toEqual({ ready: true, duration: true, error: null });
     // Exercise the actual media element and decoder; no mocked network or timers.
     await video.evaluate(async (element: HTMLVideoElement) => { element.muted = true; await element.play(); });
     const startTime = await video.evaluate((element: HTMLVideoElement) => element.currentTime);
     await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 30_000 }).toBeGreaterThan(startTime + 0.5);
     await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.videoWidth)).toBeGreaterThan(0);
-    await page.screenshot({ path: `test-results/audit-about-playing-${width}.png`, animations: "disabled" });
-    await testInfo.attach("playback-details", { body: JSON.stringify({ sources, captions, playback: await video.evaluate((element: HTMLVideoElement) => ({ src: element.currentSrc, duration: element.duration, currentTime: element.currentTime, videoWidth: element.videoWidth, videoHeight: element.videoHeight, paused: element.paused })), ...errors }, null, 2), contentType: "application/json" });
+    await page.screenshot({ path: path.join(auditDirectory, `audit-about-playing-${width}.png`), animations: "disabled" });
+    const playbackDetails = JSON.stringify({ sources, captions, playback: await video.evaluate((element: HTMLVideoElement) => ({ src: element.currentSrc, duration: element.duration, currentTime: element.currentTime, videoWidth: element.videoWidth, videoHeight: element.videoHeight, paused: element.paused })), ...errors }, null, 2);
+    await writeFile(path.join(auditDirectory, `audit-about-playing-${width}.json`), playbackDetails);
+    await testInfo.attach("playback-details", { body: playbackDetails, contentType: "application/json" });
     await dialog.getByRole("button", { name: "Tutup video" }).click();
     await expect(dialog).not.toBeVisible();
     expect.soft(errors.pageErrors).toEqual([]);

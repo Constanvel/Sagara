@@ -50,15 +50,21 @@ export function ContactSection() {
             <p className="mt-[10px] text-base leading-5 font-extrabold text-primary">{contact.location}</p>
             <p className="mt-[6px] text-[11px] leading-[18px] font-semibold text-[#656565]">{contact.addressStatus}</p>
           </div>
-          <div aria-hidden="true" className="mt-[17px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 p-[10px]">
-            <div className="relative aspect-[295/113] overflow-hidden rounded-[20px]">
-              <Asset name="contact-map.png" loading="eager" sizes="(min-width: 1024px) 455px, (max-width: 389px) calc(100vw - 93px), 297px" width={1280} height={1468} className="absolute top-[-62.69%] left-0 h-auto w-full max-w-none" />
-            </div>
+          <div className="mt-[17px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 p-[10px]">
+            <iframe
+              title="Peta lokasi SAGARA Rumah Sunat Modern Banteran"
+              src={contact.mapsEmbedUrl}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-[220px] w-full rounded-[20px] border-0"
+              allowFullScreen
+            />
           </div>
-          <button type="button" disabled aria-disabled="true" aria-describedby="location-verification" className="mt-3 flex h-[52px] w-full cursor-not-allowed items-center justify-center gap-[7px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 text-base font-medium text-[#727780]">
+          <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" aria-describedby="location-verification" className="mt-3 flex h-[52px] w-full items-center justify-center gap-[7px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 text-base font-medium text-primary hover:bg-[#3982da]/20">
             Petunjuk Arah
             <span className="-rotate-[51.1deg]"><Asset name="contact-directions-arrow.svg" width={13.4988} height={13.0846} /></span>
-          </button>
+            <span className="sr-only"> (Google Maps, tab baru)</span>
+          </a>
           <p id="location-verification" className="sr-only">{contact.locationVerification}</p>
         </div>
 

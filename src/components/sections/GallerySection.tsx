@@ -77,7 +77,7 @@ export function GallerySection() {
       </article>)}
     </div>}
     <aside className={styles.contact} data-reveal>
-      <h2><Image src="/images/figma/gallery-chat.svg" alt="" width={19} height={17.9314} />Punya pertanyaan tentang layanan?</h2>
+      <h2><Image src="/images/figma/gallery-chat.svg" alt="" width={19} height={17.9314} style={{ height: "auto", flexShrink: 0 }} />Punya pertanyaan tentang layanan?</h2>
       <p>Admin Sagara siap membantu Anda</p>
       <ContactAction className={styles.contactLink}>Hubungi admin <Image src="/images/figma/gallery-arrow.svg" alt="" width={14} height={14} /></ContactAction>
     </aside>

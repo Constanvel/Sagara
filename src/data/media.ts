@@ -274,11 +274,71 @@ export const galleryMedia: MediaItem[] = [
     "title": "Cerita layanan Sagara",
     "caption": "Video suasana dan layanan Sagara",
     "alt": "Cuplikan video layanan Sagara.",
-    "width": 1080,
-    "height": 1920
+    "width": 720,
+    "height": 1280
+  },
+  {
+    id: "video-kunjungan-rumah-ruang-hijau", type: "video",
+    src: "/videos/sagara-kunjungan-rumah-ruang-hijau.mp4",
+    thumbnail: "/images/media/sagara-kunjungan-rumah-ruang-hijau-poster.webp",
+    title: "Kunjungan di rumah berwarna hijau",
+    caption: "Dokumentasi layanan di rumah, diakhiri foto anak dengan sertifikat dan bingkisan.",
+    alt: "Anak dan pendamping berfoto dengan sertifikat dan bingkisan di rumah.",
+    width: 478, height: 850
+  },
+  {
+    id: "video-suasana-ruang-kuning", type: "video",
+    src: "/videos/sagara-suasana-ruang-kuning.mp4",
+    thumbnail: "/images/media/sagara-suasana-ruang-kuning-poster.webp",
+    title: "Suasana layanan di ruang kuning",
+    caption: "Cuplikan kendaraan di luar, anak di depan latar merah, dan petugas di ruang layanan kuning.",
+    alt: "Anak berdiri di depan latar merah Sagara di ruang berdinding kuning.",
+    width: 478, height: 850
+  },
+  {
+    id: "video-pendampingan-keluarga-ruang-kuning", type: "video",
+    src: "/videos/sagara-pendampingan-keluarga-ruang-kuning.mp4",
+    thumbnail: "/images/media/sagara-pendampingan-keluarga-ruang-kuning-poster.webp",
+    title: "Pendampingan keluarga di ruang layanan",
+    caption: "Petugas berbaju merah dan keluarga di ruang kuning, lalu foto bersama anak dengan sertifikat.",
+    alt: "Petugas berbaju merah dan anak berfoto dengan sertifikat di depan latar merah Sagara.",
+    width: 478, height: 850
+  },
+  {
+    id: "video-suasana-dan-sertifikat", type: "video",
+    src: "/videos/sagara-suasana-dan-sertifikat.mp4",
+    thumbnail: "/images/media/sagara-suasana-dan-sertifikat-poster.webp",
+    title: "Suasana Sagara dan momen sertifikat",
+    caption: "Tampak depan, ruang kuning, percakapan di meja, dan anak membawa sertifikat serta bingkisan.",
+    alt: "Anak berbaju biru membawa sertifikat dan bingkisan bersama pendamping di depan latar merah.",
+    width: 478, height: 850
   }
 ];
 
-export const heroSlides = [galleryMedia[2], galleryMedia[0], galleryMedia[8]].map((item, index) => ({ ...item, heading: ["Setiap anak punya cerita beraninya.", "Momen berani, bersama keluarga.", "Kebersamaan dalam setiap cerita."][index], description: ["Kami hadir untuk menemani langkahnya.", "Sertifikat dan bingkisan untuk si jagoan.", "Dukungan keluarga menemani si jagoan."][index] }));
+// Twenty distinct, owner-approved photographs; captions describe the pictured moment.
+const heroPhotoIndexes = [2, 0, 8, 1, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+const heroCaptions = [
+  ["Cerita berani bersama pendamping", "Sertifikat di depan latar merah Sagara."],
+  ["Sertifikat dan hadiah", "Anak dan pendamping menunjukkan sertifikat serta bingkisan."],
+  ["Sertifikat berlatar merah", "Foto bersama dengan sertifikat dan bingkisan bermotif kotak."],
+  ["Bingkisan untuk si jagoan", "Anak berpeci memegang bingkisan biru di depan latar merah."],
+  ["Sertifikat bersama pendamping", "Anak berbaju putih dan pendamping berfoto di Sagara."],
+  ["Momen di ruang kuning", "Anak dan pendamping menunjukkan sertifikat di dalam ruangan."],
+  ["Momen bersama keluarga", "Sertifikat dan bingkisan ditunjukkan bersama di depan latar merah."],
+  ["Bingkisan bersama pendamping", "Anak berbaju merah berfoto dengan pendamping berbaju merah."],
+  ["Kebersamaan di ruang tamu", "Anak berpeci menunjukkan sertifikat bersama dua pendamping."],
+  ["Momen bersama petugas", "Anak berbaju putih dan pendamping berbaju hijau berfoto bersama."],
+  ["Kebersamaan tiga pendamping", "Anak membawa bingkisan di tengah para pendamping."],
+  ["Sertifikat di dekat pintu", "Anak berpeci dan pendamping berbaju ungu menunjukkan sertifikat."],
+  ["Sertifikat bersama petugas", "Sertifikat dan bingkisan ditunjukkan di depan latar merah Sagara."],
+  ["Bingkisan berlatar merah", "Anak berbaju putih membawa bingkisan bersama pendamping."],
+  ["Kebersamaan keluarga besar", "Foto bersama keluarga di depan latar merah Sagara."],
+  ["Momen bersama orang tua", "Anak membawa bingkisan dengan dua pendamping di sisinya."],
+  ["Sertifikat dan bingkisan", "Anak dan pendamping berbaju ungu menunjukkan sertifikat bersama."],
+  ["Momen sertifikat keluarga", "Anak berbaju putih berfoto bersama pendamping."],
+  ["Cerita berani berlatar merah", "Anak berbaju gelap dan pendamping berbaju merah berfoto bersama."],
+  ["Momen bersama ibu", "Anak berbaju hitam berfoto di depan latar merah Sagara."]
+];
+export const heroSlides = heroPhotoIndexes.map((photoIndex, index) => ({ ...galleryMedia[photoIndex], heading: heroCaptions[index][0], description: heroCaptions[index][1] }));
 
-export const serviceVideo = galleryMedia[galleryMedia.length - 1];
+export const serviceVideo = galleryMedia.find(item => item.id === "video-layanan")!;

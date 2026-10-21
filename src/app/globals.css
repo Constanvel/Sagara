@@ -13,7 +13,9 @@
 
 :root {
   color-scheme: light;
-  --mobile-bottom-bar-height: 69px;
+  --mobile-header-height: 56px;
+  /* 69px navigation track plus its 1px top border. */
+  --mobile-bottom-bar-height: 70px;
 }
 
 * {
@@ -89,6 +91,15 @@ video {
 }
 
 @media (max-width: 1023px) {
+  html {
+    scroll-padding-top: calc(var(--mobile-header-height) + env(safe-area-inset-top, 0px) + 16px);
+    scroll-padding-bottom: calc(var(--mobile-bottom-bar-height) + env(safe-area-inset-bottom, 0px) + 16px);
+  }
+
+  .site-header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
   body {
     padding-bottom: calc(var(--mobile-bottom-bar-height) + env(safe-area-inset-bottom, 0px));
   }

@@ -12,6 +12,9 @@ for (const width of [412, 1440]) {
     const tabs = page.getByRole("navigation", { name: "Layanan dan paket" });
     await tabs.getByRole("link", { name: /Paket khitan/i }).click();
     await expect(page).toHaveURL(/\/paket$/);
+    await expect(nav.getByRole("link", { name: "Layanan", exact: true })).toHaveAttribute("aria-current", "true");
+    await expect(nav.getByRole("link", { name: "Paket Khitan", exact: true })).toHaveCount(0);
+    await expect(tabs.getByRole("link", { name: /Paket khitan/i })).toHaveAttribute("aria-current", "page");
     await expect(page.getByText("Rp1.100.000", { exact: true })).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/\/layanan$/);
@@ -48,7 +51,15 @@ test("consultation links use verified number and distinct messages", async ({ pa
     }
   }
   await expect(page.getByText("Petunjuk Arah", { exact: false }).first()).toBeVisible();
-  expect(await page.locator('main a[href*="google.com/maps"],main a[href*="maps.app"]').count()).toBe(0);
+  const directions = page.getByRole("link", { name: "Petunjuk Arah" });
+  await expect(directions).toHaveAttribute("href", "https://maps.app.goo.gl/e89cFM6roqapjt3dA");
+  await expect(directions).toHaveAttribute("target", "_blank");
+  await expect(directions).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(page.getByTitle("Peta lokasi SAGARA Rumah Sunat Modern Banteran")).toHaveAttribute(
+    "src",
+    "https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s-7.362495,109.2655145!6i16",
+  );
+  await expect(page.getByText("Konfirmasi alamat lengkap kepada admin sebelum berkunjung.", { exact: false })).toBeVisible();
 });
 
 test("reduced motion keeps content visible and stops entrance animations", async ({ page }) => {

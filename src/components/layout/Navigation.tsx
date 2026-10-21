@@ -19,7 +19,6 @@ const mobileLinks = [
 const links = [
   { label: "Beranda", href: "/", icon: "nav-home.svg" },
   { label: "Layanan", href: "/layanan", icon: "nav-services.svg" },
-  { label: "Paket Khitan", href: "/paket", icon: "nav-services.svg" },
   { label: "Galeri", href: "/galeri", icon: "nav-gallery.svg" },
   { label: "Kontak", href: "/kontak", icon: "nav-contact.svg" },
 ];
@@ -29,7 +28,7 @@ export function Header() {
   const pathname = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLElement>(null);
-  const swipe = useRef<{ x: number; y: number } | null>(null);
+
 
   useEffect(() => {
     const close = () => setOpen(false);
@@ -73,35 +72,28 @@ export function Header() {
     };
   }, [open]);
 
-  return <header className="site-header relative z-40 bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)] lg:sticky lg:top-0 lg:border-b lg:border-line/70 lg:bg-white/95 lg:shadow-none lg:backdrop-blur-xl">
+  return <header className="site-header sticky top-0 z-[60] bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)] lg:border-b lg:border-line/70 lg:bg-white/95 lg:shadow-none lg:backdrop-blur-xl">
     <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-[17px] lg:h-20 lg:px-6">
-      <Link href="/" aria-label="SAGARA — Beranda" className="flex items-center gap-[7px]">
+      <Link href="/" aria-label="SAGARA RUMAH SUNAT MODERN — Beranda" className="flex items-center gap-[7px]">
         <span className="relative block h-8 w-10 overflow-hidden"><Image src="/images/figma/sagara-header-logo.png" alt="" width={40} height={40} className="absolute top-[0.5px] h-auto w-10" loading="eager" /></span>
         <span><span className="block text-[15px] leading-[25px] font-extrabold tracking-[-0.5px] text-navy">SAGARA</span><span className="block text-[8px] leading-4 font-bold tracking-[0.55px] text-[#db322f]">RUMAH SUNAT MODERN</span></span>
       </Link>
       <nav aria-label="Navigasi utama" className="hidden items-center gap-1 rounded-2xl border border-line/70 bg-soft/70 p-1.5 text-sm font-bold text-primary lg:flex">{links.map(link => {
-        const active = pathname === link.href;
+        const active = pathname === link.href || (pathname === "/paket" && link.href === "/layanan");
         const classes = `desktop-nav-item flex min-h-11 items-center gap-2 rounded-xl px-3 ${active ? "bg-white text-navy shadow-sm" : "text-muted"}`;
         const content = <><Image src={`/images/figma/${link.icon}`} alt="" width={18} height={link.icon === "nav-home.svg" ? 19 : link.icon === "nav-contact.svg" ? 17 : 18} style={{ height: "auto" }} /><span>{link.label}</span></>;
-        return link.href ? <Link key={link.label} href={link.href} aria-current={active ? "page" : undefined} className={classes}>{content}</Link> : <span key={link.label} aria-disabled="true" title="Segera hadir" className={`${classes} cursor-not-allowed opacity-55`}>{content}<span className="sr-only"> — segera hadir</span></span>;
+        return link.href ? <Link key={link.label} href={link.href} aria-current={active ? (pathname === link.href ? "page" : "true") : undefined} className={classes}>{content}</Link> : <span key={link.label} aria-disabled="true" title="Segera hadir" className={`${classes} cursor-not-allowed opacity-55`}>{content}<span className="sr-only"> — segera hadir</span></span>;
       })}</nav>
       <button ref={toggle} type="button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)} className={`flex size-11 items-center justify-center text-navy lg:hidden ${styles.toggle}`} data-open={open}><span aria-hidden="true" className={styles.lines}><span /><span /><span /></span></button>
     </div>
-    <nav ref={menu} id="mobile-menu" aria-label="Menu seluler" aria-hidden={!open} inert={!open} data-open={open} className={`${styles.menu} lg:hidden`} onTouchStart={event => { const touch = event.touches[0]; swipe.current = { x: touch.clientX, y: touch.clientY }; }} onTouchEnd={event => {
-        const start = swipe.current;
-        swipe.current = null;
-        if (!start) return;
-        const touch = event.changedTouches[0];
-        const dy = touch.clientY - start.y;
-        if (dy < -60 && Math.abs(dy) > Math.abs(touch.clientX - start.x) * 1.5 && (menu.current?.scrollTop ?? 0) === 0) closeMenu();
-      }} onTouchCancel={() => { swipe.current = null; }}>{mobileLinks.map((link, index) => <Link key={link.label} href={link.href} aria-current={pathname === link.href ? "page" : undefined} onClick={closeMenu} style={{ transitionDelay: open ? `${index * 20}ms` : "0ms" }}>{link.label}</Link>)}</nav>
+    <nav ref={menu} id="mobile-menu" aria-label="Menu seluler" aria-hidden={!open} inert={!open} data-open={open} className={`${styles.menu} lg:hidden`}>{mobileLinks.map((link, index) => <Link key={link.label} href={link.href} aria-current={pathname === link.href ? "page" : pathname === "/paket" && link.href === "/layanan" ? "true" : undefined} onClick={closeMenu} style={{ transitionDelay: open ? `${index * 20}ms` : "0ms" }}>{link.label}</Link>)}</nav>
   </header>;
 }
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  // Paket belongs to the Layanan catalog; its own link is in the menu and catalog tabs.
-  const items = links.filter(item => item.href !== "/paket");
+  // Paket belongs to the Layanan catalog and remains accessible through its tabs.
+  const items = links;
   const activeIndex = Math.max(0, items.findIndex(item => pathname === item.href || (pathname === "/paket" && item.href === "/layanan")));
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const previousIndex = useRef(activeIndex);
