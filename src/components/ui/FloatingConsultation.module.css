@@ -1,0 +1,16 @@
+.root { position: fixed; z-index: 45; right: max(16px, env(safe-area-inset-right)); bottom: calc(85px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
+.root[hidden] { display: none; }
+/* Collapse only the prompt when a tall footer leaves little usable viewport. */
+.root[data-compact="true"] .bubble { display: none; }
+.button { display: grid; place-items: center; width: 54px; height: 54px; flex-shrink: 0; border-radius: 50%; background: #002869; color: white; box-shadow: 0 4px 14px rgb(0 40 105 / 18%); pointer-events: auto; transition: transform 180ms ease, background-color 180ms ease; }
+.button:hover { background: #064a9b; transform: translateY(-2px); }
+.button:focus-visible, .close:focus-visible { outline: 3px solid #3982da; outline-offset: 4px; }
+.bubble { position: relative; display: flex; align-items: center; gap: 8px; width: min(320px, calc(100vw - 32px - env(safe-area-inset-right))); padding: 18px 32px 18px 10px; border: 1px solid #002869; border-radius: 20px; background: white; color: #002869; box-shadow: 0 4px 18px rgb(0 40 105 / 10%); pointer-events: auto; animation: appear 220ms ease-out both; }
+.mascot { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+.copy { min-width: 0; }
+.copy h2 { margin: 0 0 5px; font-size: 21px; font-weight: 800; line-height: 1.2; letter-spacing: -.5px; }
+.copy p { margin: 0; font-size: 12px; line-height: 1.6; }
+.close { position: absolute; top: 0; right: 0; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #002869; font-size: 23px; cursor: pointer; }
+@keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (min-width: 1024px) { .root { right: max(24px, env(safe-area-inset-right)); bottom: max(24px, env(safe-area-inset-bottom)); } .copy h2 { font-size: 24px; } }
+@media (prefers-reduced-motion: reduce) { .bubble { animation: none; } .button { transition: none; } .button:hover { transform: none; } }
