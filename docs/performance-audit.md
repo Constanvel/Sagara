@@ -228,4 +228,44 @@ Lint, typecheck and production build pass. The targeted production suite passes 
 
 Earlier development-mode runs were not release evidence: privacy date entry failed there while passing in production; a concurrent refactor also invalidated one live-development test run. Production was rebuilt and the targeted suite rerun after edits completed.
 
-Remaining candidates: narrow the registration page's `useSearchParams` Suspense boundary so its heading is server-rendered; profile floating-widget mutation filtering and form render costs; measure route-prefetch costs before changing its policy. Repeat mobile/desktop Lighthouse on the deployed build and collect consent-appropriate real-user Web Vitals before claiming field improvements.
+At the end of that phase, remaining candidates were the registration query boundary, floating-widget mutation filtering, form render profiling and route-prefetch measurement. The next section covers the first two; the latter two still require profiling before changing behavior.
+
+## Registration and observer follow-up — 2026-10-23
+
+### Changes, smallest to largest
+
+1. `cf60c4e`: reuse two module-scoped `Intl.DateTimeFormat` instances rather than constructing formatters on every validation/display call. `new Date()` remains evaluated per `jakartaToday()` call; the date itself is not cached. Tests cover repeated formatting, the WIB year boundary and leap-day display.
+2. `600f4e4`: the consultation observer filters mutation records before scanning the document for open overlays. Unrelated child/attribute mutations skip that global scan. Inserted/removed overlay ancestors and dialog/menu state attributes still refresh visibility. A browser regression counts zero overlay document scans for its unrelated-mutation batch and checks insertion/removal; existing menu/dialog tests pass.
+3. `dbb63ed`: a persistent registration shell owns the heading and step navigation. Only the query-dependent fields sit below `Suspense`. Lazy query initialization, aliases, entered data, separate consultation/sharing consents and WhatsApp handoff remain unchanged. Query history navigation does not reset the form. No server `searchParams`, dynamic-rendering opt-in or query-keyed remount was introduced.
+
+### Production evidence and scope
+
+Build `Ri5Ri3Lh1Jw--iKMRB0X5` includes `/pendaftaran` in `prerender-manifest.json`. Its generated HTML contains exactly one `<main>` and the real initial `<h1>` (`Atur waktu<br/>untuk langkah berani.`), not the old loading heading. The shell is a prerendered Client Component; the interactive fields still require JavaScript. The fallback retains the privacy link and JavaScript instruction without adding another main landmark or heading.
+
+Lint, typecheck and production build pass. The targeted registration/privacy/SEO production suite passes **33/33 tests**. Coverage includes no-JavaScript headings, invalid/empty/alias preselection, client history changes preserving inputs and consent, responsive Axe checks, heading focus on review/edit/return, and privacy request/storage safeguards. Five targeted widget tests also pass in development. The first full production run finished **309 passed / 1 failed**: the new overlay scan counter could start before the hydration effect's initial scan. `3e003b2` waits for the post-load bubble state before instrumentation; five repeated production runs of that test pass. This changes test synchronization, not widget behavior. The subsequent full production run, including search-trust changes, passes **312/312 tests in 9.2 minutes** without retries. Production dependency audit reports **0 vulnerabilities**.
+
+A separate read-only review found no concrete correctness regression. Additional coverage opportunities remain for same-path Next.js Link/router query navigation, simultaneous overlays, browser-clock rollover at WIB midnight and complete personal-data reset on reload. Existing no-JavaScript privacy coverage already asserts the registration privacy link.
+
+These are structural and regression results, not new Lighthouse scores, measured render-time savings, initial-JavaScript reductions or field Core Web Vitals improvements. Form render memoization, footer navigation changes and prefetch policy changes remain deferred pending profiling.
+
+## Scroll-reveal follow-up — 2026-10-23
+
+The old observer started a zero-opacity animation only after a visible element crossed 24px into the viewport. Global group indices also added up to 225ms delay, including cards unrelated to the current row. This can create a visible flash/re-hide and a delayed entrance; a static screenshot cannot establish actual dropped frames.
+
+- `3723b01`: offscreen-below candidates get a paused first frame before entry, then play at a 32px positive bottom margin. First-viewport/above-viewport content stays painted. Deep scroll jumps cancel the reveal and expose the underlying content immediately. No scroll event loop, blur, permanent `will-change`, dependency, media or layout change is introduced. New filter nodes register from added subtrees; removed/routed-out targets release their observer and animation references. Keyboard focus releases a containing animation.
+- `cbb7ded`: reveal travel drops from 24px to 12px and duration from 700ms to 500ms. Delay is zero rather than an index-based cascade. Navigation/FAQ timings are unchanged.
+- `98209c3`: unsupported media-query event listeners fail open before any opacity change. Regression coverage adds true instant scroll jumps, reinserted filter cards, desktop same-row zero delays, reduced-motion cancellation, missing/throwing APIs, keyboard focus and restored client navigation.
+
+Lint, typecheck and production build pass on the implementation. The expanded reveal/retention/gallery suite passes **23/23 tests**, including running-reveal cancellation, true instant jumps in both directions without reduced motion, detached-animation cancellation and route cleanup. `efbeef4` also masks images/videos in existing home/gallery audit captures so subsequent test screenshots do not retain patient media, and waits for image completion instead of asserting synchronously after visibility. A static review of `efbeef4` finds no concrete blockers. The first full reveal-phase run ends **321 passed / 1 failed**: the existing home-artwork test checked image completion synchronously after element visibility. The image-loading synchronization fix in `efbeef4` replaces that assertion with polling; no production image-loading behavior was changed. Full-suite results for this corrected source are recorded separately when available.
+
+### Local frame sample
+
+Runner: `C:/Users/IDEAPAD SLIM 3/AppData/Local/Temp/opencode/sagara-reveal-measure.cjs`; numeric evidence: `sagara-reveal-before.json` / `sagara-reveal-after.json` in the same directory. Fresh Chromium contexts, production server, 900px viewport height, widths 390/768/1440, 2.5s settle then 6s scripted scroll at 1.4 CSS px/ms. Browser animation-frame intervals, not compositor frame tracing; one sample per condition, unthrottled local hardware, server image cache retained. No screenshots, video, page payloads or patient-form data retained.
+
+| Width | Normal-motion p95 interval before / after | Intervals >34ms before / after |
+|---|---:|---:|
+| 390 | 16.8 / 16.7 ms | 0 / 0 |
+| 768 | 16.8 / 16.7 ms | 0 / 0 |
+| 1440 | 33.3 / 16.8 ms | 3 / 1 |
+
+No long tasks were recorded in either phase, and 31 main images were loaded at the end of each sample. Desktop reduced-motion control still varied (2 / 7 intervals >34ms), so the table is not proof of a repeatable FPS gain or image-decoding optimization. The direct improvement is eliminating late opacity resets, index delays and excessive travel. Real-device review remains necessary; no universal smoothness, Lighthouse or field Web Vitals claim is inferred. Repeat mobile/desktop Lighthouse on the deployed build and collect consent-appropriate real-user Web Vitals before claiming field improvements.
