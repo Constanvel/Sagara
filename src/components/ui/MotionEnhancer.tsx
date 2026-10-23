@@ -9,78 +9,100 @@ export function MotionEnhancer() {
   const pathname = usePathname();
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (preference.matches || !("IntersectionObserver" in window)) return;
-    const animations = new Set<Animation>();
-    const play = (element: Element, distance: number, duration: number, delay = 0) => {
-      const animation = element.animate([
-        { opacity: 0, translate: `0 ${distance}px` },
-        { opacity: 1, translate: "0 0" },
-      ], { duration, delay, easing: motion.ease, fill: "backwards" });
-      animations.add(animation);
-      const release = () => animations.delete(animation);
-      animation.onfinish = release;
-      animation.oncancel = release;
-    };
-    // Keep server-rendered first-viewport content painted during hydration;
-    // fading main restarts the LCP candidate after JavaScript loads.
-
+    if (preference.matches || !("IntersectionObserver" in window) || typeof Element.prototype.animate !== "function") return;
     const selector = "main article, main [data-reveal], main h2, [data-faq-item], .contact-card";
-    // Select the outermost candidate, never animate a container and its children.
-    const candidates = Array.from(document.querySelectorAll(selector)).filter(element => !element.parentElement?.closest(selector));
-    const counts = new Map<Element, number>();
-    const order = new Map<Element, number>();
-    for (const element of candidates) {
-      const group = element.closest("[data-reveal-group]") ?? element.parentElement;
-      if (!group) continue;
-      const index = counts.get(group) ?? 0;
-      order.set(element, index);
-      counts.set(group, index + 1);
-    }
-    counts.clear();
+    const seen = new WeakSet<Element>();
+    const pending = new Map<Element, Animation>();
+    const animations = new Map<Element, Animation>();
+    const release = (element: Element) => {
+      observer.unobserve(element);
+      pending.delete(element);
+      const animation = animations.get(element);
+      animations.delete(element);
+      animation?.cancel();
+    };
     const observer = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
+        const animation = pending.get(entry.target);
+        if (!animation) continue;
         observer.unobserve(entry.target);
-        const index = order.get(entry.target) ?? 0;
-        order.delete(entry.target);
-        if (!preference.matches) play(entry.target, 24, motion.reveal, Math.min(index, 3) * motion.stagger);
+        pending.delete(entry.target);
+        // A scroll jump/history restore must not hide content already well inside
+        // the viewport. The entry bounds include the initial animated translate.
+        if (preference.matches || entry.boundingClientRect.top - motion.revealDistance < window.innerHeight - 120) {
+          release(entry.target);
+        } else {
+          animation.play();
+        }
       }
-    }, { threshold: 0, rootMargin: "0px 0px -24px 0px" });
-    // Filters remove cards without changing pathname. Release detached targets
-    // instead of retaining their DOM through the observer and stagger maps.
+    }, { threshold: 0, rootMargin: "0px 0px 32px 0px" });
+
+    const register = (elements: Element[]) => {
+      // Read layout before writing animation state, and never animate nested targets.
+      const candidates = [...new Set(elements)].filter(element => element.isConnected && !seen.has(element) && !element.parentElement?.closest(selector));
+      const positions = candidates.map(element => ({ element, bounds: element.getBoundingClientRect() }));
+      for (const { element, bounds } of positions) {
+        seen.add(element);
+        // Preserve first paint, restored scroll positions and content above the viewport.
+        if (bounds.top < window.innerHeight || preference.matches) continue;
+        try {
+          const animation = element.animate([
+            { opacity: 0, translate: `0 ${motion.revealDistance}px` },
+            { opacity: 1, translate: "0 0" },
+          ], { duration: motion.reveal, easing: motion.ease, fill: "backwards" });
+          animation.pause();
+          animation.currentTime = 0;
+          pending.set(element, animation);
+          animations.set(element, animation);
+          animation.onfinish = () => release(element);
+          animation.oncancel = () => {
+            if (animations.get(element) !== animation) return;
+            observer.unobserve(element);
+            pending.delete(element);
+            animations.delete(element);
+          };
+          observer.observe(element);
+        } catch {
+          // A failed enhancement must not leave the underlying content hidden.
+          release(element);
+        }
+      }
+    };
     const mutations = new MutationObserver(records => {
-      if (!records.some(record => record.removedNodes.length > 0)) return;
-      for (const element of order.keys()) {
-        if (element.isConnected) continue;
-        observer.unobserve(element);
-        order.delete(element);
+      if (records.some(record => record.removedNodes.length > 0)) {
+        for (const element of animations.keys()) if (!element.isConnected) release(element);
       }
+      const added: Element[] = [];
+      for (const record of records) for (const node of record.addedNodes) {
+        if (!(node instanceof Element)) continue;
+        if (node.matches(selector)) added.push(node);
+        added.push(...node.querySelectorAll(selector));
+      }
+      register(added);
     });
     const main = document.querySelector("main");
     if (main) mutations.observe(main, { childList: true, subtree: true });
-    // Snapshot the initial viewport instead of discarding entries by timestamp.
-    // Initial content stays painted; only offscreen sections receive reveals.
-    for (const element of candidates) {
-      const bounds = element.getBoundingClientRect();
-      if (bounds.top >= window.innerHeight || bounds.bottom <= 0) observer.observe(element);
-      else order.delete(element);
-    }
+    register(Array.from(document.querySelectorAll(selector)));
+    // Keyboard focus must never land on content hidden by a pending reveal.
+    const focus = (event: FocusEvent) => {
+      if (!(event.target instanceof Element)) return;
+      for (const element of animations.keys()) if (element.contains(event.target)) release(element);
+    };
     const stop = () => {
       if (!preference.matches) return;
       observer.disconnect();
       mutations.disconnect();
-      order.clear();
-      animations.forEach(animation => animation.cancel());
-      animations.clear();
+      for (const element of animations.keys()) release(element);
     };
+    document.addEventListener("focusin", focus);
     preference.addEventListener("change", stop);
     return () => {
       observer.disconnect();
       mutations.disconnect();
-      order.clear();
       preference.removeEventListener("change", stop);
-      animations.forEach(animation => animation.cancel());
-      animations.clear();
+      document.removeEventListener("focusin", focus);
+      for (const element of animations.keys()) release(element);
     };
   }, [pathname]);
   return null;

@@ -2,7 +2,7 @@
 export const motion = {
   page: 300,
   reveal: 700,
-  stagger: 75,
+  revealDistance: 24,
   icon: 220,
   press: 120,
   indicator: 340,
