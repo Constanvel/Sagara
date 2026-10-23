@@ -71,6 +71,7 @@ test("the contact map does not send a referrer", async ({ page }) => {
     await route.fulfill({ contentType: "text/html", body: "Map test fixture" });
   });
   await page.goto("/kontak?source=privacy-regression");
+  await page.getByRole("button", { name: "Muat peta interaktif Google Maps" }).click();
   const map = page.getByTitle("Peta lokasi SAGARA Rumah Sunat Modern Banteran");
   await expect(map).toHaveAttribute("referrerpolicy", "no-referrer");
   await map.scrollIntoViewIfNeeded();

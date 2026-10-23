@@ -1,4 +1,6 @@
+import Image from "next/image";
 import { Asset } from "@/components/ui/Asset";
+import { ContactMap } from "./ContactMap";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { contact } from "@/data/contact";
 import { whatsappUrl } from "@/lib/whatsapp";
@@ -54,14 +56,10 @@ export function ContactSection() {
             {contact.verified.profiles?.length ? <ul className="mt-3 space-y-2 text-sm text-primary">{contact.verified.profiles.map(profile => <li key={profile}><a href={profile} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-4">{profile}<span className="sr-only"> (profil resmi, tab baru)</span></a></li>)}</ul> : null}
           </div>
           <div className="mt-[17px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 p-[10px]">
-            <iframe
-              title="Peta lokasi SAGARA Rumah Sunat Modern Banteran"
-              src={contact.mapsEmbedUrl}
-              loading="lazy"
-              referrerPolicy="no-referrer"
-              className="h-[220px] w-full rounded-[20px] border-0"
-              allowFullScreen
-            />
+            <ContactMap src={contact.mapsEmbedUrl}>
+              <Image src="/images/media/sagara-banteran-map-preview.webp" alt="Preview peta lokasi SAGARA di Banteran" fill loading="eager" fetchPriority="high" sizes="(min-width: 1100px) 455px, (min-width: 1024px) calc((100vw - 190px) / 2), (min-width: 390px) 295px, calc(100vw - 95px)" className="object-cover object-[center_30%]" />
+            </ContactMap>
+            <p className="mt-2 text-xs leading-5 text-muted">Peta interaktif terhubung ke Google hanya setelah Anda menekan tombol. Anda juga dapat memakai tautan Petunjuk Arah di bawah.</p>
           </div>
           <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" aria-describedby="location-verification" className="mt-3 flex h-[52px] w-full items-center justify-center gap-[7px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 text-base font-medium text-primary hover:bg-[#3982da]/20">
             Petunjuk Arah

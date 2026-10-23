@@ -55,6 +55,7 @@ test("consultation links use verified number and distinct messages", async ({ pa
   await expect(directions).toHaveAttribute("href", "https://maps.app.goo.gl/e89cFM6roqapjt3dA");
   await expect(directions).toHaveAttribute("target", "_blank");
   await expect(directions).toHaveAttribute("rel", "noopener noreferrer");
+  await page.getByRole("button", { name: "Muat peta interaktif Google Maps" }).click();
   await expect(page.getByTitle("Peta lokasi SAGARA Rumah Sunat Modern Banteran")).toHaveAttribute(
     "src",
     "https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s-7.362495,109.2655145!6i16",

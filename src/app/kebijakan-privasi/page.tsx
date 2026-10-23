@@ -48,7 +48,7 @@ export default function KebijakanPrivasiPage() {
 
           <section className={section} aria-labelledby="third-party-map">
             <h2 id="third-party-map" className={heading}>Peta dan layanan pihak ketiga</h2>
-            <p>Halaman kontak memuat peta Google Maps melalui iframe pihak ketiga. Saat peta dimuat, browser menghubungi Google sehingga Google dapat menerima data teknis koneksi dan memprosesnya menurut kebijakannya sendiri. Tautan petunjuk arah juga membuka layanan Google Maps. Pemrosesan oleh Google dan WhatsApp tidak diatur oleh penyimpanan formulir situs ini.</p>
+            <p>Halaman kontak menampilkan preview peta lokal. Peta interaktif Google Maps melalui iframe pihak ketiga baru dimuat setelah Anda menekan tombol muat peta. Saat peta interaktif dimuat, browser menghubungi Google sehingga Google dapat menerima data teknis koneksi dan memprosesnya menurut kebijakannya sendiri. Tautan petunjuk arah juga membuka layanan Google Maps. Pemrosesan oleh Google dan WhatsApp tidak diatur oleh penyimpanan formulir situs ini.</p>
           </section>
 
           <section className={section} aria-labelledby="public-media">
