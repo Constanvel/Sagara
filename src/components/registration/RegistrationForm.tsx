@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type FormEvent } from "react";
+import { Suspense, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { Asset } from "@/components/ui/Asset";
 import { packages, packageCaveat, packagePriceLabel } from "@/data/packages";
@@ -15,6 +15,28 @@ const registrationServices = services.filter((item, index, all) => all.findIndex
 const initial: RegistrationData = { service: "anak-anak", package: "", date: "", time: "", guardian: "", patient: "", age: "", whatsapp: "", consent: false };
 
 export function RegistrationForm() {
+  const [step, setStep] = useState(1);
+  const title = useRef<HTMLHeadingElement>(null);
+  function moveTo(next: number) {
+    setStep(next);
+    requestAnimationFrame(() => { title.current?.focus({ preventScroll: true }); title.current?.scrollIntoView({ block: "start", behavior: "instant" }); });
+  }
+
+  return <main id="main-content" className={styles.main}>
+    <div className={styles.container}>
+      <div className={styles.topline}><span className={styles.eyebrow}>PENDAFTARAN</span><Link href="/" className={styles.home}>Kembali Beranda <Asset name="registration/arrow.svg" width={14} height={14} /></Link></div>
+      <header className={styles.intro}>
+        <h1 ref={title} tabIndex={-1}>{step === 1 ? <>Atur waktu<br />untuk langkah berani.</> : step === 2 ? "Tinjau pendaftaran Anda." : "Lanjutkan bersama admin."}</h1>
+        <p>{step === 1 ? "Pilih jadwal yang diinginkan. Ketersediaan akhir dikonfirmasi oleh admin." : step === 2 ? "Periksa kembali pilihan dan data sebelum membuka WhatsApp admin." : "Lanjutkan pengiriman di WhatsApp. Permintaan belum otomatis terkirim dan jadwal belum dikonfirmasi."}</p>
+      </header>
+      <Suspense fallback={<p className="mt-4 text-sm">Baca <Link href="/kebijakan-privasi" className="text-primary underline underline-offset-4">Kebijakan Privasi</Link> sebelum membagikan data. Aktifkan JavaScript untuk menggunakan formulir.</p>}>
+        <RegistrationFields step={step} moveTo={moveTo} />
+      </Suspense>
+    </div>
+  </main>;
+}
+
+function RegistrationFields({ step, moveTo }: { step: number; moveTo: (next: number) => void }) {
   const params = useSearchParams();
   const [data, setData] = useState(() => {
     const requestedService = params.get("layanan");
@@ -26,10 +48,8 @@ export function RegistrationForm() {
     };
   });
   const [errors, setErrors] = useState<RegistrationErrors>({});
-  const [step, setStep] = useState(1);
   const [shareConsent, setShareConsent] = useState(false);
   const [today, setToday] = useState(() => jakartaToday());
-  const title = useRef<HTMLHeadingElement>(null);
   const form = useRef<HTMLFormElement>(null);
   const service = registrationServices.find(item => item.id === data.service);
   const selectedPackage = packages.find(item => item.id === data.package);
@@ -38,10 +58,6 @@ export function RegistrationForm() {
     setShareConsent(false);
     setData(previous => ({ ...previous, [key]: value }));
     setErrors(previous => ({ ...previous, [key]: undefined }));
-  }
-  function moveTo(next: number) {
-    setStep(next);
-    requestAnimationFrame(() => { title.current?.focus({ preventScroll: true }); title.current?.scrollIntoView({ block: "start", behavior: "instant" }); });
   }
   function review(event: FormEvent) {
     event.preventDefault();
@@ -78,13 +94,7 @@ export function RegistrationForm() {
     { key: "whatsapp", label: "Nomor WhatsApp", placeholder: "08XXXXXXXXX", type: "tel", autoComplete: "tel" },
   ] as const;
 
-  return <main id="main-content" className={styles.main}>
-    <div className={styles.container}>
-      <div className={styles.topline}><span className={styles.eyebrow}>PENDAFTARAN</span><Link href="/" className={styles.home}>Kembali Beranda <Asset name="registration/arrow.svg" width={14} height={14} /></Link></div>
-      <header className={styles.intro}>
-        <h1 ref={title} tabIndex={-1}>{step === 1 ? <>Atur waktu<br />untuk langkah berani.</> : step === 2 ? "Tinjau pendaftaran Anda." : "Lanjutkan bersama admin."}</h1>
-        <p>{step === 1 ? "Pilih jadwal yang diinginkan. Ketersediaan akhir dikonfirmasi oleh admin." : step === 2 ? "Periksa kembali pilihan dan data sebelum membuka WhatsApp admin." : "Lanjutkan pengiriman di WhatsApp. Permintaan belum otomatis terkirim dan jadwal belum dikonfirmasi."}</p>
-      </header>
+  return <>
       <ol className={styles.stepper} aria-label="Tahap pendaftaran">{["Jadwal & data", "Tinjau", "Lanjut ke WhatsApp"].map((label, index) => <li key={label} data-state={step === index + 1 ? "active" : step > index + 1 ? "completed" : "upcoming"} aria-current={step === index + 1 ? "step" : undefined}><span className={styles.stepNumber}>{step > index + 1 ? "✓" : index + 1}</span><span>{label}</span></li>)}</ol>
       {step === 1 && <form ref={form} noValidate onSubmit={review} className={styles.form}>
         <div className={styles.field}><label htmlFor="service">Layanan</label><div className={styles.selectWrap}><select id="service" name="service" value={data.service} onChange={event => update("service", event.target.value)} {...attrs("service")}>{registrationServices.map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select><Asset name="registration/chevron.svg" width={24} height={24} /></div>{error("service")}</div>
@@ -108,6 +118,5 @@ export function RegistrationForm() {
       </form>}
       {step === 2 && <section className={styles.review} aria-label="Ringkasan pendaftaran"><h2>Ringkasan pilihan & data</h2><dl>{[["Layanan", service?.title], ["Paket", selectedPackage?.name], ["Biaya", packagePriceLabel], ["Preferensi tanggal", formatDate(data.date)], ["Preferensi waktu", `${data.time} WIB`], ["Orang tua / wali", data.guardian], ["Pasien", data.patient], ["Usia", `${data.age} tahun`], ["WhatsApp", data.whatsapp]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><div className={styles.notice}><h3>Belum dikirim ke klinik</h3><p>Seluruh data di atas, termasuk identitas pasien anak, akan diteruskan ke admin SAGARA melalui WhatsApp setelah Anda menyetujui. Pesan pra-isi berada di parameter tautan WhatsApp. Anda tetap perlu menekan Kirim di WhatsApp. Jadwal dan biaya baru berlaku setelah dikonfirmasi admin.</p></div><details><summary>Tinjau pesan WhatsApp lengkap</summary><pre className={styles.message}>{message}</pre></details><div className={styles.consent}><label><input type="checkbox" checked={shareConsent} onChange={event => setShareConsent(event.target.checked)} /><span>Saya menyetujui pembagian seluruh data pendaftaran di atas, termasuk nama dan usia pasien anak serta nomor WhatsApp wali, kepada admin SAGARA melalui WhatsApp.</span></label></div><div className={styles.actions}><button type="button" className={styles.secondary} onClick={() => { setShareConsent(false); moveTo(1); }}>Kembali & perbaiki</button>{href ? <a className={styles.primary} href={href} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" onClick={openWhatsApp}>Kirim Pendaftaran via WhatsApp <span aria-hidden="true">↗</span></a> : shareConsent ? <p role="alert">WhatsApp admin belum dikonfigurasi. Permintaan belum dikirim.</p> : <button type="button" className={styles.primary} disabled>Kirim Pendaftaran via WhatsApp</button>}</div></section>}
       {step === 3 && <section className={styles.review} aria-label="Langkah berikutnya"><span className={styles.status}>Menunggu tindakan & konfirmasi admin</span><h2>Silakan kirim pesan di WhatsApp.</h2><p>Jika WhatsApp tidak terbuka, gunakan tombol di bawah. Tidak ada pendaftaran yang dikirim otomatis. Admin akan mengonfirmasi ketersediaan jadwal, rincian biaya, dan langkah berikutnya.</p><div className={styles.actions}>{href && <a href={href} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" className={styles.secondary} onClick={openWhatsApp}>Buka WhatsApp kembali ↗</a>}<Link href="/" className={styles.primary}>Kembali ke Beranda</Link></div><button type="button" className={styles.textButton} onClick={() => moveTo(2)}>Lihat ringkasan kembali</button></section>}
-    </div>
-  </main>;
+  </>;
 }

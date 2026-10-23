@@ -10,6 +10,7 @@ const expectedHeadings: Record<string, string> = {
   "/layanan": "Layanan Khitan SAGARA",
   "/paket": "Pilihan Paket Khitan SAGARA",
   "/kontak": "Lokasi dan Kontak SAGARA",
+  "/pendaftaran": "Atur waktu untuk langkah berani.",
 };
 
 function expectVerifiedJsonLd(value: unknown): void {
@@ -136,6 +137,7 @@ test("all public routes expose unique metadata and headings without JavaScript",
       expect(content).not.toMatch(/\bnoindex\b/i);
     }
     await expect(page.locator("html")).toHaveAttribute("lang", "id");
+    await expect(page.locator("main")).toHaveCount(1);
     await expect(page.locator("h1")).toHaveCount(1);
     const heading = (await page.locator("h1").innerText()).replace(/\s+/g, " ").trim();
     expect(heading).not.toBe("");
