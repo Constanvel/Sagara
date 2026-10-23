@@ -123,6 +123,9 @@ test("all public routes expose unique metadata and headings without JavaScript",
     const response = await page.goto(`${baseURL}${path}`);
     expect(response?.status()).toBe(200);
     expect(response?.headers()["x-robots-tag"] ?? "").not.toMatch(/\bnoindex\b/i);
+    const verification = page.locator('head meta[name="google-site-verification"]');
+    await expect(verification).toHaveCount(1);
+    await expect(verification).toHaveAttribute("content", "BOHRfi9lMWki_GDKThknjkVUWErLg7SGAVYDshfmi-U");
     const canonical = new URL(path, origin).href;
     expect(new URL((await page.locator('link[rel="canonical"]').getAttribute("href"))!).href).toBe(canonical);
     expect(new URL((await page.locator('meta[property="og:url"]').getAttribute("content"))!).href).toBe(canonical);
