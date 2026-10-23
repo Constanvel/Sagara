@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { contact } from "../src/data/contact";
+import { faqs } from "../src/data/home";
 import { contactPageJsonLd, organizationJsonLd } from "../src/lib/seo";
 
 test("contact schema connects the published organization and WhatsApp contact without invented facts", () => {
@@ -32,6 +33,14 @@ test("published contact facts and schema are readable without JavaScript", async
     await page.goto(`${baseURL}/`);
     await expect(page.locator("footer")).toContainText(contact.whatsappLabel);
     await expect(page.locator("footer").getByRole("link", { name: /WhatsApp 0878/ })).toBeVisible();
+    await expect(page.locator("[data-faq-interactive]")).toBeHidden();
+    for (const faq of faqs) await expect(page.getByText(faq.answer, { exact: true }).filter({ visible: true })).toBeVisible();
+    await page.goto(`${baseURL}/layanan`);
+    await expect(page.getByRole("heading", { name: "Panduan konsultasi dan pendaftaran khitan" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Pertanyaan sebelum menentukan pilihan" })).toBeVisible();
+    await expect(page.locator("main")).toContainText("Membuka tautan tidak otomatis mengirim pesan.");
+    await expect(page.locator("main")).toContainText("bukan petunjuk tindakan atau perawatan medis");
+    await expect(page.getByRole("navigation", { name: "Tautan panduan konsultasi" }).getByRole("link", { name: "Buka formulir pendaftaran" })).toHaveAttribute("href", "/pendaftaran");
   } finally {
     await context.close();
   }

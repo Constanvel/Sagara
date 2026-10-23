@@ -7,7 +7,8 @@ export function FAQAccordion() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <div className="flex w-full flex-col gap-3">
+    <>
+    <div data-faq-interactive className="flex w-full flex-col gap-3">
       {faqs.map((faq, index) => (
         <div key={faq.question} data-faq-item className="rounded-xl border border-line bg-white p-5">
           <h3>
@@ -29,5 +30,12 @@ export function FAQAccordion() {
         </div>
       ))}
     </div>
+    <noscript>
+      <style>{'[data-faq-interactive] { display: none !important; }'}</style>
+      <div className="flex w-full flex-col gap-3">
+        {faqs.map(faq => <section key={faq.question} className="rounded-xl border border-line bg-white p-5"><h3 className="text-sm leading-[1.5] font-extrabold text-ink">{faq.question}</h3><p className="pt-3 text-[13px] leading-[1.65] text-muted">{faq.answer}</p></section>)}
+      </div>
+    </noscript>
+    </>
   );
 }

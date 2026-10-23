@@ -29,7 +29,7 @@ export function MethodsSection() {
       <div className={container}>
         <div className="section-intro max-w-[720px] lg:grid lg:max-w-none lg:grid-cols-[1.1fr_1fr] lg:items-end lg:gap-x-14">
           <p className="text-xs leading-5 font-bold tracking-[0.75px] text-[#db322f] uppercase lg:col-span-2">Pilihan Prosedur Modern</p>
-          <h2 id="methods-title" className="mt-[10px] text-2xl leading-[25px] font-extrabold tracking-[-0.54px] text-navy lg:mt-3 lg:max-w-[540px] lg:text-[36px] lg:leading-[1.15] lg:tracking-[-0.035em]">Metode Khitan Unggulan Sagara Banteran</h2>
+          <h2 id="methods-title" className="mt-[10px] text-2xl leading-[25px] font-extrabold tracking-[-0.54px] text-navy lg:mt-3 lg:max-w-[540px] lg:text-[36px] lg:leading-[1.15] lg:tracking-[-0.035em]">Pilihan Metode Khitan di Sagara Banteran</h2>
           <p className="mt-5 text-xs leading-[15px] text-muted lg:mt-0 lg:max-w-[460px] lg:pb-1 lg:text-[15px] lg:leading-6">Kenali pilihan metode khitan modern di SAGARA. Kesesuaian metode, manfaat, risiko, dan perawatan perlu dibahas bersama tenaga medis berdasarkan kondisi pasien.</p>
         </div>
         <div className="feature-grid mx-[2px] mt-10 grid gap-y-16 md:mx-0 md:grid-cols-3 md:gap-6 lg:mt-8 lg:gap-5">
