@@ -14,9 +14,17 @@ test("gallery filtering releases detached intersection targets", async ({ page }
     };
   });
   await page.goto("/galeri");
-  await page.waitForTimeout(500);
+  await expect(page.getByRole("region", { name: "Konsultasi SAGARA", exact: true })).toBeVisible({ timeout: 7000 });
+  await page.evaluate(() => {
+    const cards = [...document.querySelectorAll("main article")];
+    Object.assign(window, { __removedRevealCards: cards, __oldRevealAnimations: cards.flatMap(card => card.getAnimations()) });
+  });
   await page.getByRole("button", { name: "Video", exact: true }).click();
   await expect.poll(() => page.evaluate(() => [...(window as unknown as { __observed: Set<Element> }).__observed].filter(element => !element.isConnected).length)).toBe(0);
+  await expect.poll(() => page.evaluate(() => {
+    const cards = Reflect.get(window, "__removedRevealCards") as Element[];
+    return cards.filter(card => !card.isConnected).every(card => card.getAnimations().length === 0);
+  })).toBe(true);
   // Completed reveals also stop retaining targets after scrolling through the page.
   for (let index = 0; index < 6; index++) {
     await page.evaluate(() => window.scrollBy(0, innerHeight));
@@ -24,4 +32,14 @@ test("gallery filtering releases detached intersection targets", async ({ page }
   }
   await expect.poll(() => page.evaluate(() => [...(window as unknown as { __observed: Set<Element> }).__observed].filter(element => !element.isConnected).length)).toBe(0);
   await expect.poll(() => page.evaluate(() => [...(window as unknown as { __observed: Set<Element> }).__observed].filter(element => element.closest("main")).length)).toBe(0);
+  await page.locator('footer a[href="/kebijakan-privasi"]').click();
+  await expect(page).toHaveURL(/kebijakan-privasi$/);
+  await expect.poll(() => page.evaluate(() => {
+    const animations = Reflect.get(window, "__oldRevealAnimations") as Animation[];
+    return animations.every(animation => animation.playState === "idle");
+  })).toBe(true);
+  await page.evaluate(() => {
+    Reflect.deleteProperty(window, "__removedRevealCards");
+    Reflect.deleteProperty(window, "__oldRevealAnimations");
+  });
 });

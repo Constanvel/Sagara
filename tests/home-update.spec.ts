@@ -16,7 +16,7 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
     for (const name of ["sagara-hero-mascot.webp", "sagara-hero-mascot-outline.webp", "about-chat.svg"]) {
       const image = page.locator(`img[src*="${name}"]`);
       await expect(image).toBeVisible();
-      expect(await image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
     }
     const geometry = await page.locator("#hero-title").evaluate(element => {
       const box = element.getBoundingClientRect();
@@ -28,9 +28,9 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
     expect(Math.abs(media!.width / media!.height - 366 / 216)).toBeLessThan(.01);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await about.scrollIntoViewIfNeeded();
-    await page.screenshot({ path: `test-results/about-updated-${width}.png` });
+    await page.screenshot({ path: `test-results/about-updated-${width}.png`, mask: [page.locator("img, video")] });
     await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: `test-results/home-updated-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `test-results/home-updated-${width}.png`, fullPage: true, mask: [page.locator("img, video")] });
     expect(errors).toEqual([]);
   });
 }

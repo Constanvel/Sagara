@@ -12,7 +12,7 @@ for (const width of [320, 375, 390, 412, 768, 1440]) {
     await carousel.getByRole("button", { name: "Tampilkan foto 2", exact: true }).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.screenshot({ path: `test-results/carousel-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `test-results/carousel-${width}.png`, fullPage: true, mask: [page.locator("img, video")] });
   });
 }
 
@@ -25,7 +25,7 @@ test("mobile menu links, anchors, focus, history and vertical scroll gesture",  
   await expect(menu.getByRole("link")).toHaveText(["Beranda", "Tentang Sagara", "Layanan & Paket", "Galeri", "FAQ", "Lokasi & Kontak"]);
   await expect(menu.getByRole("link").first()).toBeFocused();
   await page.waitForTimeout(450);
-  await page.screenshot({ path: "test-results/menu-open-390.png" });
+  await page.screenshot({ path: "test-results/menu-open-390.png", mask: [page.locator("img, video")] });
   await page.keyboard.press("Shift+Tab");
   await expect(toggle).toBeFocused();
   await page.keyboard.press("Shift+Tab");

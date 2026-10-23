@@ -105,7 +105,7 @@ for (const width of widths) {
       }));
       const overflow = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth, body: document.body.scrollWidth }));
       const artifactName = `audit-${route === "/" ? "home" : route.slice(1)}-${width}`;
-      await page.screenshot({ path: path.join(auditDirectory, `${artifactName}.png`), fullPage: true, animations: "disabled" });
+      await page.screenshot({ path: path.join(auditDirectory, `${artifactName}.png`), fullPage: true, animations: "disabled", mask: [page.locator("img, video")] });
       const details = JSON.stringify({ route, width, overflow, media, ...errors }, null, 2);
       await writeFile(path.join(auditDirectory, `${artifactName}.json`), details);
       await testInfo.attach("audit-details", { body: details, contentType: "application/json" });
@@ -153,7 +153,7 @@ for (const width of widths) {
     const startTime = await video.evaluate((element: HTMLVideoElement) => element.currentTime);
     await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 30_000 }).toBeGreaterThan(startTime + 0.5);
     await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.videoWidth)).toBeGreaterThan(0);
-    await page.screenshot({ path: path.join(auditDirectory, `audit-about-playing-${width}.png`), animations: "disabled" });
+    await page.screenshot({ path: path.join(auditDirectory, `audit-about-playing-${width}.png`), animations: "disabled", mask: [page.locator("img, video")] });
     const playbackDetails = JSON.stringify({ sources, captions, playback: await video.evaluate((element: HTMLVideoElement) => ({ src: element.currentSrc, duration: element.duration, currentTime: element.currentTime, videoWidth: element.videoWidth, videoHeight: element.videoHeight, paused: element.paused })), ...errors }, null, 2);
     await writeFile(path.join(auditDirectory, `audit-about-playing-${width}.json`), playbackDetails);
     await testInfo.attach("playback-details", { body: playbackDetails, contentType: "application/json" });

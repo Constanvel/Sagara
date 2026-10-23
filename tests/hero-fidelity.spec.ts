@@ -48,7 +48,7 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
     } else await expect(ribbon).not.toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: `test-results/hero-corrected-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `test-results/hero-corrected-${width}.png`, fullPage: true, mask: [page.locator("img, video")] });
     await buttons.nth(1).click();
     await expect(page).toHaveURL(/\/paket$/);
   });

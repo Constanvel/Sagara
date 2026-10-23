@@ -18,7 +18,7 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1280, 1440, 1920]) {
         await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
       }
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-      await page.screenshot({ path: `test-results/${route === "/" ? "home" : route.slice(1)}-${width}.png`, fullPage: true });
+      await page.screenshot({ path: `test-results/${route === "/" ? "home" : route.slice(1)}-${width}.png`, fullPage: true, mask: [page.locator("img, video")] });
     });
   }
 }

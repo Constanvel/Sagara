@@ -23,7 +23,7 @@ for (const width of [375, 390, 412, 768, 1024, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.screenshot({ path: `test-results/gallery-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `test-results/gallery-${width}.png`, fullPage: true, mask: [page.locator("img, video")] });
   });
 }
 
@@ -65,6 +65,18 @@ test("fast scrolling and live reduced motion leave all reveals visible", async (
   expect(await page.locator("main article").evaluateAll(elements => elements.every(el => getComputedStyle(el).opacity === "1"))).toBe(true);
   await page.goto("/galeri");
   await expect(page.getByRole("heading", { name: "Cerita para jagoan" })).toBeVisible();
+});
+
+test("instant scroll jumps in both directions expose viewport cards without reduced motion", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 500 });
+  await page.goto("/galeri");
+  await expect(page.getByRole("region", { name: "Konsultasi SAGARA", exact: true })).toBeVisible({ timeout: 7000 });
+  const cards = page.locator("main article[data-media-id]");
+  for (const index of [18, 6, 24, 3]) {
+    await cards.nth(index).evaluate(el => el.scrollIntoView({ block: "center", behavior: "instant" }));
+    await expect.poll(() => cards.nth(index).evaluate(el => getComputedStyle(el).opacity)).toBe("1");
+    expect(await cards.nth(index).evaluate(el => el.getAnimations().length)).toBe(0);
+  }
 });
 
 test("gallery remains visible without JavaScript", async ({ browser }) => {
