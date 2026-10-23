@@ -34,7 +34,9 @@ jobs:
           node-version: "24"
           package-manager-cache: false
       - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm ci --strict-peer-deps --no-audit --no-fund
+      - name: Validate dependency compatibility
+        run: npm ls --all
       - name: Lint
         run: npm run lint
       - name: Generate route types

@@ -6,6 +6,14 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      # Temporary toolchain holds; reassess by 2026-11-23 (docs/performance-audit.md).
+      # Revisit when the bundled import/React/accessibility plugins declare ESLint 10 support.
+      - dependency-name: eslint
+        versions: [">=10.0.0"]
+      # TypeScript 7 lacks the compiler API required by the current typescript-eslint setup.
+      - dependency-name: typescript
+        versions: [">=7.0.0"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
