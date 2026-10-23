@@ -55,7 +55,7 @@ export function ContactSection() {
               title="Peta lokasi SAGARA Rumah Sunat Modern Banteran"
               src={contact.mapsEmbedUrl}
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer"
               className="h-[220px] w-full rounded-[20px] border-0"
               allowFullScreen
             />
