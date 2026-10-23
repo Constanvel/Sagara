@@ -1,5 +1,23 @@
 # Technical SEO audit
 
+## Search-trust follow-up — 2026-10-23
+
+The earlier sections below are historical, not a description of the current deployment.
+
+A user-supplied Lightsite screenshot reports risk 53/100 and claims there are no contacts, minimal schema and no substantive articles. Direct text fetches of the deployed homepage and `/kontak` on this date both expose WhatsApp **0878 9977 7219**, Banteran/Sumbang, a Google Maps link and the privacy link. The no-contact assertion does not match that evidence. The audit's crawl time, raw responses and scoring method were not supplied; its score is not a Google ranking or Core Web Vitals metric.
+
+The owner chose to use existing data only. Changes are committed separately:
+
+- `2e08309`: add a factual `ContactPoint` to the existing Organization and emit an Organization/ContactPage graph on `/kontak`. The graph connects the canonical contact page to the same stable organization ID and published WhatsApp number. No medical-business classification, street address, hours, credentials, ratings, prices or profiles are invented.
+- `a3e7e7b`: expand `/layanan` with a server-rendered consultation/registration guide. It covers questions to ask, costs and confirmation, form steps, data sharing and the limits of site information. It is operational guidance, not medically reviewed treatment advice. It links to registration, contacts and privacy; no empty article route or fictional author/review date is created.
+- The same content commit makes existing FAQ answers readable without JavaScript using a no-script fallback, while retaining the tested interactive accordion. It also replaces the unsupported “Metode Khitan Unggulan” heading with “Pilihan Metode Khitan”. Previously requested exact carousel captions remain unchanged.
+
+Verification: production build, lint and typecheck pass. The schema/contact/technical-SEO suite passes **13/13 tests**; the content/FAQ/accessibility suite also passes **13/13 tests**. These include actual no-JavaScript contact and FAQ visibility, schema consistency, canonical routes, sitemap, keyboard interaction and automated accessibility. A separate read-only review found no blockers in graph linkage, current CSP compatibility for the no-script fallback or factual guide wording. Build `N_rDfwOJjPGsN5UJiM-qG` retains prerendering for all seven public routes. The subsequent complete production suite passes **312/312 tests in 9.2 minutes**, without retries. No new external schema-validator certification or improved third-party score is claimed.
+
+Still needed: owner-confirmed full address, operational hours, legal/practitioner identity and qualifications with permission to publish; qualified review and reliable references before publishing substantive medical articles. After deployment, rerun the same third-party crawl with its URL/date/CSV retained and check live HTML/Search Console. Schema volume alone cannot establish trust or guarantee ranking.
+
+---
+
 Audit date: 2026-10-21. Scope: five public routes, server-rendered metadata and headings, internal links, robots, sitemap, image collection JSON-LD, and factual organization data. No layout, navigation, or media-component changes. `src/data/media.ts` and its source-image report belong to the media audit agent.
 
 ## Method and evidence
