@@ -40,7 +40,16 @@ export function FloatingConsultation() {
     const update = () => {
       element.hidden = Boolean(document.querySelector('dialog[open], #mobile-menu[data-open="true"]'));
     };
-    const observer = new MutationObserver(update);
+    const containsOverlay = (node: Node) => node instanceof Element && (
+      node.matches('dialog[open], #mobile-menu[data-open="true"]') ||
+      Boolean(node.querySelector('dialog[open], #mobile-menu[data-open="true"]'))
+    );
+    const observer = new MutationObserver(records => {
+      const relevant = records.some(record => record.type === "attributes"
+        ? record.target instanceof Element && record.target.matches('dialog, #mobile-menu')
+        : [...record.addedNodes, ...record.removedNodes].some(containsOverlay));
+      if (relevant) update();
+    });
     observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open", "data-open"] });
     update();
     return () => observer.disconnect();

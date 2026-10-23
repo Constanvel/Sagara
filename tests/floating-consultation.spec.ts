@@ -140,6 +140,42 @@ test("blocked localStorage does not break rendering or dismissal", async ({ page
   expect(errors).toEqual([]);
 });
 
+test("unrelated mutations skip overlay scans while inserted and removed overlays update the widget", async ({ page }) => {
+  await page.goto("/");
+  await expect(root(page)).toBeVisible();
+  const scans = await page.evaluate(async () => {
+    const original = document.querySelector.bind(document);
+    let count = 0;
+    document.querySelector = ((selector: string) => {
+      if (selector === 'dialog[open], #mobile-menu[data-open="true"]') count++;
+      return original(selector);
+    }) as typeof document.querySelector;
+    try {
+      const unrelated = document.createElement("section");
+      unrelated.innerHTML = '<p>Unrelated content</p><span data-open="false">State</span>';
+      document.body.append(unrelated);
+      unrelated.lastElementChild!.setAttribute("data-open", "true");
+      unrelated.firstElementChild!.textContent = "Updated content";
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      unrelated.remove();
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      return count;
+    } finally {
+      document.querySelector = original;
+    }
+  });
+  expect(scans).toBe(0);
+  await page.evaluate(() => {
+    const wrapper = document.createElement("section");
+    wrapper.id = "test-overlay-wrapper";
+    wrapper.innerHTML = '<dialog open>Test dialog</dialog>';
+    document.body.append(wrapper);
+  });
+  await expect(root(page)).toBeHidden();
+  await page.evaluate(() => document.getElementById("test-overlay-wrapper")!.remove());
+  await expect(root(page)).toBeVisible();
+});
+
 test("mobile menu suppresses the entire widget and closing restores it", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("/");
