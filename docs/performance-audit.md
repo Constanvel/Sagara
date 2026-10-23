@@ -191,3 +191,41 @@ Final all-emitted client JS: 12 chunks, **644013 decoded bytes**, 199130 local g
 Ten final checks: **0 broken completed images**, **0 failed requests**. Initial viewport only, no full-scroll/video-activation certification. Field INP remains unavailable (CrUX 403, public PSI 429); no field claim is inferred from TBT. Remaining goals: parent functional suite for this final build, deployed-origin verification, credentialed field data/RUM, and further investigation of any remaining mobile LCP above 2500 ms.
 
 Final artifacts: C:/Users/IDEAPAD SLIM 3/AppData/Local/Temp/opencode/sagara-ultimate-final. Includes all 30 reports, exact summary.json, lcp-evidence.json, gallery-priority-evidence.json, browser-evidence.json, built-chunks.json, source-evidence.json, provenance.json. The copied runner's server-home-before.html filename contains the final-phase HTML within this directory.
+
+## Incremental performance follow-up — 2026-10-23
+
+This section is a separate measurement, not a replacement for the Lighthouse phases above.
+
+### Changes, smallest to largest
+
+1. `81a509d`: video-poster and footer-map `sizes` now follow their actual mobile, tablet and desktop slots, including borders. Regression coverage compares declared sizes with rendered widths.
+2. `a7b4e88`: reveal bookkeeping retains only pending targets. Completed/initially visible targets are released; addition-only DOM mutations skip detached-target sweeps. Existing stagger, first-viewport visibility, reduced-motion behavior and cleanup remain intact.
+3. `42a723a`: server-only Footer and DecorativeRibbon modules no longer import the home FAQ/carousel through the root layout. Contact-page initial HTML no longer lists the carousel implementation chunk. This changes chunk boundaries, not necessarily all resources fetched during prefetch.
+4. `252fb28`: the contact page renders the existing local map preview; Google Maps is mounted only after explicit keyboard or pointer activation. The directions link still works without JavaScript. Preview/player height stays 220px, and the iframe retains `no-referrer`. Privacy wording and existing tests now reflect activation.
+
+### Observed production network comparison
+
+Baseline: `a352d29`. After: `252fb28`, build `T25-7tr8byb-YoqzauJLB`. Both measured using `next build` / `next start`, Chromium through Playwright, a fresh browser context per route, 390×844 CSS pixels, DPR 2, no scroll/interaction, and a 1.2-second observation window after navigation. Browser cache is fresh; server/image-optimizer caches are retained. One run per route per phase; no throttling, timing medians, Lighthouse scores, field INP or Core Web Vitals claims. Automatic route prefetch remains enabled.
+
+CDP `Network.loadingFinished.encodedDataLength` is summed for Script resources, including iframe scripts. This is transferred data, not decoded source or heap memory. Resource counts include prefetch and can vary with scheduling or third-party responses.
+
+| Route | Script transfer before / after, bytes | Third-party requests before / after |
+|---|---:|---:|
+| `/` | 170635 / 174821 | 0 / 0 |
+| `/galeri` | 163930 / 168116 | 0 / 0 |
+| `/kontak` | 622081 / 168116 | 59 / 0 |
+| `/pendaftaran` | 170635 / 174821 | 1 / 1 |
+
+Contact-page observed script transfer falls **453965 bytes (73.0%)**. Total observed requests fall **102 to 43**. Map code is deferred, not removed: activation still downloads Google resources. The other routes gain **4186 transferred script bytes** in this window as chunking/prefetch changes; do not describe this work as a universal initial-JavaScript reduction. Main-frame decoded script totals increase by 14278 bytes in this observation window. They exclude cross-origin iframe bodies and must not be compared directly with the contact-page transferred-script total.
+
+Image sizing is verified against layout at representative widths; this initial-view mobile sample does not establish substantial image-byte savings. No images or videos were recompressed or removed.
+
+Local evidence, without screenshots or patient-form payloads: `C:/Users/IDEAPAD SLIM 3/AppData/Local/Temp/opencode/sagara-perf-before.json`, `sagara-perf-after.json`, and runner `sagara-perf-measure.cjs`.
+
+### Verification and remaining work
+
+Lint, typecheck and production build pass. The targeted production suite passes 47 tests, including map activation/no-JavaScript fallback, iframe referrer policy, privacy handoff, footer, hero, FAQ, reveal retention, navigation and security headers.
+
+Earlier development-mode runs were not release evidence: privacy date entry failed there while passing in production; a concurrent refactor also invalidated one live-development test run. Production was rebuilt and the targeted suite rerun after edits completed.
+
+Remaining candidates: narrow the registration page's `useSearchParams` Suspense boundary so its heading is server-rendered; profile floating-widget mutation filtering and form render costs; measure route-prefetch costs before changing its policy. Repeat mobile/desktop Lighthouse on the deployed build and collect consent-appropriate real-user Web Vitals before claiming field improvements.
