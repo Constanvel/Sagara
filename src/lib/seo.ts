@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { contact } from "@/data/contact";
 
 export const siteUrl = "https://sagara-vert.vercel.app";
-export const siteName = "SAGARA — Rumah Sunat Modern Banteran";
-export const sitePaths = ["/", "/layanan", "/paket", "/galeri", "/kontak", "/pendaftaran"] as const;
+export const siteName = contact.siteName;
+export const sitePaths = ["/", "/layanan", "/paket", "/galeri", "/kontak", "/pendaftaran", "/kebijakan-privasi"] as const;
 
 export function absoluteUrl(path: string): string {
   return new URL(path, siteUrl).href;
@@ -14,7 +14,7 @@ export const siteLogo = {
   url: absoluteUrl("/images/media/sagara-rumah-sunat-modern-banteran-logo.webp"),
   width: 340,
   height: 152,
-  alt: "SAGARA Rumah Sunat Modern Banteran",
+  alt: contact.businessName,
 };
 
 export function pageMetadata(title: string, description: string, path: string): Metadata {
@@ -45,12 +45,14 @@ export function serializeJsonLd(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
-// No unverified street address, opening hours, credentials, prices, or ratings.
+// Optional facts must be verified and visible, never inferred from the map pin.
+// Keep Organization: hours belong to a justified Place/LocalBusiness model, not this entity.
+// Verified hours are retained in contact data but deliberately not emitted here.
 export const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": `${siteUrl}/#organization`,
-  name: "SAGARA Rumah Sunat Modern Banteran",
+  name: contact.businessName,
   url: absoluteUrl("/"),
   logo: {
     "@type": "ImageObject",
@@ -58,10 +60,12 @@ export const organizationJsonLd = {
     width: siteLogo.width,
     height: siteLogo.height,
   },
-  telephone: `+62${contact.whatsappLabel.replace(/\D/g, "").replace(/^0/, "")}`,
+  telephone: `+${contact.whatsappNumber}`,
+  ...(contact.verified.address ? { address: { "@type": "PostalAddress", ...contact.verified.address } } : {}),
+  ...(contact.verified.profiles?.length ? { sameAs: [...contact.verified.profiles] } : {}),
   location: {
     "@type": "Place",
-    name: "SAGARA Rumah Sunat Modern Banteran",
+    name: contact.businessName,
     hasMap: contact.mapsUrl,
     geo: {
       "@type": "GeoCoordinates",

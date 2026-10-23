@@ -42,5 +42,5 @@ test("mobile navigation, FAQ and approved contact links", async ({ page }) => {
   for (const contact of await contacts.all()) await expect(contact).toHaveAttribute("href", /^https:\/\/wa\.me\/6287899777219\?text=/);
   await page.getByRole("link", { name: "Lihat paket" }).click();
   await expect(page).toHaveURL(/\/paket$/);
-  await expect(page.getByText("Rp1.100.000", { exact: true })).toBeVisible();
+  await expect(page.getByText("Hubungi admin untuk biaya", { exact: true })).toHaveCount(2);
 });

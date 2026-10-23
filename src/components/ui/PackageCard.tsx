@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { Asset } from "@/components/ui/Asset";
 import { ContactAction } from "@/components/ui/ContactAction";
-import type { KhitanPackage } from "@/data/packages";
-
-const priceFormatter = new Intl.NumberFormat("id-ID");
+import { packagePriceLabel, type KhitanPackage } from "@/data/packages";
 
 export function PackageCard({ item }: { item: KhitanPackage }) {
   const isModern = item.tone === "blue";
@@ -13,10 +11,10 @@ export function PackageCard({ item }: { item: KhitanPackage }) {
       <h2 id={`package-${item.id}`} className={`inline-flex min-h-7 items-center self-start rounded-[5px] px-3 text-[10px] leading-[1.65] font-semibold uppercase ${isModern ? "bg-[rgba(0,40,105,0.2)] text-primary" : "bg-[#fff5e5] text-[#886326]"}`}>
         {item.name}
       </h2>
-      <p className="mt-[7px] text-[clamp(30px,9.7vw,40px)] leading-[1.4] font-bold tracking-[-0.025em] text-primary">
-        Rp{priceFormatter.format(item.price)}
+      <p className="mt-[7px] text-xl leading-[1.4] font-bold tracking-[-0.025em] text-primary sm:text-2xl">
+        {packagePriceLabel}
       </p>
-      <p className="text-[13px] leading-[1.65] text-muted">per pasien</p>
+      <p className="text-[13px] leading-[1.65] text-muted">Harga belum dikonfirmasi</p>
       <ul className="mt-[14px] text-[13px] leading-[1.65] text-muted">
         {item.features.map((feature) => (
           <li key={feature} className="flex items-start gap-2">

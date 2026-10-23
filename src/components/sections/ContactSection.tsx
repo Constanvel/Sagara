@@ -3,6 +3,8 @@ import { ContactAction } from "@/components/ui/ContactAction";
 import { contact } from "@/data/contact";
 import { whatsappUrl } from "@/lib/whatsapp";
 
+const dayLabels = { Monday: "Senin", Tuesday: "Selasa", Wednesday: "Rabu", Thursday: "Kamis", Friday: "Jumat", Saturday: "Sabtu", Sunday: "Minggu" } as const;
+
 export function ContactSection() {
   const whatsappHref = whatsappUrl(contact.whatsappMessage);
   const whatsappCard = (
@@ -48,7 +50,8 @@ export function ContactSection() {
               Lokasi Sagara
             </h2>
             <p className="mt-[10px] text-base leading-5 font-extrabold text-primary">{contact.location}</p>
-            <p className="mt-[6px] text-[11px] leading-[18px] font-semibold text-[#656565]">{contact.addressStatus}</p>
+            {contact.verified.address ? <address className="mt-[6px] text-[11px] leading-[18px] font-semibold text-[#656565] not-italic">{[contact.verified.address.streetAddress, contact.verified.address.addressLocality, contact.verified.address.addressRegion, contact.verified.address.postalCode, contact.verified.address.addressCountry].filter(Boolean).join(", ")}</address> : <p className="mt-[6px] text-[11px] leading-[18px] font-semibold text-[#656565]">{contact.addressStatus}</p>}
+            {contact.verified.profiles?.length ? <ul className="mt-3 space-y-2 text-sm text-primary">{contact.verified.profiles.map(profile => <li key={profile}><a href={profile} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-4">{profile}<span className="sr-only"> (profil resmi, tab baru)</span></a></li>)}</ul> : null}
           </div>
           <div className="mt-[17px] rounded-[15px] border border-[#3982da]/30 bg-[#3982da]/10 p-[10px]">
             <iframe
@@ -73,7 +76,7 @@ export function ContactSection() {
             <Asset name="contact-clock.svg" width={17.0012} height={17.0012} />
             Jam layanan
           </h2>
-          <p className="mt-2 text-[13px] leading-4 text-[#6b7280]">{contact.hours}</p>
+          {contact.verified.hours?.length ? <ul className="mt-2 space-y-2 text-[13px] leading-4 text-[#6b7280]">{contact.verified.hours.map((entry, index) => <li key={index}>{entry.dayOfWeek.map(day => dayLabels[day]).join(", ")}: {entry.opens}–{entry.closes}</li>)}</ul> : <p className="mt-2 text-[13px] leading-4 text-[#6b7280]">{contact.hours}</p>}
           <p className="mt-2 text-[13px] leading-4 text-[#6b7280]">{contact.schedule}</p>
         </div>
 

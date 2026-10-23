@@ -5,6 +5,7 @@ import { ContactAction } from "@/components/ui/ContactAction";
 import { benefits, methods, needs } from "@/data/home";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { contact } from "@/data/contact";
+import { consultationContent } from "@/data/service-content";
 import { FAQAccordion } from "./FAQAccordion";
 import { DecorativeRibbon } from "./HeroSection";
 
@@ -89,7 +90,7 @@ export function BenefitsSection() {
         <div className="feature-grid grid w-full max-w-[342px] grid-cols-2 gap-3 md:max-w-none md:grid-cols-3 lg:grid-cols-3 lg:gap-5">
           {benefits.map((benefit) => <article key={benefit.title} className="flex min-w-0 flex-col items-start gap-3 rounded-[20px] bg-white p-4 lg:grid lg:grid-cols-[40px_1fr] lg:gap-x-3 lg:gap-y-2 lg:rounded-2xl lg:border lg:border-[#e3eaf5] lg:p-5 lg:shadow-[0_4px_16px_rgba(21,61,117,0.03)] lg:[&>img]:row-span-2 lg:[&>img]:mt-1 lg:[&>h3]:text-base lg:[&>p]:col-start-2 lg:[&>p]:text-[13px]"><Asset name={benefit.icon} width={25} height={25} className="shrink-0" /><h3 className="text-[15px] leading-[1.23] font-extrabold text-ink">{benefit.title}</h3><p className="text-xs leading-[1.65] text-muted">{benefit.description}</p></article>)}
         </div>
-        <p className="text-xs leading-[1.65] text-muted">Fasilitas mengikuti informasi promosi SAGARA. Konfirmasikan rincian dan ketersediaan hadiah dengan admin saat reservasi.</p>
+        <p className="text-xs leading-[1.65] text-muted">Konfirmasikan fasilitas yang termasuk, ketersediaan, ketentuan kontrol, dan kemungkinan biaya tambahan dengan admin saat reservasi.</p>
       </div>
     </section>
   );
@@ -101,7 +102,7 @@ export function HomecareSection() {
       <div className={`${container} grid items-center gap-8 md:grid-cols-2 lg:gap-12 lg:rounded-[28px] lg:border lg:border-[#e3eaf5] lg:bg-[#f7f9fc] lg:p-10`}>
         <div className="flex flex-col items-start gap-5">
           <SectionIntro label="SAGARA homecare" title="Pilihan khitan, dari rumah." description="Ingin khitan di rumah? Diskusikan kebutuhan keluarga Anda bersama admin SAGARA" />
-          <p className="text-sm leading-[1.65] text-muted">Ketersediaan area, jadwal, kesiapan tempat, dan kelayakan layanan dikonfirmasi setelah konsultasi.</p>
+          <p className="text-sm leading-[1.65] text-muted">{consultationContent.homecare}</p>
           <ContactAction message="Saya ingin menanyakan layanan homecare." className={`${action} border-primary bg-primary text-white`}><Asset name="imgMessageCircle.svg" width={19} height={19} className="shrink-0" />Tanyakan layanan homecare</ContactAction>
         </div>
         <div className="homecare-visual relative mx-auto min-h-[226px] w-full max-w-[342px] rounded-[28px] bg-soft p-6 lg:min-h-[280px] lg:max-w-[440px] lg:bg-white lg:p-7 lg:shadow-[0_8px_28px_rgba(21,61,117,0.05)]">
@@ -154,11 +155,11 @@ export function Footer() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.15fr_1fr_1fr] lg:gap-8">
           <div className="flex max-w-[440px] flex-col items-start gap-3">
             <Image src="/images/media/sagara-footer-logo-transparan.webp" alt="Logo SAGARA Rumah Sunat Modern Banteran" width={1920} height={819} sizes="(min-width: 768px) 240px, 210px" loading="lazy" className="h-auto w-[210px] max-w-full object-contain md:w-[240px]" />
-            <p className="text-xs leading-[1.65] text-muted">Rumah Sunat Modern Banteran, Sumbang. Teman keluarga dalam merencanakan khitan.</p>
+            <p className="text-xs leading-[1.65] text-muted">Rumah Sunat Modern {contact.location}. Teman keluarga dalam merencanakan khitan.</p>
           </div>
           <div className="flex flex-col items-start gap-3 text-[13px]">
             <nav aria-label="Tautan penutup" className="flex flex-wrap items-center gap-x-2 gap-y-1 font-bold text-primary">
-              <a href="/layanan">Layanan</a><span aria-hidden="true">·</span><a href="/galeri">Galeri</a><span aria-hidden="true">·</span><a href="/kontak">Lokasi &amp; Kontak</a>
+              <a href="/layanan">Layanan</a><span aria-hidden="true">·</span><a href="/galeri">Galeri</a><span aria-hidden="true">·</span><a href="/kontak">Lokasi &amp; Kontak</a><span aria-hidden="true">·</span><Link href="/kebijakan-privasi">Kebijakan Privasi</Link>
             </nav>
             <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-primary underline underline-offset-4">Lokasi SAGARA di Google Maps<span className="sr-only"> (dibuka di tab baru)</span></a>
             <ContactAction className="!min-h-11 !rounded-none !p-0 !text-[13px] !font-normal text-ink">WhatsApp {contact.whatsappLabel}</ContactAction>
@@ -168,7 +169,7 @@ export function Footer() {
             <span className="relative block h-[140px] overflow-hidden rounded-[15px] bg-[#3982da]/10 md:h-[160px]">
               <Image src="/images/media/sagara-banteran-map-preview.webp" alt="Preview peta lokasi SAGARA di Banteran" fill sizes="(min-width: 1024px) 320px, (min-width: 768px) 640px, 320px" loading="lazy" className="object-cover object-[center_30%]" />
             </span>
-            <span className="mt-2 flex items-center justify-between gap-2 text-xs"><span>Banteran, Sumbang</span><span className="font-semibold underline underline-offset-4">Petunjuk arah</span></span>
+            <span className="mt-2 flex items-center justify-between gap-2 text-xs"><span>{contact.location}</span><span className="font-semibold underline underline-offset-4">Petunjuk arah</span></span>
           </a>
         </div>
         <div className="h-px bg-line" />

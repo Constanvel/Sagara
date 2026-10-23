@@ -1,4 +1,31 @@
+export type BusinessDay = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+
+export type VerifiedBusinessDetails = {
+  address?: {
+    streetAddress: string;
+    addressLocality: string;
+    addressRegion: string;
+    addressCountry: string;
+    postalCode?: string;
+  };
+  hours?: readonly {
+    dayOfWeek: readonly BusinessDay[];
+    opens: string;
+    closes: string;
+  }[];
+  profiles?: readonly string[];
+};
+
+// Intentionally empty until verified facts are also published in visible contact content.
+const verifiedBusinessDetails: VerifiedBusinessDetails = {};
+
 export const contact = {
+  businessName: "SAGARA Rumah Sunat Modern Banteran",
+  siteName: "SAGARA — Rumah Sunat Modern Banteran", // Existing public metadata label, not a new entity name.
+  // Add only independently verified facts also published in visible contact content.
+  // A map pin/locality is not a street address; confirmation copy is not opening hours.
+  verified: verifiedBusinessDetails,
+  whatsappNumber: "6287899777219",
   whatsappLabel: "0878 9977 7219",
   whatsappMessage: "Halo admin SAGARA, saya ingin bertanya layanan atau mendaftar khitan.",
   location: "Banteran, Sumbang",

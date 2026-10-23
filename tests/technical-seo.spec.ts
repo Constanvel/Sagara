@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { absoluteUrl, pageMetadata, serializeJsonLd, sitePaths, siteUrl } from "../src/lib/seo";
+import { contact } from "../src/data/contact";
+import { absoluteUrl, organizationJsonLd, pageMetadata, serializeJsonLd, siteName, sitePaths, siteUrl } from "../src/lib/seo";
 
 const origin = "https://sagara-vert.vercel.app";
-const paths = ["/", "/layanan", "/paket", "/galeri", "/kontak", "/pendaftaran"];
+const paths = ["/", "/layanan", "/paket", "/galeri", "/kontak", "/pendaftaran", "/kebijakan-privasi"];
 const homepageTitle = "SAGARA — Khitan & Sunat Modern di Banteran, Sumbang";
 const expectedHeadings: Record<string, string> = {
   "/": "SAGARA, Rumah Sunat Modern di Banteran, Sumbang",
@@ -15,8 +16,35 @@ function expectVerifiedJsonLd(value: unknown): void {
   if (Array.isArray(value)) {
     for (const item of value) expectVerifiedJsonLd(item);
   } else if (value !== null && typeof value === "object") {
-    for (const [key, nestedValue] of Object.entries(value)) {
-      expect(key, "JSON-LD must not invent unverified business facts").not.toMatch(/^(address|openingHours|openingHoursSpecification|specialOpeningHoursSpecification|aggregateRating|ratingValue|review|reviews|sameAs|hasCredential|hasCertification|credential|credentials|qualifications)$/i);
+    const entity = value as Record<string, unknown>;
+    for (const [key, nestedValue] of Object.entries(entity)) {
+      expect(key, "JSON-LD must not invent ratings, credentials, or commercial offers").not.toMatch(/^(aggregateRating|ratingValue|ratingCount|reviewCount|review|reviews|hasCredential|hasCertification|credential|credentials|qualifications|offers|offer|makesOffer|price|priceRange|priceSpecification)$/i);
+      if (/^address$/i.test(key)) {
+        expect(entity["@type"]).toBe("Organization");
+        expect(entity["@id"]).toBe(`${origin}/#organization`);
+        expect(contact.verified.address, "An address needs an explicit verified source, not a map pin").toBeDefined();
+        expect(nestedValue).toEqual({ "@type": "PostalAddress", ...contact.verified.address });
+      }
+      if (/^sameAs$/i.test(key)) {
+        expect(entity["@type"]).toBe("Organization");
+        expect(entity["@id"]).toBe(`${origin}/#organization`);
+        expect(contact.verified.profiles?.length, "Profiles need explicit verified URLs").toBeGreaterThan(0);
+        expect(nestedValue).toEqual(contact.verified.profiles);
+      }
+      if (/^(openingHours|openingHoursSpecification|specialOpeningHoursSpecification)$/i.test(key)) {
+        // Hours are not emitted on Organization. Only regular, verified Place hours are modeled.
+        expect(entity["@type"]).toBe("Place");
+        expect(entity.name).toBe(contact.businessName);
+        expect(entity.hasMap).toBe(contact.mapsUrl);
+        expect(key).toBe("openingHoursSpecification");
+        expect(contact.verified.hours?.length, "Confirmation copy is not a verified schedule").toBeGreaterThan(0);
+        expect(nestedValue).toEqual(contact.verified.hours?.map(entry => ({
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: entry.dayOfWeek.map(day => `https://schema.org/${day}`),
+          opens: entry.opens,
+          closes: entry.closes,
+        })));
+      }
       expectVerifiedJsonLd(nestedValue);
     }
   }
@@ -36,6 +64,7 @@ test("metadata helpers retain the official origin and use an absolute homepage t
       title: path === "/" ? homepageTitle : `${title} | SAGARA`,
       description,
       url: new URL(path, origin).href,
+      siteName: contact.siteName,
     });
     expect(metadata.twitter).toMatchObject({
       title: path === "/" ? homepageTitle : `${title} | SAGARA`,
@@ -44,6 +73,35 @@ test("metadata helpers retain the official origin and use an absolute homepage t
     });
     expect(metadata).not.toHaveProperty("keywords");
   }
+});
+
+test("organization schema includes exactly the available verified facts", () => {
+  expectVerifiedJsonLd(organizationJsonLd);
+  expect(organizationJsonLd.name).toBe(contact.businessName);
+  expect(siteName).toBe(contact.siteName);
+  if (contact.verified.address) {
+    expect(organizationJsonLd).toHaveProperty("address", { "@type": "PostalAddress", ...contact.verified.address });
+  } else {
+    expect(organizationJsonLd).not.toHaveProperty("address");
+  }
+  if (contact.verified.profiles?.length) {
+    expect(organizationJsonLd).toHaveProperty("sameAs", [...contact.verified.profiles]);
+  } else {
+    expect(organizationJsonLd).not.toHaveProperty("sameAs");
+  }
+  for (const key of ["openingHours", "openingHoursSpecification", "specialOpeningHoursSpecification"]) {
+    expect(organizationJsonLd).not.toHaveProperty(key);
+    expect(organizationJsonLd.location).not.toHaveProperty(key);
+  }
+});
+
+test("schema validation rejects fabricated claims even when nested", () => {
+  for (const key of ["aggregateRating", "ratingValue", "review", "hasCredential", "hasCertification", "qualifications", "offers", "priceSpecification"]) {
+    expect(() => expectVerifiedJsonLd({ nested: [{ [key]: "unsupported" }] }), key).toThrow();
+  }
+  expect(() => expectVerifiedJsonLd({ ...organizationJsonLd, address: { "@type": "PostalAddress", streetAddress: "Unverified street" } })).toThrow();
+  expect(() => expectVerifiedJsonLd({ ...organizationJsonLd, sameAs: ["https://example.com/unverified"] })).toThrow();
+  expect(() => expectVerifiedJsonLd({ ...organizationJsonLd, openingHours: "Mo-Su 00:00-23:59" })).toThrow();
 });
 
 test("JSON-LD serialization escapes markup without changing the structured data", () => {
@@ -104,14 +162,29 @@ test("all public routes expose unique metadata and headings without JavaScript",
     if (path === "/") {
       const organization = JSON.parse(schemas[0]);
       expect(organization["@type"]).toBe("Organization");
-      expect(organization.telephone).toBe("+6287899777219");
+      expect(organization.telephone).toBe(`+${contact.whatsappNumber}`);
+      expect(organization.name).toBe(contact.businessName);
+      expect(organization).toEqual(organizationJsonLd);
       expect(organization["@id"]).toBe(`${origin}/#organization`);
       expect(organization.url).toBe(`${origin}/`);
       expect(organization.logo.url).toBe(`${origin}/images/media/sagara-rumah-sunat-modern-banteran-logo.webp`);
-      expect(organization).not.toHaveProperty("address");
       expect(organization).not.toHaveProperty("aggregateRating");
-      expect(organization.location.geo.latitude).toBe(-7.362495);
-      expect(organization.location.geo.longitude).toBe(109.2655145);
+      expect(organization.location.geo.latitude).toBe(contact.coordinates.latitude);
+      expect(organization.location.geo.longitude).toBe(contact.coordinates.longitude);
+    }
+    if (path === "/kontak") {
+      // Structured facts must also be public, not schema-only claims.
+      const visibleContact = await page.locator("main").innerText();
+      if (contact.verified.address) {
+        for (const value of Object.values(contact.verified.address)) expect(visibleContact).toContain(value);
+      }
+      for (const profile of contact.verified.profiles ?? []) {
+        await expect(page.locator("main").locator(`a[href=${JSON.stringify(profile)}]`)).toBeVisible();
+      }
+      for (const entry of contact.verified.hours ?? []) {
+        expect(visibleContact).toContain(entry.opens);
+        expect(visibleContact).toContain(entry.closes);
+      }
     }
     if (path === "/galeri") {
       const collection = JSON.parse(schemas[0]);
@@ -158,7 +231,7 @@ test("catalog intro changes with the page while shared navigation remains availa
   await expect(catalogNav.getByRole("link", { name: "Layanan", exact: true })).toHaveAttribute("aria-current", "page");
 });
 
-test("robots and sitemap advertise only the six canonical routes", async ({ request }) => {
+test("robots and sitemap advertise only the published canonical routes", async ({ request }) => {
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);
   expect(await robots.text()).toContain(`Sitemap: ${origin}/sitemap.xml`);

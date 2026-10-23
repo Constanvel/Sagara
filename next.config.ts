@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
+          // Vercel environment is evaluated at build time, never from an untrusted Host header.
+          ...(process.env.VERCEL_ENV === "preview" ? [{ key: "X-Robots-Tag", value: "noindex" }] : []),
           // Restrict framing without blocking Next.js inline scripts or forcing dynamic rendering.
           { key: "Content-Security-Policy", value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'" },
           { key: "X-Frame-Options", value: "DENY" },

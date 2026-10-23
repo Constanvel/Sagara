@@ -15,7 +15,7 @@ for (const width of [412, 1440]) {
     await expect(nav.getByRole("link", { name: "Layanan", exact: true })).toHaveAttribute("aria-current", "true");
     await expect(nav.getByRole("link", { name: "Paket Khitan", exact: true })).toHaveCount(0);
     await expect(tabs.getByRole("link", { name: /Paket khitan/i })).toHaveAttribute("aria-current", "page");
-    await expect(page.getByText("Rp1.100.000", { exact: true })).toBeVisible();
+    await expect(page.getByText("Hubungi admin untuk biaya", { exact: true })).toHaveCount(2);
     await page.goBack();
     await expect(page).toHaveURL(/\/layanan$/);
     await nav.getByRole("link", { name: "Kontak", exact: true }).click();

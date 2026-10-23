@@ -1,3 +1,4 @@
+import { packagePriceLabel } from "@/data/packages";
 import { formatDate, type RegistrationData } from "./validation";
 
 export function normalizeRegistration(data: RegistrationData): RegistrationData {
@@ -14,6 +15,7 @@ Saya ingin mengajukan pendaftaran layanan khitan di SAGARA Rumah Sunat Modern.
 
 Layanan: ${service}
 Paket: ${packageName}
+Biaya: ${packagePriceLabel}
 Tanggal yang diinginkan: ${formatDate(data.date)}
 Waktu yang diinginkan: ${data.time} WIB
 

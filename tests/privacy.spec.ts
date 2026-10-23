@@ -1,0 +1,70 @@
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+test("privacy information is readable without JavaScript and linked from registration", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    const page = await context.newPage();
+    const response = await page.goto(`${baseURL}/kebijakan-privasi`);
+    expect(response?.status()).toBe(200);
+    await expect(page.locator("h1")).toHaveText("Kebijakan Privasi");
+    await expect(page.locator("main")).toContainText("WhatsApp");
+    await expect(page.locator("main")).toContainText("Google Maps");
+    await expect(page.locator("main")).toContainText("localStorage");
+    await page.goto(`${baseURL}/pendaftaran`);
+    await expect(page.locator("main").getByRole("link", { name: "Kebijakan Privasi", exact: true })).toHaveAttribute("href", "/kebijakan-privasi");
+    await expect(page.locator("footer").getByRole("link", { name: "Kebijakan Privasi", exact: true })).toHaveAttribute("href", "/kebijakan-privasi");
+  } finally {
+    await context.close();
+  }
+});
+
+test("privacy page fits narrow and desktop screens with accessible content", async ({ page }) => {
+  await page.goto("/kebijakan-privasi");
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [320, 360, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Ruang lingkup informasi privasi" })).toBeVisible();
+  }
+  const results = await new AxeBuilder({ page }).include("main").analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test("synthetic registration identities stay out of requests and browser storage before WhatsApp handoff", async ({ page }) => {
+  const identities = ["PrivasiUjiWali947", "PrivasiUjiPasien947", "081234560947"];
+  const leaked: string[] = [];
+  page.on("request", request => {
+    const raw = `${request.url()} ${request.postData() ?? ""}`;
+    let decoded = raw;
+    try { decoded = decodeURIComponent(raw); } catch { /* Raw data still checked. */ }
+    if (identities.some(value => raw.includes(value) || decoded.includes(value))) leaked.push(request.url());
+  });
+  await page.goto("/pendaftaran?paket=modern");
+  await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-01");
+  await page.getByRole("button", { name: "10.00", exact: true }).click();
+  await page.getByLabel("Nama orang tua / wali").fill(identities[0]);
+  await page.getByLabel("Nama pasien", { exact: true }).fill(identities[1]);
+  await page.getByLabel("Usia (tahun)").fill("7");
+  await page.getByLabel("Nomor WhatsApp", { exact: true }).fill(identities[2]);
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
+  await expect(page.getByRole("heading", { name: "Tinjau pendaftaran Anda." })).toBeVisible();
+  await expect(page.locator('main a[href*="wa.me"]')).toHaveCount(0);
+  await page.getByRole("checkbox").check();
+  const handoff = page.getByRole("link", { name: "Kirim Pendaftaran via WhatsApp" });
+  const message = new URL((await handoff.getAttribute("href"))!).searchParams.get("text")!;
+  for (const identity of identities.slice(0, 2)) expect(message).toContain(identity);
+  expect(await page.evaluate(values => {
+    const stored = JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage }, cookie: document.cookie });
+    return values.some(value => stored.includes(value));
+  }, identities)).toBe(false);
+  expect(leaked).toEqual([]);
+  await page.getByRole("button", { name: "Kembali & perbaiki" }).click();
+  await page.getByLabel("Nama pasien", { exact: true }).fill("PrivasiUjiPasienBaru947");
+  await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
+  await expect(page.getByRole("checkbox")).not.toBeChecked();
+  await expect(handoff).toHaveCount(0);
+  expect(leaked).toEqual([]);
+});
