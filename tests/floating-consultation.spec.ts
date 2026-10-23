@@ -142,7 +142,9 @@ test("blocked localStorage does not break rendering or dismissal", async ({ page
 
 test("unrelated mutations skip overlay scans while inserted and removed overlays update the widget", async ({ page }) => {
   await page.goto("/");
-  await expect(root(page)).toBeVisible();
+  // Server HTML is visible before effects run. Wait for the post-load state update
+  // so observer setup does not count as an unrelated-mutation scan.
+  await expect(bubble(page)).toBeVisible({ timeout: 7000 });
   const scans = await page.evaluate(async () => {
     const original = document.querySelector.bind(document);
     let count = 0;
