@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Asset } from "@/components/ui/Asset";
 import styles from "./HeroSection.module.css";
 import { HeroCarousel } from "./HeroCarousel";
+import { DecorativeRibbon } from "./DecorativeRibbon";
 
 const highlights = [
   { title: "Pilihan Metode", icon: "imgGroup.svg", copy: "Diskusikan metode Klem dan Biological Glue, termasuk kebutuhan jahitan serta perawatannya, saat konsultasi." },
@@ -12,11 +13,6 @@ const highlights = [
   { title: "Konsultasi Kondisi", icon: "imgIcon1.svg", copy: "Bahas kebutuhan khitan anak maupun dewasa. Pilihan tindakan dan hasil perawatan dapat berbeda pada setiap pasien." },
 ];
 
-export function DecorativeRibbon() {
-  return <div aria-hidden="true" className={`pointer-events-none relative w-full overflow-hidden lg:hidden ${styles.ribbon}`}>
-    <Image src="/images/figma/hero-ribbon.png" alt="" width={412} height={31} unoptimized className="block h-auto w-full" />
-  </div>;
-}
 export function HeroSection() {
   preload("/images/media/sagara-hero-landscape.webp", { as: "image", fetchPriority: "high", media: "(max-width: 1023px)" });
   return <section aria-labelledby="hero-title" className="hero-section relative pb-[88px] lg:bg-[#f4f7fc] lg:pt-3 lg:pb-10">

@@ -5,7 +5,7 @@ import "./globals.css";
 import { siteName, siteUrl } from "@/lib/seo";
 import { Header, MobileBottomNav } from "@/components/layout/Navigation";
 import { MotionEnhancer } from "@/components/ui/MotionEnhancer";
-import { Footer } from "@/components/sections/HomeSections";
+import { Footer } from "@/components/layout/Footer";
 import { FloatingConsultation } from "@/components/ui/FloatingConsultation";
 
 const jakarta = Plus_Jakarta_Sans({

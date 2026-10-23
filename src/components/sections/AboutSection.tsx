@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { DecorativeRibbon } from "./HeroSection";
+import { DecorativeRibbon } from "./DecorativeRibbon";
 import styles from "./AboutSection.module.css";
 import { AboutVideo } from "./AboutVideo";
 
