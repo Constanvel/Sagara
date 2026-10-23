@@ -3,7 +3,7 @@ import { contact } from "@/data/contact";
 
 export const siteUrl = "https://sagara-vert.vercel.app";
 export const siteName = "SAGARA — Rumah Sunat Modern Banteran";
-export const sitePaths = ["/", "/layanan", "/paket", "/galeri", "/kontak"] as const;
+export const sitePaths = ["/", "/layanan", "/paket", "/galeri", "/kontak", "/pendaftaran"] as const;
 
 export function absoluteUrl(path: string): string {
   return new URL(path, siteUrl).href;
@@ -18,7 +18,7 @@ export const siteLogo = {
 };
 
 export function pageMetadata(title: string, description: string, path: string): Metadata {
-  const socialTitle = path === "/" ? siteName : `${title} | SAGARA`;
+  const socialTitle = path === "/" ? title : `${title} | SAGARA`;
   return {
     title: path === "/" ? { absolute: title } : title,
     description,

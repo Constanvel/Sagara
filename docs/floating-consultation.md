@@ -2,6 +2,8 @@
 
 Date: 2026-10-21. Scope: one reusable global component added in root layout; existing navbar, footer, carousel and gallery application source unchanged.
 
+> Historical implementation note. Commit `6a14bb9` later deliberately changed the widget to remain anchored to the viewport while scrolling, including at the footer. The footer-avoidance behavior and original validation below describe the earlier version, not the current contract. The 2026-10-23 CI remediation aligns the older consultation test with that newer behavior; `tests/floating-viewport.spec.ts` retains scroll-position, reachability, and mobile-navigation clearance coverage.
+
 ## Design and assets
 
 Figma MCP inspected canvas `0:1`, then design context and screenshot for **44:11 — Konsultasi**. Reuses its navy `#002869`, white outlined 20px-radius bubble, original mascot and phone glyph, 54px circular button. Added requested support copy beneath the title; bubble is wider/taller than the compact Figma title-only reference to fit that text legibly. The phone icon follows Figma; the destination is WhatsApp.

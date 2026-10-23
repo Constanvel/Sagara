@@ -24,6 +24,18 @@ async function expectActiveFAQ(page: Page, activeIndex: number | null) {
   }
 }
 
+test("FAQ explains preparation, aftercare boundaries, and booking confirmation", async ({ page }) => {
+  await page.goto("/");
+  const preparation = page.getByRole("button", { name: "Apa yang perlu disiapkan sebelum kunjungan?", exact: true });
+  await preparation.click();
+  await expect(page.locator(".faq-panel[aria-hidden='false']")).toContainText("jangan mengubah obat atau berpuasa tanpa arahan tenaga medis");
+  await page.getByRole("button", { name: "Apakah mengisi formulir langsung memastikan jadwal?", exact: true }).click();
+  await expect(page.locator(".faq-panel[aria-hidden='false']")).toContainText("setelah menyetujui berbagi data");
+  await expect(page.locator(".faq-panel[aria-hidden='false']")).toContainText("perlu dikonfirmasi oleh admin");
+  await page.getByRole("button", { name: "Bagaimana perawatan setelah khitan?", exact: true }).click();
+  await expect(page.locator(".faq-panel[aria-hidden='false']")).toContainText("kondisi darurat memerlukan pertolongan medis segera");
+});
+
 test("FAQ starts entirely closed and only one answer can open", async ({ page }) => {
   await page.goto("/");
   await expectActiveFAQ(page, null);

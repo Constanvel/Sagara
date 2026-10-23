@@ -1,6 +1,8 @@
 export type MediaItem = { id: string; type: "photo" | "video"; src: string; thumbnail: string; title: string; caption: string; alt: string; width: number; height: number };
 
-// Publication approved by the site owner. No patient identifiers are stored in metadata.
+// The owner attested guardian permission for all current photo/video publication on 2026-10-23.
+// Records were not independently verified; original images are intentionally published unmasked.
+// Keep consent records private; detailed video/audio review remains an operational check.
 export const galleryMedia: MediaItem[] = [
   {
     "id": "sertifikat-dan-hadiah",
@@ -315,7 +317,7 @@ export const galleryMedia: MediaItem[] = [
   }
 ];
 
-// Twenty distinct, owner-approved photographs; captions describe the pictured moment.
+// Twenty distinct photographs; publication consent is a separate operational requirement.
 const heroPhotoIndexes = [2, 0, 8, 1, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 const heroCaptions = [
   ["Setiap anak punya cerita beraninya.", "Kami hadir untuk menemani langkahnya."],

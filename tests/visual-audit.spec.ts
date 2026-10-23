@@ -2,7 +2,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 
-const auditDirectory = "C:/Users/IDEAPAD SLIM 3/AppData/Local/Temp/opencode/sagara-final-audit";
+// Keep explicit audit captures inside ignored output that CI removes after testing.
+const auditDirectory = path.join(process.cwd(), "test-results", "visual-audit");
 const widths = [360, 390, 412, 768, 1280, 1440, 1920];
 
 test.beforeAll(async () => {

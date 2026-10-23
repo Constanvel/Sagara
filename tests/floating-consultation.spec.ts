@@ -52,17 +52,18 @@ for (const route of routes) {
       await whatsapp(page).focus();
       await expect(whatsapp(page)).toBeFocused();
 
-      // The widget must move above the footer, not cover its contact links.
+      // The widget stays viewport anchored even when the footer enters view.
+      const baseline = await root(page).boundingBox();
+      expect(baseline).not.toBeNull();
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      const footer = page.locator("footer");
-      await expect(footer).toBeInViewport();
+      await expect(page.locator("footer")).toBeInViewport();
       await expect(root(page)).toBeVisible();
+      await expect(whatsapp(page)).toBeVisible();
+      await expect(bubble(page)).toBeVisible();
       await expect.poll(async () => {
         const widgetBounds = await root(page).boundingBox();
-        const footerBounds = await footer.boundingBox();
-        return widgetBounds !== null && footerBounds !== null
-          && widgetBounds.y + widgetBounds.height <= footerBounds.y + 1;
-      }).toBe(true);
+        return widgetBounds === null ? Infinity : Math.abs(widgetBounds.y - baseline!.y);
+      }).toBeLessThan(2);
       await expectSafeGeometry(page);
     });
   }

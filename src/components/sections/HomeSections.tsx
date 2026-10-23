@@ -31,7 +31,7 @@ export function MethodsSection() {
         <div className="section-intro max-w-[720px] lg:grid lg:max-w-none lg:grid-cols-[1.1fr_1fr] lg:items-end lg:gap-x-14">
           <p className="text-xs leading-5 font-bold tracking-[0.75px] text-[#db322f] uppercase lg:col-span-2">Pilihan Prosedur Modern</p>
           <h2 id="methods-title" className="mt-[10px] text-2xl leading-[25px] font-extrabold tracking-[-0.54px] text-navy lg:mt-3 lg:max-w-[540px] lg:text-[36px] lg:leading-[1.15] lg:tracking-[-0.035em]">Metode Khitan Unggulan Sagara Banteran</h2>
-          <p className="mt-5 text-xs leading-[15px] text-muted lg:mt-0 lg:max-w-[460px] lg:pb-1 lg:text-[15px] lg:leading-6">Kami menyediakan ragam metode khitan modern terstandar medis internasional yang disesuaikan dengan anatomi, usia, dan kenyamanan anak Anda.</p>
+          <p className="mt-5 text-xs leading-[15px] text-muted lg:mt-0 lg:max-w-[460px] lg:pb-1 lg:text-[15px] lg:leading-6">Kenali pilihan metode khitan modern di SAGARA. Kesesuaian metode, manfaat, risiko, dan perawatan perlu dibahas bersama tenaga medis berdasarkan kondisi pasien.</p>
         </div>
         <div className="feature-grid mx-[2px] mt-10 grid gap-y-16 md:mx-0 md:grid-cols-3 md:gap-6 lg:mt-8 lg:gap-5">
           {methods.map((method, index) => (
@@ -161,7 +161,7 @@ export function Footer() {
               <a href="/layanan">Layanan</a><span aria-hidden="true">·</span><a href="/galeri">Galeri</a><span aria-hidden="true">·</span><a href="/kontak">Lokasi &amp; Kontak</a>
             </nav>
             <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-primary underline underline-offset-4">Lokasi SAGARA di Google Maps<span className="sr-only"> (dibuka di tab baru)</span></a>
-            <ContactAction className="!min-h-11 !rounded-none !p-0 !text-[13px] !font-normal text-ink">WhatsApp 0878 9977 7219</ContactAction>
+            <ContactAction className="!min-h-11 !rounded-none !p-0 !text-[13px] !font-normal text-ink">WhatsApp {contact.whatsappLabel}</ContactAction>
           </div>
           <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" aria-label="Lihat lokasi SAGARA di Google Maps (dibuka di tab baru)" className="group block w-full max-w-[360px] overflow-hidden rounded-[20px] border border-[#3982da]/30 bg-white p-3 text-primary transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-4 md:col-span-2 md:max-w-none lg:col-span-1 lg:max-w-[360px]">
             <span className="mb-2 flex items-center gap-2 text-sm font-bold"><Asset name="contact-location.svg" width={17} height={23} />Lokasi Sagara</span>

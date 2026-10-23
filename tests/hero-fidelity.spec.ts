@@ -19,13 +19,20 @@ for (const width of [320, 375, 390, 412, 768, 1024, 1440, 1920]) {
       expect(first!.height).toBe(31);
       expect(second!.x - first!.x - first!.width).toBe(15);
     }
-    if (width === 412) expect(Math.abs(first!.y - 317)).toBeLessThan(0.1);
+    const heading = await page.locator("#hero-title").boundingBox();
+    const description = await page.locator(".hero-copy p").last().boundingBox();
+    expect(heading).not.toBeNull();
+    expect(description).not.toBeNull();
+    expect(description!.y).toBeGreaterThanOrEqual(heading!.y + heading!.height);
+    expect(first!.y - description!.y - description!.height).toBeGreaterThanOrEqual(20);
+    expect(second!.x + second!.width).toBeLessThanOrEqual(width);
     const style = await buttons.nth(1).evaluate(el => {
       const css = getComputedStyle(el);
       return { border: css.borderTopWidth, background: css.backgroundColor, radius: css.borderRadius };
     });
     expect(style).toEqual({ border: "1px", background: "rgb(255, 255, 255)", radius: "100px" });
-    await expect(buttons.nth(0)).toHaveAttribute("href", /^https:\/\/wa.me\/6287899777219/);
+    await expect(buttons.nth(0)).toHaveAccessibleName("Daftar khitan");
+    await expect(buttons.nth(0)).toHaveAttribute("href", "/pendaftaran");
     await expect(buttons.nth(1)).toHaveAttribute("href", "/paket");
     for (const name of ["hero-arrow-right.svg", "hero-package.svg"]) {
       const icon = actions.locator(`img[src$="${name}"]`);

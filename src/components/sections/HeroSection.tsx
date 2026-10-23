@@ -6,10 +6,10 @@ import styles from "./HeroSection.module.css";
 import { HeroCarousel } from "./HeroCarousel";
 
 const highlights = [
-  { title: "Tanpa Jahit", icon: "imgGroup.svg", copy: "Metode Klem & Biological Glue canggih, hasil luka tertutup presisi tanpa benang jahit." },
-  { title: "Langsung Mandi", icon: "imgIcon.svg", copy: "Bebas kena air, bisa langsung main PlayStation, dan mengenakan celana seperti biasa." },
-  { title: "Tanpa Suntik", icon: "imgVector.svg", copy: "Teknologi Comfort-in/Free Needle Injection dengan semprotan mikro bebas rasa takut jarum." },
-  { title: "Hasil Rapi", icon: "imgIcon1.svg", copy: "Rapi, simetris, dan dirancang khusus oleh praktisi medis bersertifikat khitan anak & dewasa." },
+  { title: "Pilihan Metode", icon: "imgGroup.svg", copy: "Diskusikan metode Klem dan Biological Glue, termasuk kebutuhan jahitan serta perawatannya, saat konsultasi." },
+  { title: "Panduan Perawatan", icon: "imgIcon.svg", copy: "Waktu mandi, penggunaan celana, dan aktivitas setelah khitan mengikuti arahan tenaga medis sesuai kondisi pasien." },
+  { title: "Pilihan Pembiusan", icon: "imgVector.svg", copy: "Tanyakan pilihan Comfort-In/Free Needle Injection, manfaat, risiko, dan kesesuaiannya saat konsultasi." },
+  { title: "Konsultasi Kondisi", icon: "imgIcon1.svg", copy: "Bahas kebutuhan khitan anak maupun dewasa. Pilihan tindakan dan hasil perawatan dapat berbeda pada setiap pasien." },
 ];
 
 export function DecorativeRibbon() {
@@ -25,8 +25,8 @@ export function HeroSection() {
         <div className={styles.intro}>
           <p className={styles.eyebrow}><span aria-hidden="true" />Khitan modern . Banteran</p>
           <div aria-hidden="true" className={styles.mascot}><Image src="/images/media/sagara-hero-mascot-outline.webp" alt="" width={80} height={80} sizes="80px" /><Image src="/images/media/sagara-hero-mascot.webp" alt="" width={76} height={76} sizes="76px" /></div>
-          <h1 id="hero-title" className={styles.title}><span>Langkah berani si</span>{" "}<span>jagoan, dimulai di sini.</span></h1>
-          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA. Kenali pilihan metode dan rencanakan perawatan yang sesuai untuk anak maupun dewasa, bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
+          <h1 id="hero-title" className={styles.title}>SAGARA, Rumah Sunat Modern di Banteran, Sumbang</h1>
+          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Langkah berani si jagoan, dimulai di sini. Kenali layanan khitan modern SAGARA dan konsultasikan pilihan metode untuk anak maupun dewasa bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
         </div>
         <div className={`hero-actions ${styles.actions}`}>
           <Link href="/pendaftaran" className={`cta-motion ${styles.register}`}>

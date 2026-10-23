@@ -12,7 +12,7 @@ export const services: readonly KhitanService[] = [
   {
     id: "anak-anak",
     title: "Khitan anak-anak",
-    description: "Dampingi jagoan memahami proses dan persiapannya.",
+    description: "Diskusikan kesiapan anak, pilihan metode, pembiusan, dan pendampingan. Tanyakan persiapan kunjungan serta rencana perawatannya.",
     icon: "service-security.svg",
     // The exported 39×30 frame had empty right/top space; use the centered SVG viewport.
     iconWidth: 24,
@@ -22,7 +22,7 @@ export const services: readonly KhitanService[] = [
   {
     id: "bayi",
     title: "Khitan bayi",
-    description: "Bahas usia, kesiapan, dan kebutuhan perawatan bayi.",
+    description: "Konsultasikan usia, kondisi, dan kesiapan bayi sebelum menentukan tindakan. Bahas kesesuaian metode serta kebutuhan perawatan bersama tenaga medis.",
     icon: "service-baby.svg",
     iconWidth: 32,
     iconHeight: 32,
@@ -31,7 +31,7 @@ export const services: readonly KhitanService[] = [
   {
     id: "dewasa",
     title: "Khitan dewasa",
-    description: "Konsultasikan kebutuhan dan rencana perawatan Anda.",
+    description: "Bahas kondisi kesehatan, pilihan metode, manfaat, dan risiko. Konfirmasikan persiapan, jadwal kunjungan, serta batas aktivitas selama perawatan.",
     icon: "service-contact.svg",
     iconWidth: 26,
     iconHeight: 26,
@@ -40,7 +40,7 @@ export const services: readonly KhitanService[] = [
   {
     id: "kebutuhan-khusus",
     title: "Kebutuhan khusus",
-    description: "Sampaikan kebutuhan pendampingan sejak awal.",
+    description: "Sampaikan kebutuhan pendampingan sejak awal. Kelayakan tindakan, kesiapan tempat, dan rencana perawatan perlu dikonfirmasi saat konsultasi.",
     icon: "service-like.svg",
     iconWidth: 24,
     iconHeight: 24,
@@ -51,7 +51,7 @@ export const services: readonly KhitanService[] = [
   {
     id: "kebutuhan-khusus-pendampingan",
     title: "Kebutuhan khusus",
-    description: "Sampaikan kebutuhan pendampingan sejak awal.",
+    description: "Sampaikan kebutuhan pendampingan sejak awal. Kelayakan tindakan, kesiapan tempat, dan rencana perawatan perlu dikonfirmasi saat konsultasi.",
     icon: "service-like.svg",
     iconWidth: 24,
     iconHeight: 24,

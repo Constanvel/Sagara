@@ -4,7 +4,12 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   devIndicators: false,
   // Match small logo/mascot slots at 2x density instead of jumping to 256px.
-  images: { imageSizes: [32, 48, 64, 80, 96, 128, 160, 256, 384] },
+  images: {
+    imageSizes: [32, 48, 64, 80, 96, 128, 160, 256, 384],
+    localPatterns: [
+      { pathname: "/images/**", search: "" },
+    ],
+  },
   async headers() {
     return [
       {

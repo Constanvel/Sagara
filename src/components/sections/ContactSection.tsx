@@ -29,7 +29,7 @@ export function ContactSection() {
         <span aria-hidden="true" className="h-[3px] w-[18px] rounded-sm bg-red" />
         Lokasi &amp; kontak
       </div>
-      <h1 id="contact-heading" className="mt-[3px] text-[32px] leading-[1.23] font-extrabold tracking-[-0.6px] lg:text-5xl">Mari berkunjung.</h1>
+      <h1 id="contact-heading" className="mt-[3px] text-[32px] leading-[1.23] font-extrabold tracking-[-0.6px] lg:text-5xl">Lokasi dan Kontak SAGARA</h1>
       <p className="text-sm leading-[1.65] text-muted lg:mt-3">Temukan lokasi dan hubungi tim Sagara</p>
 
       <div className="mx-auto mt-[21px] grid max-w-[342px] gap-[35px] lg:mt-10 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-x-8 lg:gap-y-6">
