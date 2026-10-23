@@ -61,6 +61,12 @@ export const organizationJsonLd = {
     height: siteLogo.height,
   },
   telephone: `+${contact.whatsappNumber}`,
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: `+${contact.whatsappNumber}`,
+    contactType: "Konsultasi dan pendaftaran melalui WhatsApp",
+    url: absoluteUrl("/kontak"),
+  },
   ...(contact.verified.address ? { address: { "@type": "PostalAddress", ...contact.verified.address } } : {}),
   ...(contact.verified.profiles?.length ? { sameAs: [...contact.verified.profiles] } : {}),
   location: {
@@ -73,4 +79,20 @@ export const organizationJsonLd = {
       longitude: contact.coordinates.longitude,
     },
   },
+};
+
+export const contactPageJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    organizationJsonLd,
+    {
+      "@type": "ContactPage",
+      "@id": `${absoluteUrl("/kontak")}#webpage`,
+      url: absoluteUrl("/kontak"),
+      name: "Lokasi dan Kontak SAGARA",
+      inLanguage: "id-ID",
+      about: { "@id": organizationJsonLd["@id"] },
+      mainEntity: { "@id": organizationJsonLd["@id"] },
+    },
+  ],
 };

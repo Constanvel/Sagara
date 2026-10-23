@@ -1,4 +1,4 @@
-import { pageMetadata } from "@/lib/seo";
+import { contactPageJsonLd, pageMetadata, serializeJsonLd } from "@/lib/seo";
 import { ContactSection } from "@/components/sections/ContactSection";
 
 export const metadata = pageMetadata(
@@ -10,6 +10,7 @@ export const metadata = pageMetadata(
 export default function KontakPage() {
   return (
     <main id="main-content" className="min-h-[calc(100dvh-56px)] bg-soft">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(contactPageJsonLd) }} />
       <ContactSection />
     </main>
   );
