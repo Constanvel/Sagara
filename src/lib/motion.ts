@@ -1,8 +1,8 @@
 /** Shared timings; transform/opacity only for entrance and navigation motion. */
 export const motion = {
   page: 300,
-  reveal: 700,
-  revealDistance: 24,
+  reveal: 500,
+  revealDistance: 12,
   icon: 220,
   press: 120,
   indicator: 340,
