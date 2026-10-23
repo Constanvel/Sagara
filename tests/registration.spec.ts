@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { jakartaToday, validateRegistration, type RegistrationData } from "../src/components/registration/validation";
+import { formatDate, jakartaToday, validateRegistration, type RegistrationData } from "../src/components/registration/validation";
 
 const valid: RegistrationData = { service: "anak-anak", package: "modern", date: "2099-12-01", time: "10.00", guardian: "Wali Uji", patient: "Pasien Uji", age: "7", whatsapp: "081234567890", consent: true };
 test("validation rejects missing, past, impossible and malformed data", () => {
@@ -11,6 +11,15 @@ test("validation rejects missing, past, impossible and malformed data", () => {
   for (const age of ["-1", "1.5", "", "abc"]) expect(validateRegistration({ ...valid, age }, ["anak-anak"], ["modern"]).age).toBeTruthy();
   for (const whatsapp of ["+6281234567890", "6281234567890", "0812-3456-7890"]) expect(validateRegistration({ ...valid, whatsapp }, ["anak-anak"], ["modern"]).whatsapp).toBeUndefined();
   expect(jakartaToday(new Date("2026-01-01T18:00:00Z"))).toBe("2026-01-02");
+});
+
+test("reused date formatters preserve WIB boundaries and Indonesian display dates", () => {
+  for (let index = 0; index < 3; index++) {
+    expect(jakartaToday(new Date("2026-12-31T16:59:59Z"))).toBe("2026-12-31");
+    expect(jakartaToday(new Date("2026-12-31T17:00:00Z"))).toBe("2027-01-01");
+    expect(formatDate("2028-02-29")).toBe("29 Februari 2028");
+    expect(formatDate("2099-12-01")).toBe("1 Desember 2099");
+  }
 });
 
 for (const width of [320, 360, 390, 412, 768, 1280, 1440, 1920]) {

@@ -5,13 +5,16 @@ export type RegistrationData = {
 export type RegistrationErrors = Partial<Record<keyof RegistrationData, string>>;
 export const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00", "15.00"];
 
+const jakartaDateFormatter = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" });
+const displayDateFormatter = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
+
 export function jakartaToday(now = new Date()): string {
-  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
+  const parts = jakartaDateFormatter.formatToParts(now);
   const value = (type: string) => parts.find(part => part.type === type)?.value;
   return `${value("year")}-${value("month")}-${value("day")}`;
 }
 export function formatDate(date: string): string {
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(`${date}T12:00:00+07:00`));
+  return displayDateFormatter.format(new Date(`${date}T12:00:00+07:00`));
 }
 export function validateRegistration(data: RegistrationData, serviceIds: string[], packageIds: string[]): RegistrationErrors {
   const errors: RegistrationErrors = {};
