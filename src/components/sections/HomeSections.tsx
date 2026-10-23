@@ -167,7 +167,7 @@ export function Footer() {
           <a href={contact.mapsUrl} target="_blank" rel="noopener noreferrer" aria-label="Lihat lokasi SAGARA di Google Maps (dibuka di tab baru)" className="group block w-full max-w-[360px] overflow-hidden rounded-[20px] border border-[#3982da]/30 bg-white p-3 text-primary transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-4 md:col-span-2 md:max-w-none lg:col-span-1 lg:max-w-[360px]">
             <span className="mb-2 flex items-center gap-2 text-sm font-bold"><Asset name="contact-location.svg" width={17} height={23} />Lokasi Sagara</span>
             <span className="relative block h-[140px] overflow-hidden rounded-[15px] bg-[#3982da]/10 md:h-[160px]">
-              <Image src="/images/media/sagara-banteran-map-preview.webp" alt="Preview peta lokasi SAGARA di Banteran" fill sizes="(min-width: 1024px) 320px, (min-width: 768px) 640px, 320px" loading="lazy" className="object-cover object-[center_30%]" />
+              <Image src="/images/media/sagara-banteran-map-preview.webp" alt="Preview peta lokasi SAGARA di Banteran" fill sizes="(min-width: 1264px) 334px, (min-width: 1024px) calc((100vw - 128px) / 3.15 - 26px), (min-width: 768px) calc(100vw - 90px), (min-width: 408px) 334px, calc(100vw - 74px)" loading="lazy" className="object-cover object-[center_30%]" />
             </span>
             <span className="mt-2 flex items-center justify-between gap-2 text-xs"><span>{contact.location}</span><span className="font-semibold underline underline-offset-4">Petunjuk arah</span></span>
           </a>

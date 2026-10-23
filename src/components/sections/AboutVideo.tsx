@@ -29,7 +29,7 @@ export function AboutVideo() {
   }, [open]);
   return <>
     <button ref={trigger} type="button" className={styles.poster} aria-label="Putar video cerita layanan Sagara" onClick={() => { setError(false); setLoading(false); setOpen(true); }}>
-      <Image src={serviceVideo.thumbnail} alt="Petugas Sagara mengenakan lampu kepala saat memberikan layanan." fill sizes="(min-width: 768px) 550px, 90vw" />
+      <Image src={serviceVideo.thumbnail} alt="Petugas Sagara mengenakan lampu kepala saat memberikan layanan." fill sizes="(min-width: 1200px) 540px, (min-width: 1024px) calc((100vw - 112px) / 2 - 4px), (min-width: 768px) calc((100vw - 96px) / 2 - 4px), calc(100vw - 52px)" />
       <Image className={styles.play} src="/images/media/sagara-video-play.svg" alt="" width={66} height={66} />
     </button>
     <dialog ref={dialog} className={styles.dialog} aria-labelledby="about-video-title" onCancel={() => setOpen(false)} onClick={event => { if (event.target === event.currentTarget) setOpen(false); }}>
