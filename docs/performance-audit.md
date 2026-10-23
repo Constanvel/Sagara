@@ -224,7 +224,7 @@ Local evidence, without screenshots or patient-form payloads: `C:/Users/IDEAPAD 
 
 ### Verification and remaining work
 
-Lint, typecheck and production build pass. The targeted production suite passes 47 tests, including map activation/no-JavaScript fallback, iframe referrer policy, privacy handoff, footer, hero, FAQ, reveal retention, navigation and security headers.
+Lint, typecheck and production build pass. The targeted production suite passes 47 tests, including map activation/no-JavaScript fallback, iframe referrer policy, privacy handoff, footer, hero, FAQ, reveal retention, navigation and security headers. The subsequent complete production suite passes **305/305 tests in 5.4 minutes**, without retries. `npm audit --omit=dev --audit-level=low` reports **0 vulnerabilities**.
 
 Earlier development-mode runs were not release evidence: privacy date entry failed there while passing in production; a concurrent refactor also invalidated one live-development test run. Production was rebuilt and the targeted suite rerun after edits completed.
 
