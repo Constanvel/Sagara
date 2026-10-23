@@ -85,7 +85,9 @@ for (const width of widths) {
       }
       await page.setViewportSize({ width, height: 900 });
       await scrollEntirePage(page);
-      // Delayed consultation content may mount after the initial scroll sweep.
+      // Wait for the delayed widget before checking images; an empty image queue
+      // before it mounts does not mean its mascot has finished loading.
+      await expect(page.getByRole("region", { name: "Konsultasi SAGARA", exact: true })).toBeVisible({ timeout: 10_000 });
       await expect.poll(() => page.locator("img").evaluateAll(elements => elements.filter(element => { const image = element as HTMLImageElement; return !image.complete || !image.naturalWidth; }).length), { timeout: 30_000 }).toBe(0);
       const media = await page.locator("img, video").evaluateAll(elements => elements.map(element => {
         const box = element.getBoundingClientRect();
