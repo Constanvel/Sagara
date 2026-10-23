@@ -9,7 +9,7 @@ export function MotionEnhancer() {
   const pathname = usePathname();
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (preference.matches || !("IntersectionObserver" in window) || typeof Element.prototype.animate !== "function") return;
+    if (preference.matches || typeof preference.addEventListener !== "function" || !("IntersectionObserver" in window) || typeof Element.prototype.animate !== "function") return;
     const selector = "main article, main [data-reveal], main h2, [data-faq-item], .contact-card";
     const seen = new WeakSet<Element>();
     const pending = new Map<Element, Animation>();
