@@ -17,4 +17,11 @@ test("gallery filtering releases detached intersection targets", async ({ page }
   await page.waitForTimeout(500);
   await page.getByRole("button", { name: "Video", exact: true }).click();
   await expect.poll(() => page.evaluate(() => [...(window as unknown as { __observed: Set<Element> }).__observed].filter(element => !element.isConnected).length)).toBe(0);
+  // Completed reveals also stop retaining targets after scrolling through the page.
+  for (let index = 0; index < 6; index++) {
+    await page.evaluate(() => window.scrollBy(0, innerHeight));
+    await page.waitForTimeout(100);
+  }
+  await expect.poll(() => page.evaluate(() => [...(window as unknown as { __observed: Set<Element> }).__observed].filter(element => !element.isConnected).length)).toBe(0);
+  await expect.poll(() => page.evaluate(() => [...(window as unknown as { __observed: Set<Element> }).__observed].filter(element => element.closest("main")).length)).toBe(0);
 });
