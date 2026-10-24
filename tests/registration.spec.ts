@@ -43,12 +43,17 @@ for (const width of [320, 360, 390, 412, 768, 1280, 1440, 1920]) {
   });
 }
 
-test("unconfirmed costs never appear as numeric prices on package or registration pages", async ({ page }) => {
+test("original package names and prices match across public and registration cards", async ({ page }) => {
   for (const route of ["/paket", "/pendaftaran"]) {
     await page.goto(route);
-    await expect(page.getByText("Hubungi admin untuk biaya", { exact: true })).toHaveCount(2);
-    await expect(page.locator("main")).not.toContainText(/Rp\s*[\d.,]+/);
-    await expect(page.getByText("Harga belum dikonfirmasi", { exact: true })).toHaveCount(2);
+    for (const [name, price] of [["Paket Modern", "Rp1.100.000"], ["Paket Top Sealer", "Rp900.000"]]) {
+      const card = page.locator("article").filter({ has: page.getByRole("heading", { name, exact: true }) });
+      await expect(card.getByText(price, { exact: true })).toBeVisible();
+      await expect(card.getByText("per pasien", { exact: true })).toBeVisible();
+      await expect(card.locator("li")).toHaveCount(2);
+    }
+    await expect(page.getByText("Hubungi admin untuk biaya", { exact: true })).toHaveCount(0);
+    await expect(page.locator("main")).toContainText("Rincian biaya dan fasilitas dikonfirmasi oleh admin.");
   }
 });
 
@@ -138,9 +143,12 @@ test(`three-step flow shares all latest data only after explicit consent at ${wi
   const link = page.getByRole("link", { name: "Kirim Pendaftaran via WhatsApp" });
   await expect(page.getByRole("button", { name: "Kirim Pendaftaran via WhatsApp" })).toBeDisabled();
   await expect(page.locator('main a[href*="wa.me"]')).toHaveCount(0);
-  for (const value of [valid.guardian, valid.patient, valid.whatsapp, "7 tahun", "Khitan bayi", "Paket Modern", "Hubungi admin untuk biaya", "1 Desember 2099", "10.00 WIB"]) await expect(page.locator("dd").filter({ hasText: value })).toBeVisible();
+  for (const value of [valid.guardian, valid.patient, valid.whatsapp, "7 tahun", "Khitan bayi", "Paket Modern", "Rp1.100.000", "1 Desember 2099", "10.00 WIB"]) await expect(page.locator("dd").filter({ hasText: value })).toBeVisible();
   await page.getByRole("checkbox").check();
-  expect(new URL((await link.getAttribute("href"))!).searchParams.get("text")).toContain(valid.patient);
+  const modernMessage = new URL((await link.getAttribute("href"))!).searchParams.get("text")!;
+  expect(modernMessage).toContain(valid.patient);
+  expect(modernMessage).toContain("Paket: Paket Modern\nBiaya: Rp1.100.000");
+  expect(modernMessage).not.toContain("Rp900.000");
   await page.getByRole("button", { name: "Kembali & perbaiki" }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Atur waktuuntuk langkah berani.");
   await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
@@ -162,8 +170,8 @@ test(`three-step flow shares all latest data only after explicit consent at ${wi
   expect(url.hostname).toBe("wa.me");
   expect(url.pathname).toBe("/6287899777219");
   const message = url.searchParams.get("text")!;
-  for (const value of ["Halo Admin SAGARA! 👋", "📋 INFORMASI PENDAFTARAN", "👤 DATA PENDAFTAR", "Layanan: Khitan dewasa", "Paket: Paket Top Sealer", "Biaya: Hubungi admin untuk biaya", "Tanggal yang diinginkan: 2 Desember 2099", "Waktu yang diinginkan: 14.00 WIB", "Nama Orang Tua/Wali: Wali Baru & Ibu", "Nama Pasien: Pasien Baru & Putra + / é", "Usia Pasien: 8 tahun", "Nomor WhatsApp: +6281299998888", "Terima kasih! 🙏"]) expect(message).toContain(value);
-  for (const value of [valid.patient, valid.guardian, valid.whatsapp, "undefined", "null", "Rp0", "1.100.000", "900.000"]) expect(message).not.toContain(value);
+  for (const value of ["Halo Admin SAGARA! 👋", "📋 INFORMASI PENDAFTARAN", "👤 DATA PENDAFTAR", "Layanan: Khitan dewasa", "Paket: Paket Top Sealer", "Biaya: Rp900.000", "Tanggal yang diinginkan: 2 Desember 2099", "Waktu yang diinginkan: 14.00 WIB", "Nama Orang Tua/Wali: Wali Baru & Ibu", "Nama Pasien: Pasien Baru & Putra + / é", "Usia Pasien: 8 tahun", "Nomor WhatsApp: +6281299998888", "Terima kasih! 🙏"]) expect(message).toContain(value);
+  for (const value of [valid.patient, valid.guardian, valid.whatsapp, "undefined", "null", "Rp0", "1.100.000", "Hubungi admin untuk biaya"]) expect(message).not.toContain(value);
   expect(page.url()).not.toContain("Pasien");
   await context.route("https://wa.me/**", route => route.fulfill({ status: 200, body: "WhatsApp mock" }));
   await page.getByText("Tinjau pesan WhatsApp lengkap", { exact: true }).click();

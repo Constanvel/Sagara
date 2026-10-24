@@ -13,7 +13,7 @@ export function PackagesSection() {
         ))}
       </p>
       <p id="package-price-status" className="sr-only">
-        Harga masih menunggu verifikasi bisnis dan bukan jaminan biaya akhir. Konfirmasikan harga, rincian biaya, dan fasilitas kepada admin sebelum menentukan pilihan.
+        Harga referensi per pasien, bukan jaminan biaya akhir. Konfirmasikan rincian biaya dan fasilitas kepada admin sebelum menentukan pilihan.
       </p>
     </section>
   );

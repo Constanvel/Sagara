@@ -1,8 +1,8 @@
 export type KhitanPackage = Readonly<{
   id: string;
   name: string;
-  price: null;
-  priceStatus: "pending-business-verification";
+  price: number;
+  priceStatus: "reference-price";
   features: readonly string[];
   tone: "blue" | "gold";
   actionLabel: string;
@@ -13,8 +13,8 @@ export const packages: readonly KhitanPackage[] = [
   {
     id: "modern",
     name: "Paket Modern",
-    price: null,
-    priceStatus: "pending-business-verification",
+    price: 1100000,
+    priceStatus: "reference-price",
     features: [
       "Metode modern (Tekhnoklamp)",
       "Pembiusan dikonfirmasi saat konsultasi",
@@ -26,8 +26,8 @@ export const packages: readonly KhitanPackage[] = [
   {
     id: "top-sealer",
     name: "Paket Top Sealer",
-    price: null,
-    priceStatus: "pending-business-verification",
+    price: 900000,
+    priceStatus: "reference-price",
     features: [
       "Metode Top Sealer",
       "Pembiusan dikonfirmasi saat konsultasi",
@@ -38,7 +38,11 @@ export const packages: readonly KhitanPackage[] = [
   },
 ];
 
-export const packagePriceLabel = "Hubungi admin untuk biaya";
+const priceFormatter = new Intl.NumberFormat("id-ID");
+
+export function packagePriceLabel(item: Pick<KhitanPackage, "price">): string {
+  return `Rp${priceFormatter.format(item.price)}`;
+}
 
 export const packageCaveat =
-  "Harga belum dikonfirmasi. Hubungi admin untuk biaya, rincian fasilitas, pengecualian, serta kemungkinan biaya tambahan sebelum menentukan pilihan.";
+  "Harga mengikuti formulir Sagara yang diberikan. Rincian biaya dan fasilitas dikonfirmasi oleh admin.";

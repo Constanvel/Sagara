@@ -24,7 +24,7 @@ npx playwright test
 Later SEO work supersedes the dated initial verification below. The current origin is `https://sagara-vert.vercel.app`; metadata, canonical, sitemap, and robots are configured. See README for pending owner gates and release status.
 
 - `/`: Home, methods, service needs, benefits, homecare, FAQ, consultation, footer.
-- `/paket`: Paket Modern and Paket Top Sealer retain their IDs and selections. Unconfirmed numeric prices are not published; cards, registration, review, and WhatsApp message use `Hubungi admin untuk biaya`.
+- `/paket`: Paket Modern and Paket Top Sealer retain their IDs and selections. At the owner's request on 24 October 2026, original Figma reference prices are restored: `Rp1.100.000` and `Rp900.000`. Cards, registration, review, and WhatsApp use the same package formatter. Final costs and facilities still require admin confirmation.
 - Official WhatsApp: `6287899777219`, centralized in `src/data/contact.ts` and consumed by `src/lib/whatsapp.ts`, visible contact text, and schema. The former `NEXT_PUBLIC_WHATSAPP_NUMBER` override is no longer used, preventing destination/label drift; invalid source values disable contact actions.
 - `/layanan`, `/galeri`, `/kontak`, `/pendaftaran`, and `/kebijakan-privasi` are available. Gallery media stays original; privacy information explicitly describes public visibility.
 - Shared mobile navigation is fixed, with safe-area padding. Desktop uses header navigation.

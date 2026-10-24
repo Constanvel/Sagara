@@ -15,7 +15,8 @@ for (const width of [412, 1440]) {
     await expect(nav.getByRole("link", { name: "Layanan", exact: true })).toHaveAttribute("aria-current", "true");
     await expect(nav.getByRole("link", { name: "Paket Khitan", exact: true })).toHaveCount(0);
     await expect(tabs.getByRole("link", { name: /Paket khitan/i })).toHaveAttribute("aria-current", "page");
-    await expect(page.getByText("Hubungi admin untuk biaya", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("Rp1.100.000", { exact: true })).toBeVisible();
+    await expect(page.getByText("Rp900.000", { exact: true })).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/\/layanan$/);
     await nav.getByRole("link", { name: "Kontak", exact: true }).click();
@@ -51,7 +52,7 @@ test("bottom navigation only marks matching routes, including history navigation
   await page.goForward();
   await expect(page).toHaveURL(/\/pendaftaran$/);
   await expect(indicator).toHaveCount(0);
-  expect(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === "running").length)).toBe(0);
+  await expect.poll(() => page.evaluate(() => document.getAnimations().filter(animation => animation.playState === "running").length)).toBe(0);
 });
 
 test("mobile menu locks scroll and restores focus", async ({ page }) => {

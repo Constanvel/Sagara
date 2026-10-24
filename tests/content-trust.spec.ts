@@ -2,13 +2,13 @@ import { expect, test } from "@playwright/test";
 import { benefits, methods } from "../src/data/home";
 import { packages, packagePriceLabel } from "../src/data/packages";
 
-test("unconfirmed costs stay absent and packages retain legacy registration IDs", () => {
-  expect(packages.map(item => item.id)).toEqual(["modern", "top-sealer"]);
-  for (const item of packages) {
-    expect(item.priceStatus).toBe("pending-business-verification");
-    expect(item.price).toBeNull();
-  }
-  expect(packagePriceLabel).toBe("Hubungi admin untuk biaya");
+test("packages restore the original Figma prices and retain registration IDs", () => {
+  expect(packages.map(item => [item.id, item.name, item.price])).toEqual([
+    ["modern", "Paket Modern", 1100000],
+    ["top-sealer", "Paket Top Sealer", 900000],
+  ]);
+  expect(packages.map(packagePriceLabel)).toEqual(["Rp1.100.000", "Rp900.000"]);
+  for (const item of packages) expect(item.priceStatus).toBe("reference-price");
 });
 
 test("unreviewed promotional copy does not guarantee free follow-up or equate laser and cauter", () => {

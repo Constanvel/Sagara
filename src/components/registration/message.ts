@@ -1,4 +1,4 @@
-import { packagePriceLabel } from "@/data/packages";
+import { packagePriceLabel, type KhitanPackage } from "@/data/packages";
 import { formatDate, type RegistrationData } from "./validation";
 
 export function normalizeRegistration(data: RegistrationData): RegistrationData {
@@ -6,7 +6,7 @@ export function normalizeRegistration(data: RegistrationData): RegistrationData 
 }
 
 // Pure formatter: never persist or log this message or its Click-to-Chat URL.
-export function registrationMessage(data: RegistrationData, service: string, packageName: string): string {
+export function registrationMessage(data: RegistrationData, service: string, selectedPackage: KhitanPackage): string {
   return `Halo Admin SAGARA! 👋
 
 Saya ingin mengajukan pendaftaran layanan khitan di SAGARA Rumah Sunat Modern.
@@ -14,8 +14,8 @@ Saya ingin mengajukan pendaftaran layanan khitan di SAGARA Rumah Sunat Modern.
 📋 INFORMASI PENDAFTARAN
 
 Layanan: ${service}
-Paket: ${packageName}
-Biaya: ${packagePriceLabel}
+Paket: ${selectedPackage.name}
+Biaya: ${packagePriceLabel(selectedPackage)}
 Tanggal yang diinginkan: ${formatDate(data.date)}
 Waktu yang diinginkan: ${data.time} WIB
 

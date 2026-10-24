@@ -58,7 +58,7 @@ Alamat lengkap, jam, akun sosial, kredensial, domain baru, akses Search Console/
 - Nomor WhatsApp resmi, label, CTA, dan schema menggunakan `src/data/contact.ts`. `NEXT_PUBLIC_WHATSAPP_NUMBER` tidak lagi mengganti tujuan; hapus konfigurasi lama di hosting setelah memeriksa nomor resmi. Mengubah nomor memerlukan pembaruan data, tes, dan deployment.
 - `/kebijakan-privasi` menjelaskan perilaku teknis saat ini dan keterbatasan informasi operasional. Publikasi penjelasan telah disetujui pengelola; rincian retensi, pihak yang mengakses pesan admin, serta prosedur penghapusan belum diberikan dan tidak dikarang. Persetujuan publikasi bukan verifikasi independen atau sertifikasi kepatuhan hukum.
 - Build dengan `VERCEL_ENV=preview` mengirim `X-Robots-Tag: noindex`; produksi/development tidak. Verifikasi pada host sesungguhnya setelah deployment. Header tidak membatasi akses: aktifkan Vercel Deployment Protection secara terpisah. Jangan menonaktifkan crawling produksi atau memakai robots disallow sebagai satu-satunya pencegah indeks.
-- Domain tetap saat ini. Tidak ada alamat/jam, harga, klasifikasi medis, profil resmi, atau kredensial baru yang dikarang. Dua kartu kebutuhan khusus tetap sampai keputusan bisnis diterima. Harga yang belum dikonfirmasi tidak ditampilkan sebagai angka; kartu, formulir, ringkasan, dan pesan memakai “Hubungi admin untuk biaya”.
+- Domain tetap saat ini. Tidak ada alamat/jam, harga, klasifikasi medis, profil resmi, atau kredensial baru yang dikarang. Dua kartu kebutuhan khusus tetap sampai keputusan bisnis diterima. Sesuai permintaan pemilik pada 24 Oktober 2026, harga referensi Figma dipulihkan: Paket Modern Rp1.100.000 dan Paket Top Sealer Rp900.000. Kartu, formulir, ringkasan, dan pesan memakai sumber harga yang sama; biaya akhir dan fasilitas tetap dikonfirmasi admin.
 - Tidak ada analytics baru, session replay, form autocapture, database, atau perubahan media. Formulir tetap perlu persetujuan terpisah dan tindakan pengguna di WhatsApp.
 
 ### Antrean yang membutuhkan akses/fakta pemilik
@@ -67,7 +67,7 @@ Alamat lengkap, jam, akun sosial, kredensial, domain baru, akses Search Console/
 2. Google Profil Bisnis: listing yang sudah ada, kategori/nama nyata, NAP/jam cocok, foto fasilitas berizin, ulasan jujur tanpa hadiah atau penyaringan. Jangan membuka informasi pasien saat membalas.
 3. Alamat/kode pos/jam/homecare/profil resmi: konfirmasi sebelum menambah schema atau mengganti ketidakpastian pada halaman kontak.
 4. Tenaga medis: verifikasi istilah metode (khususnya laser/cautery), manfaat/risiko, fasilitas, serta izin menampilkan nama/peran/kredensial; baru buat halaman profil atau edukasi yang substansial beserta peninjau dan tanggal sebenarnya.
-5. Paket: konfirmasi angka, fasilitas, pengecualian/biaya tambahan, masa berlaku. Angka belum terverifikasi sudah disembunyikan serentak tanpa menghilangkan paket; jangan mengaktifkan kembali angka sebelum konfirmasi.
+5. Paket: konfirmasi angka, fasilitas, pengecualian/biaya tambahan, masa berlaku. Angka referensi Figma dipulihkan atas permintaan pemilik; publikasi referensi tidak menggantikan konfirmasi biaya akhir oleh admin.
 6. Performa: ukur deployment/commit yang sama pada tujuh route, mobile/desktop, minimal tiga pengukuran dengan kondisi tetap. Catat LCP element, transfer, font/JS, cache dan variasi; periksa interaksi formulir/galeri/navigasi. Sasaran data lapangan p75 LCP ≤2,5 detik, INP ≤200 ms, CLS ≤0,1. Lab bukan bukti CrUX; optimalkan hanya bottleneck yang terukur. Jangan unggah capture pasien.
 7. Domain sendiri: konfirmasi kepemilikan/DNS/TLS dahulu, lalu jalankan prosedur migrasi di atas. Jangan membuat redirect host preview/localhost ke produksi.
 
@@ -92,13 +92,13 @@ Artefak agregat disimpan privat di direktori sementara yang disetujui, bukan Git
 
 ### Gerbang persetujuan pemilik
 
-Pengelola menyetujui publikasi perubahan dan menyatakan seluruh persetujuan telah diberikan. Persetujuan tersebut tidak memasok alamat, jam, angka harga, identitas medis, atau rincian operasional baru. Pemilik perlu mengisi tabel berikut dalam dokumen privat; hanya fakta yang memang boleh dipublikasikan yang kemudian dipindahkan ke sumber data situs. Jangan memasukkan bukti identitas pasien, chat, kredensial, atau dokumen izin mentah ke Git.
+Pengelola menyetujui publikasi perubahan dan menyatakan seluruh persetujuan telah diberikan. Persetujuan awal tersebut tidak memasok alamat, jam, angka harga, identitas medis, atau rincian operasional baru. Pada 24 Oktober 2026, pemilik meminta harga referensi pada Figma asli ditampilkan kembali; rincian biaya akhir tetap memerlukan konfirmasi admin. Pemilik perlu mengisi tabel berikut dalam dokumen privat; hanya fakta yang memang boleh dipublikasikan yang kemudian dipindahkan ke sumber data situs. Jangan memasukkan bukti identitas pasien, chat, kredensial, atau dokumen izin mentah ke Git.
 
 | Kelompok | Fakta yang harus disetujui | Penanggung jawab/tanggal | Status |
 |---|---|---|---|
 | Identitas lokal | Nama nyata, alamat lengkap/kode pos, titik Maps, klasifikasi usaha, profil resmi | Belum diberikan | Menunggu |
 | Operasional | Jam/reservasi/hari libur, cakupan homecare dan biaya perjalanan | Belum diberikan | Menunggu |
-| Paket | Harga berlaku, fasilitas, pengecualian, tambahan biaya, kontrol | Belum diberikan | Menunggu; angka disembunyikan |
+| Paket | Harga berlaku, fasilitas, pengecualian, tambahan biaya, kontrol | Referensi Figma diminta kembali oleh pemilik, 24 Oktober 2026 | Harga referensi tampil; rincian akhir dikonfirmasi admin |
 | Layanan | Maksud dua kartu kebutuhan khusus dan kategori khitan gemuk | Belum diberikan | Menunggu; ID lama dipertahankan |
 | Klinis | Istilah laser/cautery, kelayakan pembiusan/metode, durasi, mandi/aktivitas, obat/kontrol, fasilitas | Tenaga medis belum ditetapkan | Belum ditinjau medis |
 | Profil medis | Nama/peran/kualifikasi/hubungan dengan SAGARA, izin publikasi, tanggung jawab review | Belum diberikan | Halaman belum dibuat |

@@ -29,7 +29,7 @@ export function ServicesSection() {
           <ul className="mt-2 list-disc space-y-2 pl-5">
             <li>Tanyakan siapa yang melakukan pemeriksaan dan tindakan, serta bagaimana keluarga dapat memverifikasi identitas dan kewenangannya.</li>
             <li>Bahas pilihan metode dan pembiusan, manfaat, risiko, alternatif, dan alasan kesesuaiannya untuk kondisi pasien. Nama metode saja tidak menentukan pilihan yang tepat.</li>
-            <li>Minta rincian biaya, fasilitas yang termasuk, kemungkinan biaya tambahan, ketentuan kontrol, dan kontak tindak lanjut. Harga pada situs belum dikonfirmasi.</li>
+            <li>Minta rincian biaya, fasilitas yang termasuk, kemungkinan biaya tambahan, ketentuan kontrol, dan kontak tindak lanjut. Harga paket pada situs merupakan harga referensi; biaya akhir dikonfirmasi admin.</li>
             <li>Konfirmasikan alamat lengkap, jam layanan, dan ketersediaan jadwal sebelum berangkat. Untuk homecare, tanyakan jangkauan dan kesiapan tempat.</li>
           </ul>
         </section>
