@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const routes = ["/", "/layanan", "/paket", "/galeri", "/kontak"];
-const widths = [360, 390, 412, 768, 1440];
+const widths = [360, 390, 412, 768, 1023, 1024, 1440];
 const storageKey = "sagara_consultation_dismissed";
 const message = "Halo, Admin SAGARA! 👋 Saya ingin berkonsultasi mengenai layanan khitan di SAGARA Rumah Sunat Modern. Boleh saya mendapatkan informasi mengenai pilihan layanan, persiapan, jadwal yang tersedia, dan estimasi biaya? Terima kasih.";
 const whatsappUrl = `https://wa.me/6287899777219?text=${encodeURIComponent(message)}`;
@@ -43,8 +43,14 @@ for (const route of routes) {
       expect(url.hostname).toBe("wa.me");
       expect(url.pathname).toBe("/6287899777219");
       expect(url.searchParams.get("text")).toBe(message);
-      await expect(bubble(page)).toBeVisible({ timeout: 7000 });
-      await expect(close(page)).toBeVisible();
+      if (width >= 1024) {
+        await expect(bubble(page)).toBeVisible({ timeout: 7000 });
+        await expect(close(page)).toBeVisible();
+      } else {
+        await page.waitForTimeout(2300);
+        await expect(bubble(page)).not.toBeVisible();
+        await expect(close(page)).not.toBeVisible();
+      }
       await expectSafeGeometry(page);
       const target = await whatsapp(page).boundingBox();
       expect(target!.width).toBeGreaterThanOrEqual(44);
@@ -59,7 +65,8 @@ for (const route of routes) {
       await expect(page.locator("footer")).toBeInViewport();
       await expect(root(page)).toBeVisible();
       await expect(whatsapp(page)).toBeVisible();
-      await expect(bubble(page)).toBeVisible();
+      if (width >= 1024) await expect(bubble(page)).toBeVisible();
+      else await expect(bubble(page)).not.toBeVisible();
       await expect.poll(async () => {
         const widgetBounds = await root(page).boundingBox();
         return widgetBounds === null ? Infinity : Math.abs(widgetBounds.y - baseline!.y);
@@ -68,6 +75,22 @@ for (const route of routes) {
     });
   }
 }
+
+test("compact mode never shows the bubble and preserves dismissal across breakpoint changes", async ({ page }) => {
+  await page.setViewportSize({ width: 1023, height: 900 });
+  await page.goto("/");
+  await page.waitForTimeout(2300);
+  await expect(whatsapp(page)).toBeVisible();
+  await expect(bubble(page)).not.toBeVisible();
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(bubble(page)).toBeVisible();
+  await close(page).click();
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect(whatsapp(page)).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(bubble(page)).not.toBeVisible();
+  expect(await page.evaluate(key => localStorage.getItem(key), storageKey)).toBe("true");
+});
 
 test("consultation notification waits two seconds after window load", async ({ page }) => {
   const time = new Date("2026-10-21T12:00:00Z");
@@ -84,7 +107,7 @@ test("consultation notification waits two seconds after window load", async ({ p
 });
 
 test("dismissal persists through reload, client navigation and another tab", async ({ page, context }) => {
-  await page.setViewportSize({ width: 390, height: 900 });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(bubble(page)).toBeVisible({ timeout: 7000 });
   await close(page).click();
@@ -99,7 +122,7 @@ test("dismissal persists through reload, client navigation and another tab", asy
 
   // A window marker distinguishes Next.js client navigation from a full reload.
   await page.evaluate(() => Object.assign(window, { consultationNavigationMarker: "retained" }));
-  await page.getByRole("navigation", { name: "Navigasi bawah", exact: true })
+  await page.getByRole("navigation", { name: "Navigasi utama", exact: true })
     .getByRole("link", { name: "Galeri", exact: true }).click();
   await expect(page).toHaveURL(/\/galeri$/);
   expect(await page.evaluate(() => Reflect.get(window, "consultationNavigationMarker"))).toBe("retained");
@@ -181,7 +204,8 @@ test("unrelated mutations skip overlay scans while inserted and removed overlays
 test("mobile menu suppresses the entire widget and closing restores it", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("/");
-  await expect(bubble(page)).toBeVisible({ timeout: 7000 });
+  await expect(root(page)).toBeVisible();
+  await expect(bubble(page)).not.toBeVisible();
   const toggle = page.locator('[aria-controls="mobile-menu"]');
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
@@ -190,15 +214,31 @@ test("mobile menu suppresses the entire widget and closing restores it", async (
   await page.keyboard.press("Escape");
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(root(page)).toBeVisible();
-  await expect(bubble(page)).toBeVisible();
+  await expect(bubble(page)).not.toBeVisible();
   expect(await page.evaluate(key => localStorage.getItem(key), storageKey)).toBeNull();
 });
 
 for (const width of [390, 1440]) {
+  test(`form focus suppresses the widget including registration submit at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/pendaftaran");
+    await expect(root(page)).toBeVisible();
+    for (const control of [page.locator("form select").first(), page.locator("form input[type='text']").first(), page.locator("form button[type='submit']")]) {
+      await control.focus();
+      await expect(control).toBeFocused();
+      await expect(root(page)).toBeHidden();
+    }
+    await page.getByRole("link", { name: "SAGARA RUMAH SUNAT MODERN — Beranda", exact: true }).focus();
+    await expect(root(page)).toBeVisible();
+    expect(await page.evaluate(key => localStorage.getItem(key), storageKey)).toBeNull();
+  });
+
   test(`media dialog suppresses the entire widget at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/galeri");
-    await expect(bubble(page)).toBeVisible({ timeout: 7000 });
+    await expect(root(page)).toBeVisible();
+    if (width >= 1024) await expect(bubble(page)).toBeVisible({ timeout: 7000 });
+    else await expect(bubble(page)).not.toBeVisible();
     const trigger = page.locator("article[data-media-type='photo'] button").first();
     await trigger.scrollIntoViewIfNeeded();
     await trigger.click();
@@ -208,7 +248,8 @@ for (const width of [390, 1440]) {
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();
     await expect(root(page)).toBeVisible();
-    await expect(bubble(page)).toBeVisible();
+    if (width >= 1024) await expect(bubble(page)).toBeVisible();
+    else await expect(bubble(page)).not.toBeVisible();
     expect(await page.evaluate(key => localStorage.getItem(key), storageKey)).toBeNull();
   });
 }

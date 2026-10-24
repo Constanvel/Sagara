@@ -28,15 +28,15 @@ export function ContactSection() {
   const whatsappClass = "flex min-h-[99px] items-center gap-[14px] rounded-[20px] bg-primary px-6 py-[13px] text-white hover:bg-navy";
 
   return (
-    <section aria-labelledby="contact-heading" className="mx-auto max-w-[1100px] px-6 pt-6 pb-[61px] lg:px-8 lg:py-14">
+    <section aria-labelledby="contact-heading" className="mx-auto max-w-[1100px] px-6 pt-6 pb-8 lg:px-8 lg:py-14">
       <div className="flex items-center gap-2 text-[11px] leading-[14px] font-extrabold text-primary uppercase">
         <span aria-hidden="true" className="h-[3px] w-[18px] rounded-sm bg-red" />
         Lokasi &amp; kontak
       </div>
-      <h1 id="contact-heading" className="mt-[3px] text-[32px] leading-[1.23] font-extrabold tracking-[-0.6px] lg:text-5xl">Lokasi dan Kontak SAGARA</h1>
-      <p className="text-sm leading-[1.65] text-muted lg:mt-3">Temukan lokasi dan hubungi tim Sagara</p>
+      <h1 id="contact-heading" className="mt-[3px] text-[32px] leading-[1.23] font-extrabold tracking-[-0.6px] lg:text-5xl">Mari berkunjung.</h1>
+      <p className="mt-2 text-sm leading-[1.65] text-muted lg:mt-3">Temukan SAGARA di Banteran, Sumbang. Hubungi admin untuk mengonfirmasi lokasi dan jadwal kunjungan.</p>
 
-      <div className="mx-auto mt-[21px] grid max-w-[342px] gap-[35px] lg:mt-10 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-x-8 lg:gap-y-6">
+      <div className="mx-auto mt-[21px] grid max-w-[342px] gap-5 lg:mt-10 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-x-8 lg:gap-y-6">
         <div className="lg:col-start-1 lg:row-start-1">
           {whatsappHref ? (
             <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={whatsappClass}>{whatsappCard}</a>
@@ -69,7 +69,7 @@ export function ContactSection() {
           <p id="location-verification" className="sr-only">{contact.locationVerification}</p>
         </div>
 
-        <div className="-mt-[3px] rounded-2xl bg-white px-5 pt-5 pb-[11px] shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] lg:col-start-1 lg:row-start-2 lg:mt-0">
+        <div className="rounded-2xl bg-white px-5 pt-5 pb-[11px] shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] lg:col-start-1 lg:row-start-2 lg:mt-0">
           <h2 className="flex items-center gap-[10px] text-[15px] leading-[19px] font-semibold text-[#374151]">
             <Asset name="contact-clock.svg" width={17.0012} height={17.0012} />
             Jam layanan
@@ -78,7 +78,7 @@ export function ContactSection() {
           <p className="mt-2 text-[13px] leading-4 text-[#6b7280]">{contact.schedule}</p>
         </div>
 
-        <div className="-mt-3 rounded-2xl bg-white p-5 shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] lg:col-start-1 lg:row-start-3 lg:mt-0">
+        <div className="rounded-2xl bg-white p-5 shadow-[0_2px_12px_0_rgba(0,0,0,0.06)] lg:col-start-1 lg:row-start-3 lg:mt-0">
           <h2 className="flex items-center gap-2 text-[15px] leading-[19px] font-semibold text-[#374151]">
             <Asset name="contact-home.svg" width={18} height={18} />
             Ingin khitan di rumah?

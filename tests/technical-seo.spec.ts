@@ -6,10 +6,10 @@ const origin = "https://sagara-vert.vercel.app";
 const paths = ["/", "/layanan", "/paket", "/galeri", "/kontak", "/pendaftaran", "/kebijakan-privasi"];
 const homepageTitle = "SAGARA — Khitan & Sunat Modern di Banteran, Sumbang";
 const expectedHeadings: Record<string, string> = {
-  "/": "SAGARA, Rumah Sunat Modern di Banteran, Sumbang",
-  "/layanan": "Layanan Khitan SAGARA",
-  "/paket": "Pilihan Paket Khitan SAGARA",
-  "/kontak": "Lokasi dan Kontak SAGARA",
+  "/": "Langkah berani si jagoan, dimulai di sini.",
+  "/layanan": "Pilihan layanan untuk keluarga.",
+  "/paket": "Pilihan untuk keluarga.",
+  "/kontak": "Mari berkunjung.",
   "/pendaftaran": "Atur waktu untuk langkah berani.",
 };
 

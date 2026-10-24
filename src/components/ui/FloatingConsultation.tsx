@@ -36,10 +36,17 @@ export function FloatingConsultation() {
   useEffect(() => {
     const element = root.current;
     if (!element) return;
-    // Integrate with existing menu/dialog state without changing their components.
+    // Suppress the widget during form interaction, including the registration submit.
     const update = () => {
-      element.hidden = Boolean(document.querySelector('dialog[open], #mobile-menu[data-open="true"]'));
+      const focused = document.activeElement;
+      const formFocused = focused instanceof Element && (
+        focused.matches("input, select, textarea") || Boolean(focused.closest("form"))
+      );
+      element.hidden = formFocused || Boolean(document.querySelector('dialog[open], #mobile-menu[data-open="true"]'));
     };
+    const afterFocus = () => queueMicrotask(update);
+    document.addEventListener("focusin", update);
+    document.addEventListener("focusout", afterFocus);
     const containsOverlay = (node: Node) => node instanceof Element && (
       node.matches('dialog[open], #mobile-menu[data-open="true"]') ||
       Boolean(node.querySelector('dialog[open], #mobile-menu[data-open="true"]'))
@@ -52,7 +59,11 @@ export function FloatingConsultation() {
     });
     observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open", "data-open"] });
     update();
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("focusin", update);
+      document.removeEventListener("focusout", afterFocus);
+    };
   }, []);
 
   function dismiss() {

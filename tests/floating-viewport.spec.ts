@@ -24,15 +24,21 @@ for (const width of [360, 390, 412, 768, 1280, 1440, 1920]) {
         expect(await button.evaluate(element => { const r = element.getBoundingClientRect(); return element.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await expect(root.getByRole("region", { name: "Konsultasi SAGARA" })).toBeVisible({ timeout: 6000 });
+      if (width >= 1024) {
+        await expect(root.getByRole("region", { name: "Konsultasi SAGARA" })).toBeVisible({ timeout: 6000 });
+        await root.getByRole("button", { name: "Tutup notifikasi konsultasi" }).click();
+        await expect(root.getByRole("region")).toHaveCount(0);
+        expect(await page.evaluate(() => localStorage.getItem("sagara_consultation_dismissed"))).toBe("true");
+      } else {
+        await page.waitForTimeout(2300);
+        await expect(root.getByRole("region", { name: "Konsultasi SAGARA" })).not.toBeVisible();
+        expect(await page.evaluate(() => localStorage.getItem("sagara_consultation_dismissed"))).toBeNull();
+      }
       if (route === "/pendaftaran") await page.screenshot({ path: `test-results/floating-footer-${width}.png` });
-      await root.getByRole("button", { name: "Tutup notifikasi konsultasi" }).click();
-      await expect(root.getByRole("region")).toHaveCount(0);
       await expect(button).toBeVisible();
-      expect(await page.evaluate(() => localStorage.getItem("sagara_consultation_dismissed"))).toBe("true");
       await page.reload();
       await expect(page.getByTestId("floating-consultation").getByRole("link")).toBeVisible();
-      await expect(page.getByRole("region", { name: "Konsultasi SAGARA" })).toHaveCount(0);
+      await expect(page.getByRole("region", { name: "Konsultasi SAGARA" })).not.toBeVisible();
       await page.evaluate(() => localStorage.removeItem("sagara_consultation_dismissed"));
     }
     expect(errors).toEqual([]);

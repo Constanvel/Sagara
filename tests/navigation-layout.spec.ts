@@ -42,8 +42,15 @@ test("every route renders one shared footer outside main", async ({ page }) => {
 test("service shield viewport centers the actual artwork without offsets", async ({ page }) => {
   await page.goto("/layanan");
   const shield = page.locator('img[src$="/service-security.svg"]');
-  await expect(shield).toHaveAttribute("width", "24");
-  await expect(shield).toHaveAttribute("height", "30");
+  await expect(shield).toHaveAttribute("width", "22");
+  await expect(shield).toHaveAttribute("height", "28");
+  const centering = await shield.evaluate(image => {
+    const icon = image.getBoundingClientRect();
+    const slot = image.parentElement!.getBoundingClientRect();
+    return { x: Math.abs(icon.x + icon.width / 2 - slot.x - slot.width / 2), y: Math.abs(icon.y + icon.height / 2 - slot.y - slot.height / 2) };
+  });
+  expect(centering.x).toBeLessThanOrEqual(1);
+  expect(centering.y).toBeLessThanOrEqual(1);
   const svg = await (await page.request.get("/images/figma/service-security.svg")).text();
   expect(svg).toContain('viewBox="0 3 24 30"');
   expect(svg).toContain('preserveAspectRatio="xMidYMid meet"');

@@ -15,6 +15,7 @@ for (const width of [375, 390, 412, 768, 1024, 1440]) {
     await page.getByRole("button", { name: "Foto", exact: true }).click();
     await expect(page.getByRole("button", { name: "Foto", exact: true })).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("main article[data-media-id]")).toHaveCount(photos.length);
+    await page.locator("details > summary").click();
     for (const image of await page.locator("main article img").all()) {
       await image.scrollIntoViewIfNeeded();
       await expect(image).toHaveAttribute("alt", /\S+/);
@@ -70,7 +71,8 @@ test("fast scrolling and live reduced motion leave all reveals visible", async (
 test("instant scroll jumps in both directions expose viewport cards without reduced motion", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 500 });
   await page.goto("/galeri");
-  await expect(page.getByRole("region", { name: "Konsultasi SAGARA", exact: true })).toBeVisible({ timeout: 7000 });
+  await expect(page.getByTestId("floating-consultation")).toBeVisible();
+  await page.locator("details > summary").click();
   const cards = page.locator("main article[data-media-id]");
   for (const index of [18, 6, 24, 3]) {
     await cards.nth(index).evaluate(el => el.scrollIntoView({ block: "center", behavior: "instant" }));
@@ -86,5 +88,8 @@ test("gallery remains visible without JavaScript", async ({ browser }) => {
   await expect(page.getByRole("heading", { name: "Cerita para jagoan" })).toBeVisible();
   await expect(page.locator("main article[data-media-id]")).toHaveCount(galleryMedia.length);
   expect(await page.locator("main article").first().evaluate(el => getComputedStyle(el).opacity)).toBe("1");
+  await expect(page.locator("main article[data-media-id]:visible")).toHaveCount(3);
+  await page.locator("details > summary").click();
+  await expect(page.locator("main article[data-media-id]:visible")).toHaveCount(galleryMedia.length);
   await context.close();
 });

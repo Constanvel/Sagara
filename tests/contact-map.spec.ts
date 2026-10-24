@@ -7,6 +7,8 @@ test("contact map makes no third-party requests until explicitly activated", asy
   });
   await page.route("https://www.google.com/maps/**", route => route.fulfill({ contentType: "text/html", body: "Map fixture" }));
   await page.goto("/kontak");
+  await expect(page.getByRole("heading", { level: 1, name: "Mari berkunjung.", exact: true })).toBeVisible();
+  await expect(page.locator("main")).toContainText("SAGARA di Banteran, Sumbang");
   const trigger = page.getByRole("button", { name: "Muat peta interaktif Google Maps" });
   await trigger.scrollIntoViewIfNeeded();
   await expect(trigger.getByRole("img")).toBeVisible();
@@ -19,16 +21,23 @@ test("contact map makes no third-party requests until explicitly activated", asy
   await expect.poll(() => thirdParty.length).toBe(1);
 });
 
-test("contact preview keeps the same map height and responsive slot", async ({ page }) => {
+test("contact preview and active map keep the same responsive geometry", async ({ page }) => {
+  await page.route("https://www.google.com/maps/**", route => route.fulfill({ contentType: "text/html", body: "Map fixture" }));
   for (const width of [360, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/kontak");
     const image = page.locator("main").getByAltText("Preview peta lokasi SAGARA di Banteran");
     await expect(image).toHaveAttribute("fetchpriority", "high");
     const bounds = await image.boundingBox();
-    expect(bounds?.height).toBe(220);
+    expect(bounds?.height).toBe(width >= 768 ? 220 : 160);
     const declared = width >= 1100 ? 455 : width >= 1024 ? (width - 190) / 2 : width >= 390 ? 295 : width - 95;
     expect(Math.abs(bounds!.width - declared)).toBeLessThan(2);
+    await page.getByRole("button", { name: "Muat peta interaktif Google Maps" }).click();
+    const iframe = page.getByTitle("Peta lokasi SAGARA Rumah Sunat Modern Banteran");
+    await expect(iframe).toBeVisible();
+    const activeBounds = await iframe.boundingBox();
+    expect(activeBounds?.height).toBe(bounds?.height);
+    expect(activeBounds?.width).toBe(bounds?.width);
   }
 });
 

@@ -23,6 +23,10 @@
 .contact h2 { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 800; color: #064a9b; }
 .contact p { margin-top: 7px; font-size: 10px; color: #68717b; }
 .contact .contactLink { padding: 0; justify-content: flex-start; font-size: 13px; color: #064a9b; }
+.additional { margin-top: 28px; }
+.additional summary { width: fit-content; min-height: 44px; margin-inline: auto; padding: 12px 18px; border: 1px solid #b9c6d5; border-radius: 12px; background: white; color: #064a9b; font-size: 14px; font-weight: 700; cursor: pointer; }
+.additional summary span { font-weight: 400; }
+.additional summary:focus-visible { outline: 3px solid #064a9b; outline-offset: 3px; }
 .section button { cursor: pointer; }
 .section button:focus-visible { outline: 3px solid #064a9b; outline-offset: 3px; }
 .dialog { position: fixed; inset: 0; margin: auto; width: min(920px, 94vw); max-height: 94dvh; padding: 20px; border: 0; border-radius: 20px; background: white; color: #102d50; overflow: auto; }

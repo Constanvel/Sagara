@@ -37,8 +37,18 @@ test("published contact facts and schema are readable without JavaScript", async
     for (const faq of faqs) await expect(page.getByText(faq.answer, { exact: true }).filter({ visible: true })).toBeVisible();
     await page.goto(`${baseURL}/layanan`);
     await expect(page.getByRole("heading", { name: "Panduan konsultasi dan pendaftaran khitan" })).toBeVisible();
+    const guide = page.getByRole("region", { name: "Panduan konsultasi dan pendaftaran khitan" });
+    await expect(guide.locator("details")).toHaveCount(3);
+    await expect(guide.locator("details[open]")).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "Tautan panduan konsultasi" }).getByRole("link", { name: "Buka formulir pendaftaran" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Pertanyaan sebelum menentukan pilihan" })).toBeVisible();
-    await expect(page.locator("main")).toContainText("Membuka tautan tidak otomatis mengirim pesan.");
+    for (const summary of await guide.locator("summary").all()) {
+      await expect(summary.getByRole("heading", { level: 3 })).toBeVisible();
+      await summary.click();
+    }
+    await expect(guide.locator("details[open]")).toHaveCount(3);
+    await expect(page.getByText(/Membuka tautan tidak otomatis mengirim pesan\./)).toBeVisible();
+    await expect(page.getByText(/Panduan ini tidak menyatakan adanya peninjauan medis/)).toBeVisible();
     await expect(page.locator("main")).toContainText("bukan petunjuk tindakan atau perawatan medis");
     await expect(page.getByRole("navigation", { name: "Tautan panduan konsultasi" }).getByRole("link", { name: "Buka formulir pendaftaran" })).toHaveAttribute("href", "/pendaftaran");
   } finally {

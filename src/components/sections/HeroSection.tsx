@@ -21,8 +21,8 @@ export function HeroSection() {
         <div className={styles.intro}>
           <p className={styles.eyebrow}><span aria-hidden="true" />Khitan modern . Banteran</p>
           <div aria-hidden="true" className={styles.mascot}><Image src="/images/media/sagara-hero-mascot-outline.webp" alt="" width={80} height={80} sizes="80px" /><Image src="/images/media/sagara-hero-mascot.webp" alt="" width={76} height={76} sizes="76px" /></div>
-          <h1 id="hero-title" className={styles.title}>SAGARA, Rumah Sunat Modern di Banteran, Sumbang</h1>
-          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Langkah berani si jagoan, dimulai di sini. Kenali layanan khitan modern SAGARA dan konsultasikan pilihan metode untuk anak maupun dewasa bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
+          <h1 id="hero-title" className={styles.title}>Langkah berani si jagoan, dimulai di sini.</h1>
+          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA di Banteran, Sumbang. Kenali pilihan layanan dan konsultasikan rencana perawatan untuk anak maupun dewasa bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
         </div>
         <div className={`hero-actions ${styles.actions}`}>
           <Link href="/pendaftaran" className={`cta-motion ${styles.register}`}>
@@ -37,7 +37,10 @@ export function HeroSection() {
       </div>
       <HeroCarousel />
     </div>
-    <div className="feature-grid mx-auto mt-10 grid max-w-[1200px] grid-cols-2 gap-x-[18px] gap-y-[14px] px-[21px] lg:mt-1 lg:grid-cols-4 lg:gap-4 lg:px-8">{highlights.map(item => <article key={item.title} className="min-w-0 rounded-[20px] bg-[#dee6f3] px-[15px] py-3 shadow-[4px_4px_4px_rgba(0,0,0,0.25)] lg:rounded-2xl lg:border lg:border-[#e3eaf5] lg:bg-white lg:p-5 lg:shadow-[0_4px_16px_rgba(21,61,117,0.04)]"><div className="flex min-h-7 items-center gap-2"><Asset name={item.icon} width={28} height={28} className="h-7 w-7 shrink-0" /><h2 className="text-[13px] leading-5 font-bold text-navy lg:text-[15px]">{item.title}</h2></div><p className="mt-2 text-[9px] leading-[15px] text-[#434652] lg:text-xs lg:leading-5">{item.copy}</p></article>)}</div>
+    <section aria-labelledby="highlights-title" className="mx-auto mt-8 max-w-[1200px] px-[21px] lg:mt-4 lg:px-8">
+      <h2 id="highlights-title" className="mb-6 text-center text-[24px] leading-[1.3] font-bold text-ink lg:text-[28px]">Tenang Bersama Sagara</h2>
+      <div className="feature-grid grid grid-cols-2 gap-x-[18px] gap-y-[14px] lg:grid-cols-4 lg:gap-4">{highlights.map(item => <article key={item.title} className="min-w-0 rounded-[20px] border border-primary/50 border-b-[3px] border-b-navy bg-[#dee6f3] px-[13px] py-3 lg:p-5"><div className="flex min-h-7 items-start gap-2"><Asset name={item.icon} width={28} height={28} className="h-7 w-7 shrink-0" /><h3 className="text-[13px] leading-5 font-bold text-navy lg:text-[15px]">{item.title}</h3></div><p className="mt-2 text-[11px] leading-[1.6] text-[#434652] lg:text-xs lg:leading-5">{item.copy}</p></article>)}</div>
+    </section>
     <div className="absolute right-0 bottom-0 left-0"><DecorativeRibbon /></div>
   </section>;
 }

@@ -90,6 +90,7 @@ export function BenefitsSection() {
         </div>
         <p className="text-xs leading-[1.65] text-muted">Konfirmasikan fasilitas yang termasuk, ketersediaan, ketentuan kontrol, dan kemungkinan biaya tambahan dengan admin saat reservasi.</p>
       </div>
+      <div className="-mx-6 mt-10 md:-mx-8"><DecorativeRibbon /></div>
     </section>
   );
 }
@@ -110,6 +111,7 @@ export function HomecareSection() {
           </div>
         </div>
       </div>
+      <div className="-mx-6 mt-10 md:-mx-8"><DecorativeRibbon /></div>
     </section>
   );
 }

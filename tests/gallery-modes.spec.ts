@@ -16,7 +16,7 @@ for (const width of [360, 390, 412, 768, 1280, 1440, 1920]) {
     await page.goto("/galeri");
     const cards = page.locator("article[data-media-id]");
     const ids = () => cards.evaluateAll(elements => elements.map(el => el.getAttribute("data-media-id")));
-    const boxes = () => cards.evaluateAll(elements => elements.map(el => {
+    const boxes = () => page.locator("article[data-media-id]:visible").evaluateAll(elements => elements.map(el => {
       const { x, y, width, height } = el.querySelector("img")!.getBoundingClientRect();
       return { x, y, width, height };
     }));
@@ -36,6 +36,7 @@ for (const width of [360, 390, 412, 768, 1280, 1440, 1920]) {
     expect(await ids()).toEqual(photos.map(item => item.id));
     await expect(page.locator("article[data-media-type='video']")).toHaveCount(0);
     await expect(page.getByRole("status")).toHaveText("Foto: 24 foto, 0 video.");
+    await page.locator("details > summary").click();
     const photoBoxes = await boxes();
     for (const box of photoBoxes) {
       expect(Math.abs(box.width - photoBoxes[0].width)).toBeLessThan(1);
@@ -49,6 +50,7 @@ for (const width of [360, 390, 412, 768, 1280, 1440, 1920]) {
     expect(await ids()).toEqual(videos.map(item => item.id));
     await expect(page.getByRole("status")).toHaveText("Video: 0 foto, 5 video.");
     await expect(page.getByText("5 video cerita dan suasana Sagara. Pilih video untuk menonton.")).toBeVisible();
+    await page.locator("details > summary").click();
     const videoBoxes = await boxes();
     for (const box of videoBoxes) expect(Math.abs(box.width / box.height - 16 / 9)).toBeLessThan(0.01);
     if (width < 768) expect(videoBoxes[1].y).toBeGreaterThan(videoBoxes[0].y);

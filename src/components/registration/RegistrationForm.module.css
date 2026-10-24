@@ -8,16 +8,12 @@
 .intro h1 { margin: 0; font-size: clamp(28px, 7.77vw, 32px); line-height: 1.23; font-weight: 800; letter-spacing: -.035em; scroll-margin-top: 80px; }
 .intro h1:focus { outline: none; }
 .intro p { margin: 14px 0 0; max-width: 620px; font-size: 12px; line-height: 1.65; color: var(--color-muted); }
-.stepper { display: flex; align-items: center; padding: 0; margin: 12px 0 18px; list-style: none; gap: 10px; }
-.stepper li { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--color-muted); font-size: 10px; }
+.stepper { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; padding: 0; margin: 18px 0 24px; list-style: none; gap: 12px; }
+.stepper li { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 0; color: var(--color-muted); font-size: 11px; line-height: 1.5; text-align: center; }
 .stepper li > span:last-child { min-width: 0; }
-.stepNumber { flex-shrink: 0; }
-.stepper li:not(:last-child) { flex: 1; }
-.stepper li:not(:last-child)::after { content: ""; flex: 1; min-width: 8px; height: 1px; background: #7b8da4; margin-left: 0; }
-.stepNumber { display: inline; }
-.stepper [data-state="active"] .stepNumber, .stepper [data-state="completed"] .stepNumber { display: grid; place-items: center; min-width: 31px; height: 31px; border-radius: 50%; background: #073374; color: white; font-size: 12px; font-weight: 800; }
+.stepNumber { display: grid; place-items: center; flex-shrink: 0; width: 31px; height: 31px; border: 1px solid #7b8da4; border-radius: 50%; font-size: 12px; font-weight: 800; }
+.stepper [data-state="active"] .stepNumber, .stepper [data-state="completed"] .stepNumber { border-color: #073374; background: #073374; color: white; }
 .stepper [data-state="completed"] .stepNumber { background: var(--color-primary); }
-.stepper [data-state="upcoming"] .stepNumber::after { content: "."; }
 .form { display: flex; flex-direction: column; gap: 26px; }
 .field { display: flex; flex-direction: column; min-width: 0; gap: 8px; }
 .field label, .form legend { font-size: 13px; line-height: 1.4; font-weight: 800; }
@@ -53,6 +49,7 @@
 .personal { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px 24px; }
 .personal [data-field="guardian"], .personal [data-field="whatsapp"] { grid-column: 1/-1; }
 .consent label { display: flex; gap: 11px; align-items: flex-start; font-size: 12px; color: var(--color-muted); line-height: 1.65; }
+.consentCopy { display: grid; gap: 8px; }
 .consent input { width: 18px; height: 18px; margin: 3px 0 0; flex: 0 0 18px; accent-color: var(--color-primary); }
 .primary, .secondary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 10px; min-height: 44px; padding: 11px 18px; border: 1px solid #073374; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
 .primary { background: #073374; color: white; }

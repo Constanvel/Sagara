@@ -24,6 +24,7 @@ test("filters show accurate counts and lightbox navigates only the filtered coll
   await page.getByRole("button", { name: "Foto", exact: true }).click();
   await expect(cards).toHaveCount(photos.length);
   await expect(page.getByRole("status")).toHaveText(`Foto: ${photos.length} foto, 0 video.`);
+  await page.locator("details > summary").click();
   await cards.last().getByRole("button").click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading")).toHaveText(photos.at(-1)!.title);
@@ -104,4 +105,9 @@ test("video playback failure displays an accessible recovery link", async ({ pag
   await dialog.locator("video").evaluate((el: HTMLVideoElement) => { void el.play().catch(() => {}); });
   await expect(dialog.getByRole("status")).toContainText("Video tidak dapat diputar", { timeout: 15000 });
   await expect(dialog.getByRole("link", { name: "Buka video langsung" })).toHaveAttribute("href", videos[0].src);
+  // Late media lifecycle events must not hide the recovery action.
+  await dialog.locator("video").evaluate(element => {
+    for (const type of ["loadstart", "waiting", "canplay", "playing"]) element.dispatchEvent(new Event(type));
+  });
+  await expect(dialog.getByRole("status")).toContainText("Video tidak dapat diputar");
 });

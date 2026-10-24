@@ -4,7 +4,7 @@
 .eyebrow { display: flex; align-items: center; gap: 6px; font-size: 11px; line-height: 14px; font-weight: 800; text-transform: uppercase; color: white; }
 .eyebrow > span { width: 18px; height: 3px; border-radius: 3px; background: #002869; }
 .title { position: relative; margin-top: 17px; font-size: clamp(24px, 7.767vw, 32px); font-weight: 800; line-height: 1.23; color: white; text-shadow: 0 2px 4px rgb(0 0 0 / 25%); }
-.title > span { display: block; white-space: nowrap; }
+.title::before { content: ""; float: right; width: 72px; height: 38px; margin-left: 8px; }
 .mascot { position: absolute; top: 16px; right: 16px; width: 80px; height: 64px; pointer-events: none; }
 .mascot { overflow: hidden; }
 .mascot img { position: absolute; top: 0; left: 0; width: 100%; height: auto; max-width: none; }
@@ -27,6 +27,7 @@
   .copy { border-radius: 24px; padding: 32px 24px 48px; min-height: 420px; background-size: cover; }
   .intro { padding: 0; }
   .title { font-size: clamp(30px, 2.7vw, 42px); margin-top: 28px; }
+  .title::before { width: 68px; height: 22px; }
   .mascot { top: -16px; right: -12px; }
   .description { margin: 28px 10px 0 0; font-size: 15px; line-height: 1.65; }
 }

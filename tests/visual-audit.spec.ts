@@ -65,6 +65,8 @@ for (const width of widths) {
       if (route === "/galeri") {
         expect(videoRequests, "gallery must not request video before user interaction").toEqual([]);
         expect(await page.locator("video").evaluateAll(videos => videos.flatMap(video => [video.getAttribute("src"), ...Array.from(video.querySelectorAll("source"), source => source.getAttribute("src"))]).filter(Boolean)), "gallery videos must have no initial source").toEqual([]);
+        // Audit the entire collection, including media hidden by the native disclosure.
+        await page.locator("main details summary", { hasText: "Lihat media lainnya" }).click();
       }
       const header = page.locator("header.site-header");
       const bottomNav = page.getByRole("navigation", { name: "Navigasi bawah", exact: true });
@@ -85,10 +87,16 @@ for (const width of widths) {
       }
       await page.setViewportSize({ width, height: 900 });
       await scrollEntirePage(page);
-      // Wait for the delayed widget before checking images; an empty image queue
-      // before it mounts does not mean its mascot has finished loading.
-      await expect(page.getByRole("region", { name: "Konsultasi SAGARA", exact: true })).toBeVisible({ timeout: 10_000 });
-      await expect.poll(() => page.locator("img").evaluateAll(elements => elements.filter(element => { const image = element as HTMLImageElement; return !image.complete || !image.naturalWidth; }).length), { timeout: 30_000 }).toBe(0);
+      // Wait for the delayed desktop bubble before checking its mascot image.
+      // Mobile retains only the compact consultation button.
+      const bubble = page.getByRole("region", { name: "Konsultasi SAGARA", exact: true, includeHidden: true });
+      await expect(page.getByRole("link", { name: "Konsultasi melalui WhatsApp (dibuka di tab baru)", exact: true })).toBeVisible();
+      if (width < 1024) await expect(bubble).toBeHidden();
+      else await expect(bubble).toBeVisible({ timeout: 10_000 });
+      // The delayed bubble can mount after the initial image pass, even when
+      // CSS hides it on mobile. Verify that new lazy image too.
+      await page.locator("img").evaluateAll(images => images.forEach(image => { (image as HTMLImageElement).loading = "eager"; }));
+      await expect.poll(() => page.locator("img").evaluateAll(elements => elements.filter(element => { const image = element as HTMLImageElement; return !image.complete || !image.naturalWidth; }).map(image => (image as HTMLImageElement).currentSrc || (image as HTMLImageElement).src)), { timeout: 30_000 }).toEqual([]);
       const media = await page.locator("img, video").evaluateAll(elements => elements.map(element => {
         const box = element.getBoundingClientRect();
         const css = getComputedStyle(element);

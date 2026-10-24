@@ -3,15 +3,27 @@ import { motion } from "../src/lib/motion";
 
 async function ready(page: import("@playwright/test").Page) {
   await page.goto("/galeri");
-  // Wait for client effects, not merely server-rendered card visibility.
-  await expect(page.getByRole("region", { name: "Konsultasi SAGARA", exact: true })).toBeVisible({ timeout: 7000 });
+  const bubble = page.getByRole("region", { name: "Konsultasi SAGARA", exact: true, includeHidden: true });
+  await expect(page.getByRole("link", { name: "Konsultasi melalui WhatsApp (dibuka di tab baru)", exact: true })).toBeVisible();
+  if (page.viewportSize()!.width < 1024) await expect(bubble).toBeHidden();
+  else await expect(bubble).toBeVisible({ timeout: 7000 });
+}
+
+async function expandGallery(page: import("@playwright/test").Page) {
+  const additional = page.locator("main details").filter({ has: page.locator("summary", { hasText: "Lihat media lainnya" }) });
+  if (!await additional.evaluate((element: HTMLDetailsElement) => element.open)) {
+    await additional.locator("summary").click();
+  }
+  await expect(additional).toHaveAttribute("open", "");
+  await page.evaluate(() => scrollTo(0, 0));
 }
 
 test("offscreen reveals are prepared before entry, have no stagger and run once", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 500 });
   await ready(page);
-  const cards = page.locator("main article[data-media-id]");
-  const card = cards.nth(6);
+  await page.getByRole("button", { name: "Foto", exact: true }).click();
+  // The initial photo grid still contains offscreen targets before disclosure.
+  const card = page.locator('main article[data-media-type="photo"]').nth(5);
   await expect.poll(() => card.evaluate(el => el.getAnimations()[0]?.playState)).toBe("paused");
   const timing = await card.evaluate(el => {
     const animation = el.getAnimations()[0];
@@ -37,6 +49,7 @@ test("initial viewport stays painted and scroll jumps reveal content immediately
   await ready(page);
   await expect(page.locator("main article").first()).toHaveCSS("opacity", "1");
   expect(await page.locator("main article").first().evaluate(el => el.getAnimations().length)).toBe(0);
+  await expandGallery(page);
   const card = page.locator("main article[data-media-id]").nth(12);
   await card.evaluate(el => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await expect(card).toHaveCSS("opacity", "1");
@@ -49,7 +62,7 @@ test("new filter cards are registered and live reduced motion clears paused reve
   await page.getByRole("button", { name: "Foto", exact: true }).click();
   await expect(page.locator('main article[data-media-type="video"]')).toHaveCount(0);
   await page.getByRole("button", { name: "Video", exact: true }).click();
-  const last = page.locator('main article[data-media-type="video"]').last();
+  const last = page.locator('main article[data-media-type="video"]').nth(1);
   await expect.poll(() => last.evaluate(el => el.getAnimations()[0]?.playState)).toBe("paused");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect.poll(() => page.locator("main article").evaluateAll(elements => elements.every(el => getComputedStyle(el).opacity === "1" && el.getAnimations().length === 0))).toBe(true);
@@ -58,7 +71,8 @@ test("new filter cards are registered and live reduced motion clears paused reve
 test("live reduced motion clears running reveals as well as pending targets", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 500 });
   await ready(page);
-  const card = page.locator("main article[data-media-id]").nth(6);
+  await page.getByRole("button", { name: "Foto", exact: true }).click();
+  const card = page.locator('main article[data-media-type="photo"]').nth(5);
   await card.evaluate((el, distance) => {
     scrollTo({ top: el.getBoundingClientRect().top + scrollY - distance - (innerHeight - 20), behavior: "instant" });
   }, motion.revealDistance);
@@ -82,13 +96,15 @@ for (const support of ["missing", "throws", "no-observer", "legacy-media-query"]
       else Object.defineProperty(Element.prototype, "animate", { configurable: true, value: value === "missing" ? undefined : () => { throw new Error("Animation unavailable"); } });
     }, support);
     await ready(page);
+    await expandGallery(page);
     expect(await page.locator("main article").evaluateAll(elements => elements.every(el => getComputedStyle(el).opacity === "1"))).toBe(true);
   });
 }
 
 test("cards in the same desktop row enter together without index delays", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: 1440, height: 500 });
   await ready(page);
+  await page.getByRole("button", { name: "Foto", exact: true }).click();
   const pair = await page.locator("main article[data-media-id]").evaluateAll(elements => {
     for (let index = 1; index < elements.length - 1; index++) {
       const a = elements[index].getBoundingClientRect();
@@ -112,13 +128,18 @@ test("cards in the same desktop row enter together without index delays", async 
 test("client navigation and restored gallery scroll leave viewport cards visible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 500 });
   await ready(page);
-  await page.locator("main article[data-media-id]").nth(12).scrollIntoViewIfNeeded();
+  await expandGallery(page);
+  const restoredCard = page.locator("main article[data-media-id]").nth(12);
+  await restoredCard.scrollIntoViewIfNeeded();
   await page.locator('footer a[href="/kebijakan-privasi"]').click();
   await expect(page).toHaveURL(/kebijakan-privasi$/);
   await page.goBack();
   await expect(page).toHaveURL(/galeri$/);
+  await expandGallery(page);
+  await restoredCard.scrollIntoViewIfNeeded();
+  await expect(restoredCard).toHaveCSS("opacity", "1");
   await expect.poll(() => page.locator("main article[data-media-id]").evaluateAll(elements => {
-    const visible = elements.filter(el => { const box = el.getBoundingClientRect(); return box.top < innerHeight - 120 && box.bottom > 0; });
+    const visible = elements.filter(el => { const box = el.getBoundingClientRect(); return box.width > 0 && box.height > 0 && box.top < innerHeight - 120 && box.bottom > 0; });
     return visible.length > 0 && visible.every(el => getComputedStyle(el).opacity === "1");
   })).toBe(true);
 });
@@ -126,7 +147,8 @@ test("client navigation and restored gallery scroll leave viewport cards visible
 test("keyboard focus releases an offscreen reveal", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 500 });
   await ready(page);
-  const card = page.locator("main article[data-media-id]").nth(6);
+  await page.getByRole("button", { name: "Foto", exact: true }).click();
+  const card = page.locator('main article[data-media-type="photo"]').nth(5);
   await card.locator("button").focus();
   await expect(card).toHaveCSS("opacity", "1");
   expect(await card.evaluate(el => el.getAnimations().length)).toBe(0);
