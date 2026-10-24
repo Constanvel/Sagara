@@ -19,6 +19,51 @@ test("privacy information is readable without JavaScript and linked from registr
   }
 });
 
+test("opening privacy information in a new tab preserves the registration draft", async ({ page, context }) => {
+  const identities = ["Wali Draf Sintetis", "Pasien Draf Sintetis", "081234560947"];
+  const leaked: string[] = [];
+  context.on("request", request => {
+    const raw = `${request.url()} ${request.postData() ?? ""}`;
+    let decoded = raw;
+    try { decoded = decodeURIComponent(raw); } catch { /* Check raw values too. */ }
+    if (identities.some(value => decoded.includes(value))) leaked.push(request.url());
+  });
+  await page.goto("/pendaftaran?layanan=bayi&paket=modern");
+  await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-01");
+  await page.getByRole("button", { name: "10.00", exact: true }).click();
+  await page.getByLabel("Nama orang tua / wali").fill(identities[0]);
+  await page.getByLabel("Nama pasien", { exact: true }).fill(identities[1]);
+  await page.getByLabel("Usia (tahun)").fill("7");
+  await page.getByLabel("Nomor WhatsApp", { exact: true }).fill(identities[2]);
+  await page.getByRole("checkbox").check();
+  const link = page.locator("form").getByRole("link", { name: "Kebijakan Privasi", exact: true });
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(link).toHaveAccessibleDescription("(dibuka di tab baru)");
+  const popupPromise = page.waitForEvent("popup");
+  await link.click();
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL(/\/kebijakan-privasi$/);
+  await expect(popup.getByRole("heading", { level: 1 })).toHaveText("Kebijakan Privasi");
+  expect(await popup.evaluate(() => window.opener === null)).toBe(true);
+  await popup.close();
+  await expect(page).toHaveURL(/\/pendaftaran\?layanan=bayi&paket=modern$/);
+  await expect(page.getByLabel("Layanan", { exact: true })).toHaveValue("bayi");
+  await expect(page.getByRole("button", { name: "Pilih Paket Modern" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Tanggal yang diinginkan")).toHaveValue("2099-12-01");
+  await expect(page.getByRole("button", { name: "10.00", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Nama orang tua / wali")).toHaveValue(identities[0]);
+  await expect(page.getByLabel("Nama pasien", { exact: true })).toHaveValue(identities[1]);
+  await expect(page.getByLabel("Usia (tahun)")).toHaveValue("7");
+  await expect(page.getByLabel("Nomor WhatsApp", { exact: true })).toHaveValue(identities[2]);
+  await expect(page.getByRole("checkbox")).toBeChecked();
+  expect(await page.evaluate(values => {
+    const stored = JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage }, cookie: document.cookie });
+    return values.some(value => stored.includes(value));
+  }, identities)).toBe(false);
+  expect(leaked).toEqual([]);
+});
+
 test("privacy page fits narrow and desktop screens with accessible content", async ({ page }) => {
   await page.goto("/kebijakan-privasi");
   await page.evaluate(() => document.fonts.ready);

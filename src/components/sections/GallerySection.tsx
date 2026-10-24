@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ContactAction } from "@/components/ui/ContactAction";
 import { galleryMedia } from "@/data/media";
+import { acquireScrollLock } from "@/lib/scroll-lock";
 import styles from "./GallerySection.module.css";
 
 const filters = ["Semua", "Foto", "Video"] as const;
@@ -55,11 +56,10 @@ export function GallerySection() {
     if (!isOpen) return;
     const modal = dialog.current;
     modal?.showModal();
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScrollLock = acquireScrollLock();
     return () => {
       modal?.close();
-      document.body.style.overflow = previous;
+      releaseScrollLock();
       trigger.current?.focus({ preventScroll: true });
     };
   }, [isOpen]);

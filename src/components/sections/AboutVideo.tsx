@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { serviceVideo } from "@/data/media";
+import { acquireScrollLock } from "@/lib/scroll-lock";
 import styles from "./AboutVideo.module.css";
 
 export function AboutVideo() {
@@ -18,12 +19,11 @@ export function AboutVideo() {
     const player = video.current;
     const button = trigger.current;
     modal?.showModal();
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScrollLock = acquireScrollLock();
     return () => {
       player?.pause();
       modal?.close();
-      document.body.style.overflow = overflow;
+      releaseScrollLock();
       button?.focus({ preventScroll: true });
     };
   }, [open]);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "@/lib/motion";
+import { acquireScrollLock } from "@/lib/scroll-lock";
 import styles from "./Navigation.module.css";
 
 const mobileLinks = [
@@ -48,8 +49,7 @@ export function Header() {
 
   useEffect(() => {
     if (!open) return;
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const releaseScrollLock = acquireScrollLock();
     const focusTimer = window.setTimeout(() => menu.current?.querySelector<HTMLAnchorElement>("a")?.focus({ preventScroll: true }), 50);
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") { setOpen(false); toggle.current?.focus({ preventScroll: true }); }
@@ -66,7 +66,7 @@ export function Header() {
     document.addEventListener("keydown", onKey);
     return () => {
       window.clearTimeout(focusTimer);
-      document.body.style.overflow = overflow;
+      releaseScrollLock();
       desktop.removeEventListener("change", onResize);
       document.removeEventListener("keydown", onKey);
     };
@@ -94,12 +94,13 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   // Paket belongs to the Layanan catalog and remains accessible through its tabs.
   const items = links;
-  const activeIndex = Math.max(0, items.findIndex(item => pathname === item.href || (pathname === "/paket" && item.href === "/layanan")));
+  const activeIndex = items.findIndex(item => pathname === item.href || (pathname === "/paket" && item.href === "/layanan"));
   const iconRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const previousIndex = useRef(activeIndex);
   useEffect(() => {
     if (previousIndex.current === activeIndex) return;
     previousIndex.current = activeIndex;
+    if (activeIndex < 0) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const element = iconRefs.current[activeIndex];
     const animation = element?.animate([
@@ -110,7 +111,7 @@ export function MobileBottomNav() {
     return () => animation?.cancel();
   }, [activeIndex]);
   return <nav aria-label="Navigasi bawah" className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_0_4px_rgba(0,0,0,0.25)] lg:hidden"><div className="bottom-nav-track relative mx-auto grid h-[69px] max-w-[600px] grid-cols-4">
-    <span aria-hidden="true" data-testid="bottom-nav-indicator" className="bottom-nav-indicator pointer-events-none absolute top-0 left-0 h-px w-1/4" style={{ transform: `translateX(${activeIndex * 100}%)`, transitionDuration: `${motion.indicator}ms`, transitionTimingFunction: motion.spring }}><span className="mx-auto block h-px w-12 bg-primary" /></span>
+    {activeIndex >= 0 && <span aria-hidden="true" data-testid="bottom-nav-indicator" className="bottom-nav-indicator pointer-events-none absolute top-0 left-0 h-px w-1/4" style={{ transform: `translateX(${activeIndex * 100}%)`, transitionDuration: `${motion.indicator}ms`, transitionTimingFunction: motion.spring }}><span className="mx-auto block h-px w-12 bg-primary" /></span>}
     {items.map((item, index) => {
     const active = pathname === item.href || (pathname === "/paket" && item.href === "/layanan");
     const content = <><span ref={element => { iconRefs.current[index] = element; }} aria-hidden="true" className="bottom-nav-icon relative block h-[19px] w-[19px]" data-active={active}><span className="nav-icon-layer absolute inset-0 block bg-current" style={{ maskImage: `url(/images/figma/${item.icon})`, maskSize: "contain", maskPosition: "center", maskRepeat: "no-repeat" }} /></span><span>{item.label}</span></>;

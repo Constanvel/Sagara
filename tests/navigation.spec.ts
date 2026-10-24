@@ -24,6 +24,36 @@ for (const width of [412, 1440]) {
   });
 }
 
+test("bottom navigation only marks matching routes, including history navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const nav = page.getByRole("navigation", { name: "Navigasi bawah", exact: true });
+  const indicator = nav.getByTestId("bottom-nav-indicator");
+  for (const [route, index, label] of [["/", 0, "Beranda"], ["/layanan", 1, "Layanan"], ["/paket", 1, "Layanan"], ["/galeri", 2, "Galeri"], ["/kontak", 3, "Kontak"]] as const) {
+    await page.goto(route);
+    await expect(indicator).toBeVisible();
+    await expect(indicator).toHaveAttribute("style", new RegExp(`translateX\\(${index * 100}%\\)`));
+    await expect(nav.locator("a[aria-current]")).toHaveCount(1);
+    await expect(nav.getByRole("link", { name: label, exact: true })).toHaveAttribute("aria-current", route === "/paket" ? "true" : "page");
+  }
+  for (const route of ["/pendaftaran", "/kebijakan-privasi", "/navigation-missing-page"]) {
+    await page.goto(route);
+    await expect(indicator).toHaveCount(0);
+    await expect(nav.locator("a[aria-current]")).toHaveCount(0);
+  }
+  await page.goto("/");
+  await page.getByRole("link", { name: "Daftar khitan", exact: true }).first().click();
+  await expect(page).toHaveURL(/\/pendaftaran$/);
+  await expect(indicator).toHaveCount(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(indicator).toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(/\/pendaftaran$/);
+  await expect(indicator).toHaveCount(0);
+  expect(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === "running").length)).toBe(0);
+});
+
 test("mobile menu locks scroll and restores focus", async ({ page }) => {
   await page.setViewportSize({ width: 412, height: 900 });
   await page.goto("/layanan");
