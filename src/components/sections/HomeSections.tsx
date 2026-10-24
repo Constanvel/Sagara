@@ -37,7 +37,7 @@ export function MethodsSection() {
             <article key={method.title} className={`flex min-w-0 flex-col justify-between rounded-2xl bg-[#f0f2f6] p-6 shadow-sm ${index === 0 ? "min-h-[418px]" : "min-h-[446px]"} ${index === 2 ? "mt-[5px] md:mt-0" : ""} lg:min-h-[360px] lg:border lg:border-[#e3eaf5] lg:bg-[#f7f9fc] lg:p-6 lg:shadow-[0_4px_18px_rgba(21,61,117,0.04)]`}>
               <div>
                 <div className="mb-4 flex min-h-10 items-center justify-between gap-2">
-                  {method.badge ? <span className={`rounded-full px-3 py-1 text-[11px] leading-4 font-bold tracking-[0.44px] ${index === 0 ? "bg-[#ffdad6] text-[#b7131a]" : "bg-[#dae2ff] text-navy"}`}>{method.badge}</span> : <span />}
+                  {method.badge ? <span className={`rounded-full px-3 py-1 text-[11px] leading-4 font-bold tracking-[0.44px] ${index === 0 ? "bg-[#ffdad6] text-[#b7131a]" : index === 1 ? "bg-[#dae2ff] text-navy" : "bg-[#d1e5fb] text-[#1b2e3e]"}`}>{method.badge}</span> : <span />}
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#e7eeff]"><Asset name={method.icon} width={19} height={index === 0 ? 24 : index === 1 ? 16 : 19} /></span>
                 </div>
                 <h3 className="max-w-[280px] text-xl leading-7 font-bold text-navy">{method.title}</h3>

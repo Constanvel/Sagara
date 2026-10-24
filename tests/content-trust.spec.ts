@@ -11,10 +11,35 @@ test("packages restore the original Figma prices and retain registration IDs", (
   for (const item of packages) expect(item.priceStatus).toBe("reference-price");
 });
 
-test("unreviewed promotional copy does not guarantee free follow-up or equate laser and cauter", () => {
-  const cauter = methods.find(item => item.icon === "cauter.svg")!;
-  expect(cauter.title).not.toMatch(/laser\s*\//i);
-  expect(cauter.description).toContain("perbedaan istilah laser dan cauter");
+// These three cards use the Figma copy explicitly requested by the user.
+// This checks editorial fidelity, not clinical verification of the claims.
+test("procedure cards preserve the user-requested Figma explanations", () => {
+  expect(methods.map(({ title, badge, description, bullets, action }) => ({ title, badge, description, bullets, action }))).toEqual([
+    {
+      title: "Tekhno Klamp / Smart Klamp",
+      badge: "Terpopuler Anak",
+      description: "Tabung pelindung sekali pakai (disposable). Perlindungan optimal dari gesekan pampers & celana.",
+      bullets: ["Anti air, bisa mandi langsung", "Tanpa perban atau jahitan", "Usia: 0 Bulan - 12 Tahun"],
+      action: "Tanya Metode Klamp",
+    },
+    {
+      title: "Bius Comfort-In (Needle Free)",
+      badge: "Pilihan Pembiusan",
+      description: "Menembakkan cairan anestesi berkecepatan tinggi melalui pori-pori kulit secara instan dan tanpa jarum.",
+      bullets: ["Hilangkan phobia suntikan", "Reaksi kebas cepat (hitungan detik)", "Dapat dikombinasi ke semua metode"],
+      action: "Tanya Pilihan Pembiusan",
+    },
+    {
+      title: "Laser / Flash Cauter Medis",
+      badge: "Minim Perdarahan",
+      description: "Menggunakan generator panas mikro presisi untuk memotong sekaligus menutup pembuluh darah kecil.",
+      bullets: ["Tindakan cepat (10–15 menit)", "Cocok anak usia SD hingga Remaja", "Hemat & efisien biaya"],
+      action: "Tanya Metode Cauter",
+    },
+  ]);
+});
+
+test("unreviewed benefit copy does not guarantee free follow-up", () => {
   expect(JSON.stringify(benefits)).not.toMatch(/gratis|obat-obatan 3 hari|konsultasi sampai sembuh/i);
 });
 
