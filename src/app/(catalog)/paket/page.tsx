@@ -3,7 +3,7 @@ import { PackagesSection } from "@/components/sections/PackagesSection";
 
 export const metadata = pageMetadata(
   "Paket Khitan",
-  "Pilihan Paket Modern dan Top Sealer. Tanyakan rincian biaya dan fasilitas paket khitan kepada admin Sagara sebelum menentukan pilihan.",
+  "Pilihan Paket Modern dan Top Seller. Tanyakan rincian biaya dan fasilitas paket khitan kepada admin Sagara sebelum menentukan pilihan.",
   "/paket",
 );
 

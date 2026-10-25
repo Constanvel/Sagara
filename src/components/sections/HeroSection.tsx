@@ -22,7 +22,7 @@ export function HeroSection() {
           <p className={styles.eyebrow}><span aria-hidden="true" />Khitan modern . Banteran</p>
           <div aria-hidden="true" className={styles.mascot}><Image src="/images/media/sagara-hero-mascot-outline.webp" alt="" width={80} height={80} sizes="80px" /><Image src="/images/media/sagara-hero-mascot.webp" alt="" width={76} height={76} sizes="76px" /></div>
           <h1 id="hero-title" className={styles.title}>Langkah berani si jagoan, dimulai di sini.</h1>
-          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA di Banteran, Sumbang. Kenali pilihan layanan dan konsultasikan rencana perawatan untuk anak maupun dewasa bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>“</span></div>
+          <div className={styles.description}><span aria-hidden="true" className={styles.quoteStart}>“</span><p>Khitan modern bersama SAGARA di Banteran, Sumbang. Kenali pilihan layanan dan konsultasikan rencana perawatan untuk anak maupun dewasa bersama keluarga.</p><span aria-hidden="true" className={styles.quoteEnd}>”</span></div>
         </div>
         <div className={`hero-actions ${styles.actions}`}>
           <Link href="/pendaftaran" className={`cta-motion ${styles.register}`}>

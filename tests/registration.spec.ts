@@ -63,7 +63,7 @@ for (const width of [320, 360, 390, 412, 768, 1280, 1440, 1920]) {
 test("original package names and prices match across public and registration cards", async ({ page }) => {
   for (const route of ["/paket", "/pendaftaran"]) {
     await page.goto(route);
-    for (const [name, price] of [["Paket Modern", "Rp1.100.000"], ["Paket Top Sealer", "Rp900.000"]]) {
+    for (const [name, price] of [["Paket Modern", "Rp1.100.000"], ["Paket Top Seller", "Rp900.000"]]) {
       const card = page.locator("article").filter({ has: page.getByRole("heading", { name, exact: true }) });
       await expect(card.getByText(price, { exact: true })).toBeVisible();
       await expect(card.getByText("per pasien", { exact: true })).toBeVisible();
@@ -100,7 +100,7 @@ for (const [serviceId, title, modern, topSealer] of [
     await page.screenshot({ path: `test-results/registration-prices-${serviceId}.png`, fullPage: true });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(page.getByLabel("Layanan", { exact: true })).toHaveValue(serviceId);
-    for (const [name, price] of [["Paket Modern", modern], ["Paket Top Sealer", topSealer]]) {
+    for (const [name, price] of [["Paket Modern", modern], ["Paket Top Seller", topSealer]]) {
       const card = page.locator("article").filter({ has: page.getByRole("heading", { name, exact: true }) });
       await expect(card.getByText(price, { exact: true })).toBeVisible();
     }
@@ -111,7 +111,7 @@ for (const [serviceId, title, modern, topSealer] of [
     await page.getByLabel("Usia (tahun)").fill(valid.age);
     await page.getByLabel("Nomor WhatsApp", { exact: true }).fill(valid.whatsapp);
     await page.getByRole("checkbox").check();
-    for (const [name, price] of [["Paket Modern", modern], ["Paket Top Sealer", topSealer]]) {
+    for (const [name, price] of [["Paket Modern", modern], ["Paket Top Seller", topSealer]]) {
       await page.getByRole("button", { name: `Pilih ${name}`, exact: true }).click();
       await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
       await expect(page.locator("dd").getByText(title, { exact: true })).toBeVisible();
@@ -128,9 +128,9 @@ for (const [serviceId, title, modern, topSealer] of [
     for (const id of ["dewasa", "kebutuhan-khusus", "bayi", "anak-anak", serviceId]) {
       await page.getByLabel("Layanan", { exact: true }).selectOption(id);
       const expected = id === "dewasa" ? "Rp1.750.000" : id === "kebutuhan-khusus" ? "Rp1.500.000" : id === "khitan-gemuk" ? "Konfirmasi admin" : "Rp900.000";
-      const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Paket Top Sealer", exact: true }) });
+      const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Paket Top Seller", exact: true }) });
       await expect(card.getByText(expected, { exact: true })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Pilih Paket Top Sealer", exact: true })).toHaveAttribute("aria-pressed", "true");
+      await expect(page.getByRole("button", { name: "Pilih Paket Top Seller", exact: true })).toHaveAttribute("aria-pressed", "true");
     }
   });
 }
@@ -199,12 +199,12 @@ test(`three-step flow shares all latest data only after explicit consent at ${wi
   await page.setViewportSize({ width, height: 850 });
   await page.goto("/pendaftaran?paket=top-sealer&layanan=bayi");
   await expect(page.getByLabel("Layanan", { exact: true })).toHaveValue("bayi");
-  await expect(page.getByRole("button", { name: "Pilih Paket Top Sealer" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Pilih Paket Top Seller" })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
   await expect(page.locator("main").getByRole("alert")).toBeVisible();
   await expect(page.getByLabel("Tanggal yang diinginkan")).toBeFocused();
   await page.getByRole("button", { name: "Pilih Paket Modern" }).click();
-  await expect(page.getByRole("button", { name: "Pilih Paket Top Sealer" })).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByRole("button", { name: "Pilih Paket Top Seller" })).toHaveAttribute("aria-pressed", "false");
   await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-01");
   await page.getByLabel("Waktu yang diinginkan", { exact: true }).fill("10:00");
   await page.getByLabel("Nama orang tua / wali").fill(valid.guardian);
@@ -237,7 +237,7 @@ test(`three-step flow shares all latest data only after explicit consent at ${wi
   await page.getByLabel("Usia (tahun)").fill("8");
   await page.getByLabel("Nomor WhatsApp", { exact: true }).fill("+62 812-9999-8888");
   await page.getByLabel("Layanan", { exact: true }).selectOption("dewasa");
-  await page.getByRole("button", { name: "Pilih Paket Top Sealer" }).click();
+  await page.getByRole("button", { name: "Pilih Paket Top Seller" }).click();
   await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-02");
   await page.getByLabel("Waktu yang diinginkan", { exact: true }).fill("14:27");
   await page.getByRole("button", { name: "Tinjau Pendaftaran" }).click();
@@ -248,7 +248,7 @@ test(`three-step flow shares all latest data only after explicit consent at ${wi
   expect(url.hostname).toBe("wa.me");
   expect(url.pathname).toBe("/6287899777219");
   const message = url.searchParams.get("text")!;
-  for (const value of ["Halo Admin SAGARA! 👋", "📋 INFORMASI PENDAFTARAN", "👤 DATA PENDAFTAR", "Layanan: Khitan Dewasa", "Paket: Paket Top Sealer", "Biaya: Rp1.750.000", "Tanggal yang diinginkan: 2 Desember 2099", "Waktu yang diinginkan: 14:27 WIB", "Nama Orang Tua/Wali: Wali Baru & Ibu", "Nama Pasien: Pasien Baru & Putra + / é", "Usia Pasien: 8 tahun", "Nomor WhatsApp: +6281299998888", "Terima kasih! 🙏"]) expect(message).toContain(value);
+  for (const value of ["Halo Admin SAGARA! 👋", "📋 INFORMASI PENDAFTARAN", "👤 DATA PENDAFTAR", "Layanan: Khitan Dewasa", "Paket: Paket Top Seller", "Biaya: Rp1.750.000", "Tanggal yang diinginkan: 2 Desember 2099", "Waktu yang diinginkan: 14:27 WIB", "Nama Orang Tua/Wali: Wali Baru & Ibu", "Nama Pasien: Pasien Baru & Putra + / é", "Usia Pasien: 8 tahun", "Nomor WhatsApp: +6281299998888", "Terima kasih! 🙏"]) expect(message).toContain(value);
   for (const value of [valid.patient, valid.guardian, valid.whatsapp, "undefined", "null", "Rp0", "1.100.000", "Hubungi admin untuk biaya"]) expect(message).not.toContain(value);
   expect(page.url()).not.toContain("Pasien");
   await context.route("https://wa.me/**", route => route.fulfill({ status: 200, body: "WhatsApp mock" }));

@@ -5,7 +5,7 @@ import { packages, packagePriceLabel } from "../src/data/packages";
 test("packages restore the original Figma prices and retain registration IDs", () => {
   expect(packages.map(item => [item.id, item.name, item.price])).toEqual([
     ["modern", "Paket Modern", 1100000],
-    ["top-sealer", "Paket Top Sealer", 900000],
+    ["top-sealer", "Paket Top Seller", 900000],
   ]);
   expect(packages.map(packagePriceLabel)).toEqual(["Rp1.100.000", "Rp900.000"]);
   for (const item of packages) expect(item.priceStatus).toBe("reference-price");
@@ -19,14 +19,14 @@ test("procedure cards preserve the user-requested Figma explanations", () => {
       title: "Tekhno Klamp / Smart Klamp",
       badge: "Terpopuler Anak",
       description: "Tabung pelindung sekali pakai (disposable). Perlindungan optimal dari gesekan pampers & celana.",
-      bullets: ["Anti air, bisa mandi langsung", "Tanpa perban atau jahitan", "Usia: 0 Bulan - 12 Tahun"],
+      bullets: ["Antiair, bisa mandi langsung", "Tanpa perban atau jahitan", "Usia: 0 Bulan - 12 Tahun"],
       action: "Tanya Metode Klamp",
     },
     {
       title: "Bius Comfort-In (Needle Free)",
       badge: "Pilihan Pembiusan",
       description: "Menembakkan cairan anestesi berkecepatan tinggi melalui pori-pori kulit secara instan dan tanpa jarum.",
-      bullets: ["Hilangkan phobia suntikan", "Reaksi kebas cepat (hitungan detik)", "Dapat dikombinasi ke semua metode"],
+      bullets: ["Hilangkan fobia suntikan", "Reaksi kebas cepat (hitungan detik)", "Dapat dikombinasi ke semua metode"],
       action: "Tanya Pilihan Pembiusan",
     },
     {

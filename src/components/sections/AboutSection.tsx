@@ -15,7 +15,7 @@ export function AboutSection() {
         <div className={styles.description} data-reveal-group>
           <div data-reveal>
             <h3>Sagara Rumah Sunat Modern</h3>
-            <p>hadir di Banteran, Sumbang, untuk membantu keluarga merencanakan layanan khitan bagi anak maupun dewasa. Setiap pasien membawa kebutuhan,kesiapan, dan pertanyaan yang berbeda.</p>
+            <p>Hadir di Banteran, Sumbang, untuk membantu keluarga merencanakan layanan khitan bagi anak maupun dewasa. Setiap pasien membawa kebutuhan, kesiapan, dan pertanyaan yang berbeda.</p>
             <p>Melalui konsultasi, Anda dapat membahas pilihan layanan, pembiusan, persiapan, serta perawatan setelah tindakan. Kesesuaian tindakan dan rincian biaya dikonfirmasi sebelum jadwal disepakati.</p>
           </div>
           <aside className={styles.card} data-reveal>

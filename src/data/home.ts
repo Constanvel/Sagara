@@ -6,7 +6,7 @@ export const methods = [
     badge: "Terpopuler Anak",
     icon: "imgContainer.svg",
     description: "Tabung pelindung sekali pakai (disposable). Perlindungan optimal dari gesekan pampers & celana.",
-    bullets: ["Anti air, bisa mandi langsung", "Tanpa perban atau jahitan", "Usia: 0 Bulan - 12 Tahun"],
+    bullets: ["Antiair, bisa mandi langsung", "Tanpa perban atau jahitan", "Usia: 0 Bulan - 12 Tahun"],
     action: "Tanya Metode Klamp",
   },
   {
@@ -14,7 +14,7 @@ export const methods = [
     badge: "Pilihan Pembiusan",
     icon: "imgContainer2.svg",
     description: "Menembakkan cairan anestesi berkecepatan tinggi melalui pori-pori kulit secara instan dan tanpa jarum.",
-    bullets: ["Hilangkan phobia suntikan", "Reaksi kebas cepat (hitungan detik)", "Dapat dikombinasi ke semua metode"],
+    bullets: ["Hilangkan fobia suntikan", "Reaksi kebas cepat (hitungan detik)", "Dapat dikombinasi ke semua metode"],
     action: "Tanya Pilihan Pembiusan",
   },
   {

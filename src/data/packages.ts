@@ -25,16 +25,16 @@ export const packages: readonly KhitanPackage[] = [
   },
   {
     id: "top-sealer",
-    name: "Paket Top Sealer",
+    name: "Paket Top Seller",
     price: 900000,
     priceStatus: "reference-price",
     features: [
-      "Metode Top Sealer",
+      "Metode Top Seller",
       "Pembiusan dikonfirmasi saat konsultasi",
     ],
     tone: "gold",
-    actionLabel: "Tanya paket Top Sealer",
-    message: "Halo admin Sagara, saya ingin menanyakan rincian paket Top Sealer.",
+    actionLabel: "Tanya paket Top Seller",
+    message: "Halo admin Sagara, saya ingin menanyakan rincian paket Top Seller.",
   },
 ];
 
