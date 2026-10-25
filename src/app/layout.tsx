@@ -16,6 +16,14 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  applicationName: "SAGARA",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon", sizes: "16x16 32x32 48x48 192x192" },
+      { url: "/sagara-icon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: { url: "/sagara-apple-icon.png", type: "image/png", sizes: "180x180" },
+  },
   verification: {
     google: "BOHRfi9lMWki_GDKThknjkVUWErLg7SGAVYDshfmi-U",
   },

@@ -81,6 +81,13 @@ async function expectResponsiveDialogImage(dialog: Locator, media: MediaItem, wi
     probe.style.cssText = `position:fixed;width:${selectedSize.replace(/^\(.*?\)\s+/, "")};height:0;pointer-events:none;visibility:hidden`;
     document.body.append(probe);
     const declaredWidth = probe.getBoundingClientRect().width;
+    // Reduced-motion CSS sets a tiny transition duration on every element;
+    // a second fresh probe avoids sampling the previous width mid-transition.
+    const clampProbe = document.createElement("div");
+    clampProbe.style.cssText = `position:fixed;width:${modalStyle.maxWidth};height:0;pointer-events:none;visibility:hidden`;
+    document.body.append(clampProbe);
+    const maxDialogWidth = clampProbe.getBoundingClientRect().width;
+    clampProbe.remove();
     probe.remove();
     const candidates = element.srcset.split(/,\s*/).map(candidate => {
       const match = candidate.trim().match(/^(.*)\s+(\d+)w$/);
@@ -88,15 +95,16 @@ async function expectResponsiveDialogImage(dialog: Locator, media: MediaItem, wi
       return { url: new URL(match[1], location.href).href, width: Number(match[2]) };
     });
     return {
-      boxWidth: box.width, boxHeight: box.height, declaredWidth, horizontalInset,
+      boxWidth: box.width, boxHeight: box.height, declaredWidth, horizontalInset, maxDialogWidth,
       dialogWidth: modal.getBoundingClientRect().width, currentSrc: element.currentSrc,
       candidates, decodedWidth, dpr: devicePixelRatio,
     };
   });
 
   expect(metrics.dpr).toBe(dpr);
-  // Chromium's default dialog max-width can clamp 94vw to viewport - 2em.
-  const expectedDialogWidth = Math.min(920, width * 0.94, width - 32);
+  // Resolve the browser's dialog max-width instead of assuming its UA margin.
+  // Chromium 156 uses calc(100% - 38px), including its default border allowance.
+  const expectedDialogWidth = Math.min(920, width * 0.94, metrics.maxDialogWidth);
   const expectedDeclaredWidth = Math.min(920, width * 0.94) - 40;
   expect(Math.abs(metrics.dialogWidth - expectedDialogWidth)).toBeLessThan(2);
   expect(metrics.horizontalInset).toBe(40);
