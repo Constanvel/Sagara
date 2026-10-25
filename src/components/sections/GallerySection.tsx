@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ContactAction } from "@/components/ui/ContactAction";
-import { galleryMedia } from "@/data/media";
+import { galleryMedia } from "@/data/media/gallery";
 import { acquireScrollLock } from "@/lib/scroll-lock";
 import styles from "./GallerySection.module.css";
 
@@ -134,7 +134,7 @@ export function GallerySection() {
       {selectedMedia && selected !== null && <div className={styles.dialogContent}>
         <button type="button" autoFocus onClick={() => setSelected(null)} aria-label="Tutup media" className={styles.close}>Tutup ×</button>
         <figure>
-          {selectedMedia.type === "video" ? <GalleryVideo key={selectedMedia.id} src={selectedMedia.src} poster={selectedMedia.thumbnail} title={selectedMedia.title} /> : <div className={styles.fullImage}><Image key={selectedMedia.id} src={selectedMedia.src} alt={selectedMedia.alt} fill sizes="90vw" /></div>}
+          {selectedMedia.type === "video" ? <GalleryVideo key={selectedMedia.id} src={selectedMedia.src} poster={selectedMedia.thumbnail} title={selectedMedia.title} /> : <div className={styles.fullImage}><Image key={selectedMedia.id} src={selectedMedia.src} alt={selectedMedia.alt} fill sizes="(min-width: 979px) 880px, calc(94vw - 40px)" /></div>}
           <figcaption>
             <h2 id="gallery-dialog-title">{selectedMedia.title}</h2>
             <p id="gallery-dialog-caption">{selectedMedia.caption}</p>

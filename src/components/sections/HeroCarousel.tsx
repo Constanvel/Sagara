@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import styles from "./HeroCarousel.module.css";
-import { heroSlides as slides } from "@/data/media";
+import { carouselSlides as slides } from "@/data/media/hero-slides";
 
 export function HeroCarousel() {
   const [index, setIndex] = useState(0);

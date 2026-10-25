@@ -279,3 +279,65 @@ PR #1's TypeScript 7.0.2 update fails in CI at lint: the locked `typescript-esli
 CI now installs with `--strict-peer-deps` and validates `npm ls --all` before lint. Local strict installation, dependency graph validation, lint, route type generation, typecheck and production build pass. The full dependency audit reports **0 vulnerabilities**.
 
 The first full run after the dependency repair finishes **322 passed / 1 failed**: the visual audit can inspect images before the delayed consultation widget mounts, then capture its still-loading mascot. The audit now explicitly waits for the consultation region before polling image completion. It retains the existing broken-image, network-error and layout assertions; no application image-loading behavior changes. The previously failing gallery audit passes **5/5 repeated production runs**. A full-suite rerun on the corrected tests is pending.
+
+## Pure performance implementation — 2026-10-25
+
+### Scope and reproducibility
+
+Source baseline: `5b7f15f990c6cb5902939aff028171fa3d73e3e2`, clean working tree before this phase. Baseline production build: `HQvDzXtre7kRxtbSotKz-`. Installed Next.js **16.4.2** Server/Client Components, Image and Link documentation was read before editing. No dependency, CSS, original media, encoding, package ID, price, consent, navigation policy or animation change is retained. No commit or push is part of this phase.
+
+Audit artifacts are local-only under `C:/Users/IDEAPAD SLIM 3/AppData/Local/Temp/opencode/sagara-opt-20261025/`. Production uses `http://localhost:3100`, not the user's development server on port 3000. Standalone harnesses require the existing Playwright installation; no package is added.
+
+Main sampling uses Chromium **156.0.8078.4**, Playwright **1.64.1**, Node **24.16.0**, Windows x64, viewport height **900px**, CPU throttle **4×**, network latency **150ms**, download **200,000 B/s**, upload **93,750 B/s**. Each build has **80 observations**: four routes (`/`, `/galeri`, `/kontak`, `/pendaftaran`) × widths **390/1440** × five repetitions × first/repeat visits. The observation window ends 1,800ms after `load`. A first visit has a fresh browser context; a repeat reloads the same context after a safe carousel/filter/package interaction. Server/image-optimizer cache is retained; this is not a cold-origin benchmark. Measurements run separately from regression suites.
+
+Report Resource Timing compressed entity bytes separately from `transferSize` (which includes header accounting). Cached `encodedBodySize` is not network traffic. Initial navigation HTML already contains embedded Flight data: count that HTML once, then add only separate RSC requests. Route HTML-listed JavaScript is reported separately from chunks fetched by navigation prefetch. CDP transfer is an independent cross-check, never added to Resource Timing totals. Five-run medians and min–max ranges are used, not a best run.
+
+Local LCP, session-window CLS, long tasks and click/Event Timing samples are diagnostics, not Lighthouse scores, INP, field Core Web Vitals or a universal CPU improvement. Contact-map activation is omitted from performance sampling to avoid unrelated third-party traffic; regression tests cover its function. Registration's pre-existing client-form boundary contributes substantial sampled CLS (approximately 0.638 mobile / 0.307 desktop); this is present in both builds and not fixed by changing media imports.
+
+### Implementation and rejected alternatives
+
+- Split `media/types.ts`, `media/gallery.ts`, `media/hero.ts`; `media.ts` remains a compatibility facade. Full media/hero metadata, 29 catalog items, 20 caption pairs, IDs and ordering retain integrity SHA-256 `a1c2a8f48a96202043efaa6c221f63429b63bc66720918788e0a9ef8d2bf7088`.
+- Gallery imports its collection directly; hero captions do not enter its route entry chunk. `AboutSection` passes only video `src`/`poster` to `AboutVideo`; player and scroll-lock behavior are unchanged.
+- **Rejected server-prop hero candidate** (`o3U-AnwP8bsSfCeh9O2np`): home route-specific entry chunk gzip fell 6,349 → 3,876 B, but HTML rose 20,369 → 21,930 B and sampled RSC rose 29,311 → 30,737 B. With prefetch included, home JS + HTML + RSC fell only **428 B**, while repeat network transfer rose **1,426 B** (34,111 → 35,537 B). Other routes also fetched the larger home RSC through prefetch. Smaller JavaScript alone did not justify the cache regression.
+- **Measured fallback:** `media/hero-slides.ts` contains only static `src`, `alt`, `heading`, `description` fields, imported by `HeroCarousel`. Captions have one source; `media/hero.ts` reconstructs the full compatibility objects from that narrow module and the gallery. No full catalog is imported by the carousel. This deliberately departs from passing hero data as server props because the approved acceptance condition requires avoiding payload displacement.
+- Dialog image `sizes` changes from `90vw` to `(min-width: 979px) 880px, calc(94vw - 40px)`. Actual border-box dialog widths at 390/768/1440/1920 are 352/721.906/920/920px, with 40px horizontal padding. Chromium's default dialog max-width clamps the smallest viewport; the declaration safely overestimates its 312px inner slot by about 15px. CSS, height, contain behavior, quality and source files are unchanged.
+
+### Conditional experiments not retained
+
+**Gallery prefetch:** five slow-network trials per width on the server-prop candidate. Disabling prefetch only for `/galeri` removed its initial requests and reduced sampled JS + RSC by approximately **7,002 B**, but navigation's click-to-two-animation-frames proxy worsened. Mobile default/disabled medians: **672.6 / 1,058.0ms** (ranges 387.3–1,352.9 / 959.5–1,237.1). Desktop: **471.4 / 1,158.5ms** (420.0–660.8 / 946.2–1,279.4). The original policy was restored exactly in `Navigation.tsx`; registration CTA prefetch was never disabled. These are navigation proxies, not INP.
+
+**Mobile first-carousel preload:** response-rewrite control versus desktop-only preload, five repetitions at heights 680/1100 and width 390. Both variants use interception, so browser HTTP caching is disabled equally and results are separate from primary measurements. Median LCP original/desktop-only: **1,264/1,268ms** at height 680; **1,304/1,236ms** at height 1100. All first images were complete before scrolling; median image response-end was 906/896ms and 904/915ms respectively. No consistent benefit supports changing preload. Original mobile/desktop priority and initial/neighbor mounting remain intact; no orientation-specific candidate is shipped.
+
+**CPU:** separate production profiles cover reveal, carousel, gallery filtering and synthetic registration input. Identifiable samples include Turbopack and React/Next.js; shared minified chunks cannot reliably attribute every frame to a component. Five instrumented runs at 4× CPU measured initial aggregate `getBoundingClientRect` medians of **0.6ms home**, **62.2ms gallery**, **55.1ms registration**; home animation creation median **10.6ms**. A forced layout call can absorb prior style/layout work; this does not prove that a particular callback owns all cost. Gallery layout and registration observer/form setup merit a separate attributed investigation. No speculative `memo`, cached carousel width, reveal delay or form rewrite is applied. Instrumentation overhead and single-profile variability preclude a CPU improvement claim.
+
+### Final validation
+
+Final measured build: `P_VEjsbxvyGhJ0KmqWERs`. Baseline, rejected server-prop candidate and final each completed 80 main observations. Final retains default prefetch/preload. Route-specific chunk gzip: home **6,349 → 5,280 B** (raw 23,737 → 16,265 B), gallery **5,441 → 4,499 B** (raw 21,469 → 19,094 B). Home HTML gzip is **20,369 → 20,404 B**. All HTML-listed scripts plus HTML, excluding the unchanged `nomodule` legacy script, total **175,028 → 173,994 B** on home and **167,957 → 167,018 B** on gallery. These artifact sizes are not HTTP visit totals.
+
+Observed initial JS drops **2,011 B** on all four routes when prefetch is included. The unchanged contact/registration entry scripts benefit only from fetching smaller home/gallery chunks; do not attribute this to their own components. Initial image bytes and request-count medians are unchanged. JS + HTML + separately requested RSC falls **1,915 B home**, **1,951–1,955 B gallery**, **1,954–1,958 B contact**, **1,956 B registration**.
+
+| Route | First network bytes, 390px before / final | First network bytes, 1440px before / final | Repeat network bytes, 390px before / final | Repeat network bytes, 1440px before / final |
+|---|---:|---:|---:|---:|
+| `/` | 379,232 / 377,317 | 440,176 / 438,261 | 34,111 / 34,172 | 34,111 / 34,172 |
+| `/galeri` | 333,261 / 331,306 | 411,574 / 409,623 | 26,251 / 26,304 | 31,292 / 31,349 |
+| `/kontak` | 284,303 / 282,345 | 303,534 / 301,580 | 26,251 / 26,304 | 31,292 / 31,349 |
+| `/pendaftaran` | 289,566 / 287,610 | 285,996 / 284,040 | 26,251 / 26,304 | 26,251 / 26,304 |
+
+The final narrow static module restores cacheable hero data. Repeat visits still transfer **53–61 B more RSC** (approximately 0.18–0.20%), including the small video props/Flight and build-reference changes. This is a disclosed trade-off, not a repeat-transfer saving. One first plus one repeat visit remains **1,854–1,905 B smaller**; no traffic-weighted universal saving is claimed. Substantial repeat-only gains are not established.
+
+| Route/width | First LCP ms: baseline median [min–max] | Final median [min–max] | Repeat LCP ms: baseline / final median |
+|---|---:|---:|---:|
+| `/` 390 | 1,548 [1,416–1,812] | 1,252 [1,112–1,368] | 344 / 328 |
+| `/` 1440 | 1,848 [1,772–1,884] | 1,748 [1,728–1,780] | 468 / 392 |
+| `/galeri` 390 | 1,204 [1,080–1,412] | 1,108 [1,076–1,128] | 324 / 324 |
+| `/galeri` 1440 | 1,760 [1,720–1,768] | 1,752 [1,696–1,772] | 432 / 336 |
+| `/kontak` 390 | 1,216 [1,044–1,304] | 1,100 [1,004–1,256] | 456 / 328 |
+| `/kontak` 1440 | 1,628 [1,276–1,764] | 1,072 [1,016–1,108] | 508 / 372 |
+| `/pendaftaran` 390 | 1,580 [1,560–1,832] | 1,508 [1,416–1,560] | 488 / 320 |
+| `/pendaftaran` 1440 | 1,116 [1,004–1,232] | 932 [904–1,052] | 424 / 296 |
+
+LCP reductions on unchanged routes show why the complete timing improvement cannot be assigned to this approximately 2 KB reduction: sequential local samples remain sensitive to hardware/runtime conditions. Session-window CLS is effectively unchanged: first home approximately 0.000089/0.000108 (mobile/desktop), gallery 0.000427/0.000082, contact 0.000099/0.000108; registration approximately 0.638/0.307 remains high. Desktop repeat home CLS varies with restored scroll/reveal timing (0.0299 → 0.0121); this is not claimed as a layout fix.
+
+Observed initial long-task total medians before/final (mobile, desktop): home **518/303, 470/248ms**; gallery **424/351, 453/342ms**; contact **370/336, 606/279ms**; registration **736/505, 680/423ms**. CPU source is unchanged and ranges vary; these totals do not establish a CPU refactor benefit. All measured safe interactions confirmed their expected state. First-visit Event Timing median before/final: carousel **56/32ms mobile, 48/40ms desktop**; gallery filter **112/88ms, 120/112ms**; package choice **120/72ms, 136/88ms**. Click-to-two-rAF proxies also show no final median regression. These are sampled local interactions, not INP.
+
+Settled visual comparison and complete production regression results follow after validation.
