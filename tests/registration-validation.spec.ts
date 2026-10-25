@@ -5,7 +5,7 @@ const serviceIds = ["khitan"];
 const packageIds = ["reguler"];
 const now = new Date("2026-10-24T09:00:00+07:00");
 const validData: RegistrationData = {
-  service: "khitan", package: "reguler", date: "2026-10-24", time: "10.00",
+  service: "khitan", package: "reguler", date: "2026-10-24", time: "10:00",
   guardian: "Budi", patient: "Adi", age: "8", whatsapp: "081234567890", consent: true,
 };
 
@@ -22,18 +22,18 @@ for (const [label, instant, rejected] of [
   ["exactly at", "2026-10-24T02:00:00.000Z", true],
   ["one millisecond after", "2026-10-24T02:00:00.001Z", true],
 ] as const) {
-  test(`09.00 WIB slot with now ${label} the requested instant`, () => {
-    const errors = validate({ time: "09.00" }, new Date(instant));
+  test(`09:00 WIB requested time with now ${label} the requested instant`, () => {
+    const errors = validate({ time: "09:00" }, new Date(instant));
     expect(errors.date).toBeUndefined();
     expect(errors.time).toBe(rejected ? "Pilih waktu yang belum lewat (WIB)." : undefined);
   });
 }
 
-test("past slots are rejected while later slots on the same WIB day remain valid", () => {
+test("past times are rejected while later times on the same WIB day remain valid", () => {
   const instant = new Date("2026-10-24T10:30:00+07:00");
-  expect(validate({ time: "10.00" }, instant).time).toBe("Pilih waktu yang belum lewat (WIB).");
-  expect(validate({ time: "11.00" }, instant)).toEqual({});
-  expect(validate({ date: "2026-10-25", time: "09.00" }, instant)).toEqual({});
+  expect(validate({ time: "10:00" }, instant).time).toBe("Pilih waktu yang belum lewat (WIB).");
+  expect(validate({ time: "11:00" }, instant)).toEqual({});
+  expect(validate({ date: "2026-10-25", time: "09:00" }, instant)).toEqual({});
 });
 
 test("today changes at WIB midnight, not UTC midnight", () => {
@@ -43,24 +43,30 @@ test("today changes at WIB midnight, not UTC midnight", () => {
   expect(jakartaToday(midnight)).toBe("2026-10-25");
   expect(validate({}, beforeMidnight)).toEqual({ time: "Pilih waktu yang belum lewat (WIB)." });
   expect(validate({}, midnight)).toEqual({ date: "Tanggal tidak boleh sebelum hari ini (WIB)." });
-  expect(validate({ date: "2026-10-25", time: "09.00" }, midnight)).toEqual({});
+  expect(validate({ date: "2026-10-25", time: "09:00" }, midnight)).toEqual({});
 });
 
 for (const date of ["", "not-a-date", "2026-1-01", "2026-10-24T09:00:00", "2026-02-29", "2026-04-31", "2026-13-01"]) {
-  test(`malformed date ${JSON.stringify(date)} is rejected without comparing a slot`, () => {
-    expect(validate({ date, time: "09.00" })).toEqual({ date: "Pilih tanggal yang valid." });
+  test(`malformed date ${JSON.stringify(date)} is rejected without comparing a time`, () => {
+    expect(validate({ date, time: "09:00" })).toEqual({ date: "Pilih tanggal yang valid." });
   });
 }
 
-for (const time of ["", "09:00", "9.00", "09.00:00", "12.00", "24.00"]) {
-  test(`malformed or unavailable time ${JSON.stringify(time)} keeps its validation error`, () => {
-    expect(validate({ time })).toEqual({ time: "Pilih satu preferensi waktu." });
+for (const time of ["", "24:00", "12:60", "9:00", "09.00", "09:00:00", " 09:00", "09:00 "]) {
+  test(`malformed time ${JSON.stringify(time)} keeps its validation error`, () => {
+    expect(validate({ time })).toEqual({ time: "Isi waktu dalam format 24 jam HH:mm (00:00–23:59 WIB)." });
+  });
+}
+
+for (const time of ["00:00", "09:01", "10:17", "12:34", "23:59"]) {
+  test(`valid patient-entered time ${time} is accepted without predefined slots`, () => {
+    expect(validate({ date: "2026-10-25", time })).toEqual({});
   });
 }
 
 test("invalid date and time report their own errors together", () => {
-  expect(validate({ date: "2026-02-30", time: "09:00" })).toEqual({
-    date: "Pilih tanggal yang valid.", time: "Pilih satu preferensi waktu.",
+  expect(validate({ date: "2026-02-30", time: "24:00" })).toEqual({
+    date: "Pilih tanggal yang valid.", time: "Isi waktu dalam format 24 jam HH:mm (00:00–23:59 WIB).",
   });
 });
 

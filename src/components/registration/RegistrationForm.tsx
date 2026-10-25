@@ -4,14 +4,14 @@ import Link from "next/link";
 import { Suspense, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { Asset } from "@/components/ui/Asset";
-import { packages, packageCaveat, packagePriceLabel } from "@/data/packages";
+import { packages, packageCaveat, packageForService, packagePriceLabel } from "@/data/packages";
 import { services } from "@/data/services";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { formatDate, jakartaToday, timeSlots, validateRegistration, type RegistrationData, type RegistrationErrors } from "./validation";
+import { formatDate, jakartaToday, validateRegistration, type RegistrationData, type RegistrationErrors } from "./validation";
 import { normalizeRegistration, registrationMessage } from "./message";
 import styles from "./RegistrationForm.module.css";
 
-const registrationServices = services.filter((item, index, all) => all.findIndex(other => other.title === item.title) === index);
+const registrationServices = services;
 const initial: RegistrationData = { service: "anak-anak", package: "", date: "", time: "", guardian: "", patient: "", age: "", whatsapp: "", consent: false };
 
 export function RegistrationForm() {
@@ -40,7 +40,7 @@ function RegistrationFields({ step, moveTo }: { step: number; moveTo: (next: num
   const params = useSearchParams();
   const [data, setData] = useState(() => {
     const requestedService = params.get("layanan");
-    const serviceId = requestedService === "kebutuhan-khusus-pendampingan" ? "kebutuhan-khusus" : requestedService;
+    const serviceId = requestedService === "kebutuhan-khusus-pendampingan" ? "khitan-gemuk" : requestedService;
     const packageId = params.get("paket");
     return { ...initial,
       service: registrationServices.some(item => item.id === serviceId) ? serviceId! : initial.service,
@@ -52,7 +52,8 @@ function RegistrationFields({ step, moveTo }: { step: number; moveTo: (next: num
   const [today, setToday] = useState(() => jakartaToday());
   const form = useRef<HTMLFormElement>(null);
   const service = registrationServices.find(item => item.id === data.service);
-  const selectedPackage = packages.find(item => item.id === data.package);
+  const servicePackages = packages.map(item => packageForService(item, data.service));
+  const selectedPackage = servicePackages.find(item => item.id === data.package);
 
   function update<K extends keyof RegistrationData>(key: K, value: RegistrationData[K]) {
     setShareConsent(false);
@@ -99,8 +100,8 @@ function RegistrationFields({ step, moveTo }: { step: number; moveTo: (next: num
       {step === 1 && <form ref={form} noValidate onSubmit={review} className={styles.form}>
         <div className={styles.field}><label htmlFor="service">Layanan</label><div className={styles.selectWrap}><select id="service" name="service" value={data.service} onChange={event => update("service", event.target.value)} {...attrs("service")}>{registrationServices.map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</select><Asset name="registration/chevron.svg" width={24} height={24} /></div>{error("service")}</div>
         <fieldset className={styles.packageField}><legend>Pilih paket khitan</legend><p className={styles.helper}>Pilih satu paket yang ingin Anda tanyakan.</p>
-          <div className={styles.packages}>{packages.map(item => <article key={item.id} className={styles.package} data-selected={data.package === item.id} data-price-status={item.priceStatus}>
-            <h2 className={styles.badge} data-tone={item.tone}>{item.name}</h2><p className={styles.price}>{packagePriceLabel(item)}</p><p className={styles.perPatient}>per pasien</p>
+          <div className={styles.packages} aria-live="polite">{servicePackages.map(item => <article key={item.id} className={styles.package} data-selected={data.package === item.id} data-price-status={item.priceStatus}>
+            <h2 className={styles.badge} data-tone={item.tone}>{item.name}</h2><p className={styles.price}>{packagePriceLabel(item)}</p><p className={styles.perPatient}>{item.price === null ? "Biaya dikonfirmasi setelah konsultasi" : "per pasien"}</p>
             <ul>{item.features.map(feature => <li key={feature}><Asset name="registration/tick.svg" width={15} height={15} /><span>{feature}</span></li>)}</ul>
             <button type="button" aria-pressed={data.package === item.id} aria-label={`Pilih ${item.name}`} onClick={() => update("package", item.id)} {...attrs("package")}>{data.package === item.id ? "Paket dipilih ✓" : "Pilih paket"}</button>
           </article>)}</div>{error("package")}<p className={styles.caveat} id="package-price-status">{packageCaveat}</p>
@@ -108,7 +109,7 @@ function RegistrationFields({ step, moveTo }: { step: number; moveTo: (next: num
         <div className={styles.details}>
           <section className={styles.schedule} aria-label="Preferensi jadwal">
             <div className={styles.field}><label htmlFor="date">Tanggal yang diinginkan</label><div className={styles.dateWrap}><input id="date" name="date" type="date" min={today} value={data.date} onFocus={() => setToday(jakartaToday())} onChange={event => update("date", event.target.value)} required {...attrs("date")} /><Asset name="registration/calendar.svg" width={16} height={18} /></div>{error("date")}</div>
-            <fieldset className={styles.timeField}><legend>Pilihan waktu</legend><div className={styles.times}>{timeSlots.map(time => <button key={time} type="button" aria-pressed={data.time === time} onClick={() => update("time", time)} {...attrs("time")}>{time}</button>)}</div>{error("time")}<p className={styles.caveat}>Waktu dalam WIB, sebagai preferensi. Ketersediaan dikonfirmasi admin, bukan jadwal real-time.</p></fieldset>
+            <div className={styles.field}><label htmlFor="time">Waktu yang diinginkan</label><div className={styles.timeWrap}><input id="time" name="time" type="text" placeholder="HH:mm" maxLength={5} pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autoComplete="off" value={data.time} onChange={event => update("time", event.target.value)} required {...attrs("time")} aria-describedby={`time-format time-note${errors.time ? " error-time" : ""}`} /><span>WIB</span></div><p id="time-format" className={styles.caveat}>Format 24 jam (HH:mm), contoh 16:30 WIB.</p>{error("time")}<p id="time-note" className={styles.caveat}>Waktu yang dipilih merupakan preferensi pasien. Ketersediaan jadwal akan dikonfirmasi oleh admin.</p></div>
           </section>
           <section className={styles.personal} aria-label="Data pendaftar">{fields.map(field => <div key={field.key} className={styles.field} data-field={field.key}><label htmlFor={field.key}>{field.label}</label><input id={field.key} name={field.key} type={field.type} placeholder={field.placeholder} autoComplete={field.autoComplete} maxLength={field.type === "text" ? 100 : undefined} min={field.key === "age" ? 0 : undefined} max={field.key === "age" ? 120 : undefined} step={field.key === "age" ? 1 : undefined} inputMode={field.key === "age" ? "numeric" : field.key === "whatsapp" ? "tel" : "text"} value={data[field.key]} onChange={event => update(field.key, event.target.value)} required {...attrs(field.key)} />{error(field.key)}</div>)}</section>
         </div>

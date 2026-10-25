@@ -2,13 +2,13 @@
 
 ## Scope
 
-Added `/layanan` and `/kontak`; refined existing `/paket`. Home content and section source files are unchanged. Shared navigation now points to actual routes. Desktop/header menu includes Paket Khitan per the latest specification; four-item mobile bottom navigation retains the Figma layout and groups Paket under Layanan. Galeri remains disabled.
+Added `/layanan` and `/kontak`; refined existing `/paket`. Home section source files are unchanged; home service labels were later aligned with the owner-confirmed identities below. Shared navigation now points to actual routes. Desktop/header menu includes Paket Khitan per the latest specification; four-item mobile bottom navigation retains the Figma layout and groups Paket under Layanan. Galeri remains disabled.
 
 ## Figma references
 
 File `4uOzAoUAwIBh6TL7f9cGsN`, latest frames: Layanan `9:792` (412×1025), Paket `9:731` (412×927), Kontak `9:669` (412×1031). Context and screenshots retrieved through Figma MCP.
 
-- Preserved the two separate Kebutuhan khusus cards rather than inventing a replacement. Their business intent still needs confirmation.
+- Owner clarification on 25 October 2026: the final duplicate Kebutuhan khusus card is Khitan Gemuk (`khitan-gemuk`), separate from Khitan Kebutuhan Khusus. Service and home labels now agree; the Gemuk card reuses the existing neutral home description and `imgAccessibility.svg` asset. Its price is unknown and must read “Konfirmasi admin”; no service detail pages were added.
 - Corrected obvious service spelling errors, keeping meaning. Omitted the stray “Tanya paket Modern” text on Layanan.
 - Downloaded exact service icons, contact icons, and map preview under `public/images/figma/service-*` and `contact-*`.
 - Mobile geometry follows the references with fluid widths to prevent clipping at 320px. Package CTAs retain a compact visual height with larger hit areas. Minor contrast adjustments prioritize accessibility.
@@ -17,7 +17,7 @@ File `4uOzAoUAwIBh6TL7f9cGsN`, latest frames: Layanan `9:792` (412×1025), Paket
 ## Data and limitations
 
 - WhatsApp remains the previously verified `6287899777219` with service/package/homecare-specific inquiry messages.
-- Prices remain numeric centralized data in `src/data/packages.ts`; status is pending business verification. The disclaimer and accessible explanation avoid guaranteed final pricing.
+- Prices remain centralized in `src/data/packages.ts`; numeric references are pending business verification. Khitan Gemuk has no confirmed price and displays “Konfirmasi admin”. The disclaimer and accessible explanation avoid guaranteed final pricing.
 - No verified Google Maps URL exists. `src/data/contact.ts` records `mapsUrl: null`. The original map preview is displayed, but Petunjuk Arah is disabled and explains why to assistive technology. No invented address, coordinates, or hours.
 - `PRD.md` was not found in the workspace. `AGENTS.md` and installed Next.js documentation were read.
 - No production domain was supplied; domain-specific metadata remains omitted.

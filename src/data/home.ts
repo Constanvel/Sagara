@@ -30,9 +30,9 @@ export const methods = [
 export const needs = [
   { title: "Khitan anak-anak", description: "Dampingi jagoan memahami proses dan persiapannya.", icon: "imgSmile.svg" },
   { title: "Khitan bayi", description: "Bahas usia, kesiapan, dan kebutuhan perawatan bayi.", icon: "imgBaby.svg" },
-  { title: "Khitan dewasa", description: "Konsultasi kebutuhan dan rencana perawatan Anda.", icon: "imgUserRound.svg" },
-  { title: "Kebutuhan khusus", description: "Sampaikan kebutuhan pendampingan sejak awal.", icon: "imgHeartHandshake.svg" },
-  { title: "Khitan gemuk", description: "Penilaian kondisi untuk memilih pendekatan yang sesuai.", icon: "imgAccessibility.svg" },
+  { title: "Khitan Dewasa", description: "Konsultasi kebutuhan dan rencana perawatan Anda.", icon: "imgUserRound.svg" },
+  { title: "Khitan Kebutuhan Khusus", description: "Sampaikan kebutuhan pendampingan sejak awal.", icon: "imgHeartHandshake.svg" },
+  { title: "Khitan Gemuk", description: "Penilaian kondisi untuk memilih pendekatan yang sesuai.", icon: "imgAccessibility.svg" },
 ] as const;
 
 export const benefits = [

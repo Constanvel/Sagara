@@ -1,8 +1,8 @@
 export type KhitanPackage = Readonly<{
   id: string;
   name: string;
-  price: number;
-  priceStatus: "reference-price";
+  price: number | null;
+  priceStatus: "reference-price" | "confirmation-required";
   features: readonly string[];
   tone: "blue" | "gold";
   actionLabel: string;
@@ -38,10 +38,24 @@ export const packages: readonly KhitanPackage[] = [
   },
 ];
 
+// Service-specific prices confirmed by the owner. Other services keep the original prices.
+const servicePrices: Readonly<Record<string, Readonly<Record<string, number | null>>>> = {
+  dewasa: { modern: 2500000, "top-sealer": 1750000 },
+  "kebutuhan-khusus": { modern: 2000000, "top-sealer": 1500000 },
+  "khitan-gemuk": { modern: null, "top-sealer": null },
+};
+
+export function packageForService(item: KhitanPackage, serviceId: string): KhitanPackage {
+  const prices = servicePrices[serviceId];
+  if (!prices || !(item.id in prices)) return item;
+  const price = prices[item.id];
+  return { ...item, price, priceStatus: price === null ? "confirmation-required" : "reference-price" };
+}
+
 const priceFormatter = new Intl.NumberFormat("id-ID");
 
 export function packagePriceLabel(item: Pick<KhitanPackage, "price">): string {
-  return `Rp${priceFormatter.format(item.price)}`;
+  return item.price === null ? "Konfirmasi admin" : `Rp${priceFormatter.format(item.price)}`;
 }
 
 export const packageCaveat =

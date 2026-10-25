@@ -2,7 +2,7 @@ export type KhitanService = Readonly<{
   id: string;
   title: string;
   description: string;
-  icon: "service-security.svg" | "service-baby.svg" | "service-contact.svg" | "service-like.svg";
+  icon: "service-security.svg" | "service-baby.svg" | "service-contact.svg" | "service-like.svg" | "imgAccessibility.svg";
   iconWidth: number;
   iconHeight: number;
   message: string;
@@ -30,7 +30,7 @@ export const services: readonly KhitanService[] = [
   },
   {
     id: "dewasa",
-    title: "Khitan dewasa",
+    title: "Khitan Dewasa",
     description: "Bahas kondisi kesehatan, pilihan metode, manfaat, dan risiko. Konfirmasikan persiapan, jadwal kunjungan, serta batas aktivitas selama perawatan.",
     icon: "service-contact.svg",
     iconWidth: 26,
@@ -39,22 +39,20 @@ export const services: readonly KhitanService[] = [
   },
   {
     id: "kebutuhan-khusus",
-    title: "Kebutuhan khusus",
+    title: "Khitan Kebutuhan Khusus",
     description: "Sampaikan kebutuhan pendampingan sejak awal. Kelayakan tindakan, kesiapan tempat, dan rencana perawatan perlu dikonfirmasi saat konsultasi.",
     icon: "service-like.svg",
     iconWidth: 24,
     iconHeight: 24,
     message: "Halo admin Sagara, saya ingin membahas kebutuhan khusus dan pendampingan untuk khitan.",
   },
-  // Figma Layanan 25:892 repeats this title at 25:950 and 25:959.
-  // Preserve both until their distinct business intent is confirmed; do not invent a service.
   {
-    id: "kebutuhan-khusus-pendampingan",
-    title: "Kebutuhan khusus",
-    description: "Sampaikan kebutuhan pendampingan sejak awal. Kelayakan tindakan, kesiapan tempat, dan rencana perawatan perlu dikonfirmasi saat konsultasi.",
-    icon: "service-like.svg",
-    iconWidth: 24,
-    iconHeight: 24,
-    message: "Halo admin Sagara, saya ingin berkonsultasi tentang pendampingan khitan bagi keluarga dengan kebutuhan khusus.",
+    id: "khitan-gemuk",
+    title: "Khitan Gemuk",
+    description: "Penilaian kondisi untuk memilih pendekatan yang sesuai.",
+    icon: "imgAccessibility.svg",
+    iconWidth: 22,
+    iconHeight: 22,
+    message: "Halo admin Sagara, saya ingin berkonsultasi tentang khitan gemuk, penilaian kondisi, dan biayanya.",
   },
 ];

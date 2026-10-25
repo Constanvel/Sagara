@@ -3,7 +3,6 @@ export type RegistrationData = {
   guardian: string; patient: string; age: string; whatsapp: string; consent: boolean;
 };
 export type RegistrationErrors = Partial<Record<keyof RegistrationData, string>>;
-export const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00", "15.00"];
 
 const jakartaDateFormatter = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" });
 const displayDateFormatter = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
@@ -28,9 +27,9 @@ export function validateRegistration(data: RegistrationData, serviceIds: string[
   const parsed = new Date(`${data.date}T12:00:00+07:00`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date) || Number.isNaN(parsed.getTime()) || jakartaToday(parsed) !== data.date) errors.date = "Pilih tanggal yang valid.";
   else if (data.date < jakartaToday(now)) errors.date = "Tanggal tidak boleh sebelum hari ini (WIB).";
-  if (!timeSlots.includes(data.time)) errors.time = "Pilih satu preferensi waktu.";
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.time)) errors.time = "Isi waktu dalam format 24 jam HH:mm (00:00–23:59 WIB).";
   if (!errors.date && !errors.time) {
-    const requested = new Date(`${data.date}T${data.time.replace(".", ":")}:00+07:00`);
+    const requested = new Date(`${data.date}T${data.time}:00+07:00`);
     if (requested.getTime() <= now.getTime()) errors.time = "Pilih waktu yang belum lewat (WIB).";
   }
   if (!isValidName(data.guardian)) errors.guardian = "Isi nama orang tua/wali yang terbaca (2–100 karakter).";

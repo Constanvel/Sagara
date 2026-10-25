@@ -29,8 +29,9 @@ test("opening privacy information in a new tab preserves the registration draft"
     if (identities.some(value => decoded.includes(value))) leaked.push(request.url());
   });
   await page.goto("/pendaftaran?layanan=bayi&paket=modern");
+  await expect(page.getByLabel("Waktu yang diinginkan", { exact: true })).toHaveValue("");
   await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-01");
-  await page.getByRole("button", { name: "10.00", exact: true }).click();
+  await page.getByLabel("Waktu yang diinginkan", { exact: true }).fill("10:00");
   await page.getByLabel("Nama orang tua / wali").fill(identities[0]);
   await page.getByLabel("Nama pasien", { exact: true }).fill(identities[1]);
   await page.getByLabel("Usia (tahun)").fill("7");
@@ -51,7 +52,7 @@ test("opening privacy information in a new tab preserves the registration draft"
   await expect(page.getByLabel("Layanan", { exact: true })).toHaveValue("bayi");
   await expect(page.getByRole("button", { name: "Pilih Paket Modern" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByLabel("Tanggal yang diinginkan")).toHaveValue("2099-12-01");
-  await expect(page.getByRole("button", { name: "10.00", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Waktu yang diinginkan", { exact: true })).toHaveValue("10:00");
   await expect(page.getByLabel("Nama orang tua / wali")).toHaveValue(identities[0]);
   await expect(page.getByLabel("Nama pasien", { exact: true })).toHaveValue(identities[1]);
   await expect(page.getByLabel("Usia (tahun)")).toHaveValue("7");
@@ -88,7 +89,7 @@ test("synthetic registration identities stay out of requests and browser storage
   });
   await page.goto("/pendaftaran?paket=modern");
   await page.getByLabel("Tanggal yang diinginkan").fill("2099-12-01");
-  await page.getByRole("button", { name: "10.00", exact: true }).click();
+  await page.getByLabel("Waktu yang diinginkan", { exact: true }).fill("10:00");
   await page.getByLabel("Nama orang tua / wali").fill(identities[0]);
   await page.getByLabel("Nama pasien", { exact: true }).fill(identities[1]);
   await page.getByLabel("Usia (tahun)").fill("7");
