@@ -11,9 +11,9 @@ test("packages restore the original Figma prices and retain registration IDs", (
   for (const item of packages) expect(item.priceStatus).toBe("reference-price");
 });
 
-// These three cards use the Figma copy explicitly requested by the user.
+// These cards retain the requested Figma copy with confirmed spelling corrections.
 // This checks editorial fidelity, not clinical verification of the claims.
-test("procedure cards preserve the user-requested Figma explanations", () => {
+test("procedure cards preserve the requested explanations with spelling corrections", () => {
   expect(methods.map(({ title, badge, description, bullets, action }) => ({ title, badge, description, bullets, action }))).toEqual([
     {
       title: "Tekhno Klamp / Smart Klamp",
@@ -37,6 +37,26 @@ test("procedure cards preserve the user-requested Figma explanations", () => {
       action: "Tanya Metode Cauter",
     },
   ]);
+});
+
+test("confirmed spelling corrections appear on the home and package pages", async ({ page }) => {
+  await page.goto("/");
+  const about = page.locator("#tentang-sagara");
+  await expect(about).toContainText("Hadir di Banteran, Sumbang,");
+  await expect(about).toContainText("kebutuhan, kesiapan, dan pertanyaan");
+  await expect(page.getByText("Antiair, bisa mandi langsung", { exact: true })).toBeVisible();
+  await expect(page.getByText("Hilangkan fobia suntikan", { exact: true })).toBeVisible();
+  const hero = page.locator('[aria-labelledby="hero-title"]');
+  await expect(hero.locator('span[aria-hidden="true"]').filter({ hasText: "”" })).toHaveCount(1);
+
+  await page.goto("/paket");
+  const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Paket Top Seller", exact: true }) });
+  await expect(card.getByText("Metode Top Seller", { exact: true })).toBeVisible();
+  await expect(card.getByRole("link", { name: "Daftar Paket Top Seller", exact: true })).toHaveAttribute("href", "/pendaftaran?paket=top-sealer");
+  const inquiry = card.getByRole("link", { name: "Tanya paket Top Seller", exact: true });
+  expect(new URL((await inquiry.getAttribute("href"))!).searchParams.get("text")).toContain("rincian paket Top Seller.");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Pilihan Paket Modern dan Top Seller\./);
+  await expect(page.locator("main")).not.toContainText("Top Sealer");
 });
 
 test("unreviewed benefit copy does not guarantee free follow-up", () => {

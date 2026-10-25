@@ -117,6 +117,7 @@ for (const [serviceId, title, modern, topSealer] of [
       await expect(page.locator("dd").getByText(title, { exact: true })).toBeVisible();
       await expect(page.locator("dd").getByText(price, { exact: true })).toBeVisible();
       await expect(page.locator("dd").getByText("18:37 WIB", { exact: true })).toBeVisible();
+      await expect(page.getByText("Pesan yang telah diisi otomatis berada di parameter tautan WhatsApp.", { exact: false })).toBeVisible();
       await page.getByRole("checkbox").check();
       const message = new URL((await page.getByRole("link", { name: "Kirim Pendaftaran via WhatsApp" }).getAttribute("href"))!).searchParams.get("text")!;
       expect(message).toContain(`Layanan: ${title}\nPaket: ${name}\nBiaya: ${price}`);
