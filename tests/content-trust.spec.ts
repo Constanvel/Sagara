@@ -53,7 +53,7 @@ test("confirmed spelling corrections appear on the home and package pages", asyn
   const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Paket Top Seller", exact: true }) });
   await expect(card.getByText("Metode Top Seller", { exact: true })).toBeVisible();
   await expect(card.getByRole("link", { name: "Daftar Paket Top Seller", exact: true })).toHaveAttribute("href", "/pendaftaran?paket=top-sealer");
-  const inquiry = card.getByRole("link", { name: "Tanya paket Top Seller", exact: true });
+  const inquiry = card.getByRole("link", { name: "Tanya paket Top Seller (WhatsApp, tab baru)", exact: true });
   expect(new URL((await inquiry.getAttribute("href"))!).searchParams.get("text")).toContain("rincian paket Top Seller.");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Pilihan Paket Modern dan Top Seller\./);
   await expect(page.locator("main")).not.toContainText("Top Sealer");
