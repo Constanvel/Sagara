@@ -4,15 +4,17 @@ import { formatDate, jakartaToday, validateRegistration, type RegistrationData }
 import { packageForService, packagePriceLabel, packages } from "../src/data/packages";
 
 const valid: RegistrationData = { service: "anak-anak", package: "modern", date: "2099-12-01", time: "10:00", guardian: "Wali Uji", patient: "Pasien Uji", age: "7", whatsapp: "081234567890", consent: true };
-test("service price resolution preserves base prices and never borrows special-needs prices for Gemuk", () => {
+test("children, infants and Gemuk share base prices without changing service-specific prices", () => {
   for (const item of packages) {
-    for (const service of ["anak-anak", "bayi"]) expect(packageForService(item, service)).toBe(item);
-    const gemuk = packageForService(item, "khitan-gemuk");
-    expect(gemuk.price).toBeNull();
-    expect(gemuk.priceStatus).toBe("confirmation-required");
-    expect(packagePriceLabel(gemuk)).toBe("Konfirmasi admin");
+    for (const service of ["anak-anak", "bayi", "khitan-gemuk"]) {
+      expect(packageForService(item, service)).toBe(item);
+      expect(packageForService(item, service).priceStatus).toBe("reference-price");
+    }
   }
   expect(packages.map(item => item.price)).toEqual([1100000, 900000]);
+  expect(packages.map(item => packagePriceLabel(packageForService(item, "khitan-gemuk")))).toEqual(["Rp1.100.000", "Rp900.000"]);
+  expect(packages.map(item => packageForService(item, "dewasa").price)).toEqual([2500000, 1750000]);
+  expect(packages.map(item => packageForService(item, "kebutuhan-khusus").price)).toEqual([2000000, 1500000]);
 });
 
 test("validation rejects missing, past, impossible and malformed data", () => {
@@ -71,6 +73,10 @@ test("original package names and prices match across public and registration car
     }
     await expect(page.getByText("Hubungi admin untuk biaya", { exact: true })).toHaveCount(0);
     await expect(page.locator("main")).toContainText("Rincian biaya dan fasilitas dikonfirmasi oleh admin.");
+    if (route === "/paket") {
+      await expect(page.locator("main")).toContainText("Harga kartu berlaku untuk Khitan anak-anak, Khitan bayi, dan Khitan Gemuk.");
+      await expect(page.locator("main")).not.toContainText("Biaya Khitan Gemuk: Konfirmasi admin.");
+    }
   }
 });
 
@@ -92,7 +98,7 @@ test("preferred time starts empty, accepts arbitrary 24-hour times and shows sch
 for (const [serviceId, title, modern, topSealer] of [
   ["dewasa", "Khitan Dewasa", "Rp2.500.000", "Rp1.750.000"],
   ["kebutuhan-khusus", "Khitan Kebutuhan Khusus", "Rp2.000.000", "Rp1.500.000"],
-  ["khitan-gemuk", "Khitan Gemuk", "Konfirmasi admin", "Konfirmasi admin"],
+  ["khitan-gemuk", "Khitan Gemuk", "Rp1.100.000", "Rp900.000"],
 ] as const) {
   test(`service prices stay consistent through cards, review and WhatsApp: ${serviceId}`, async ({ page }) => {
     await page.setViewportSize({ width: serviceId === "khitan-gemuk" ? 320 : 390, height: 900 });
@@ -122,13 +128,12 @@ for (const [serviceId, title, modern, topSealer] of [
       const message = new URL((await page.getByRole("link", { name: "Kirim Pendaftaran via WhatsApp" }).getAttribute("href"))!).searchParams.get("text")!;
       expect(message).toContain(`Layanan: ${title}\nPaket: ${name}\nBiaya: ${price}`);
       expect(message).toContain("Waktu yang diinginkan: 18:37 WIB");
-      if (serviceId === "khitan-gemuk") expect(message).not.toMatch(/Rp[0-9]/);
       await page.getByRole("button", { name: "Kembali & perbaiki" }).click();
     }
     // Changing services must update prices even when the selected package is retained.
     for (const id of ["dewasa", "kebutuhan-khusus", "bayi", "anak-anak", serviceId]) {
       await page.getByLabel("Layanan", { exact: true }).selectOption(id);
-      const expected = id === "dewasa" ? "Rp1.750.000" : id === "kebutuhan-khusus" ? "Rp1.500.000" : id === "khitan-gemuk" ? "Konfirmasi admin" : "Rp900.000";
+      const expected = id === "dewasa" ? "Rp1.750.000" : id === "kebutuhan-khusus" ? "Rp1.500.000" : "Rp900.000";
       const card = page.locator("article").filter({ has: page.getByRole("heading", { name: "Paket Top Seller", exact: true }) });
       await expect(card.getByText(expected, { exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "Pilih Paket Top Seller", exact: true })).toHaveAttribute("aria-pressed", "true");

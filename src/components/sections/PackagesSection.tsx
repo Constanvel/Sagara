@@ -8,7 +8,7 @@ export function PackagesSection() {
         {packages.map((item) => <PackageCard key={item.id} item={item} />)}
       </div>
       <p className="mt-5 max-w-[640px] text-[13px] leading-[1.65] text-muted">
-        Harga kartu berlaku untuk Khitan anak-anak dan Khitan bayi. Pilih layanan pada formulir pendaftaran untuk melihat harga Khitan Dewasa dan Khitan Kebutuhan Khusus. Biaya Khitan Gemuk: Konfirmasi admin.
+        Harga kartu berlaku untuk Khitan anak-anak, Khitan bayi, dan Khitan Gemuk. Pilih layanan pada formulir pendaftaran untuk melihat harga Khitan Dewasa dan Khitan Kebutuhan Khusus.
       </p>
       <p className="mt-3 max-w-[640px] text-[13px] leading-[1.65] text-muted">
         {packageCaveat.split(". ").map((sentence, index) => (

@@ -42,7 +42,6 @@ export const packages: readonly KhitanPackage[] = [
 const servicePrices: Readonly<Record<string, Readonly<Record<string, number | null>>>> = {
   dewasa: { modern: 2500000, "top-sealer": 1750000 },
   "kebutuhan-khusus": { modern: 2000000, "top-sealer": 1500000 },
-  "khitan-gemuk": { modern: null, "top-sealer": null },
 };
 
 export function packageForService(item: KhitanPackage, serviceId: string): KhitanPackage {
