@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ContactAction } from "@/components/ui/ContactAction";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
@@ -66,10 +65,6 @@ export default function KebijakanPrivasiPage() {
             <h2 id="privacy-requests" className={heading}>Koreksi, penghapusan, dan penarikan media</h2>
             <p>Hubungi admin melalui kontak WhatsApp yang digunakan situs untuk meminta koreksi atau penghapusan data yang telah Anda kirim, serta penarikan foto atau video. Jelaskan permintaan dan sertakan rujukan seperlunya, misalnya tautan halaman atau media, tanpa mengirim ulang dokumen sensitif jika tidak diperlukan.</p>
             <p>Admin perlu mengonfirmasi cakupan dan tindak lanjut permintaan Anda. Penghapusan dari situs atau percakapan tidak menjamin hilangnya salinan yang sudah diunduh, dibagikan, dicadangkan, atau tersimpan dalam cache pihak lain.</p>
-            <ContactAction message="Halo admin SAGARA, saya ingin menanyakan penanganan data pribadi atau mengajukan permintaan koreksi, penghapusan data, atau penarikan media. Mohon informasikan prosedurnya." className="mt-2 border border-primary bg-primary text-white">
-              Hubungi admin tentang privasi
-            </ContactAction>
-            <p className="text-sm">Pesan awal ini tidak menyertakan isian formulir pendaftaran. Anda memilih sendiri informasi tambahan yang dikirim di WhatsApp.</p>
           </section>
         </div>
 

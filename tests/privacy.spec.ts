@@ -11,6 +11,15 @@ test("privacy information is readable without JavaScript and linked from registr
     await expect(page.locator("main")).toContainText("WhatsApp");
     await expect(page.locator("main")).toContainText("Google Maps");
     await expect(page.locator("main")).toContainText("localStorage");
+    const requests = page.getByRole("region", { name: "Koreksi, penghapusan, dan penarikan media", exact: true });
+    await expect(requests.locator("p")).toHaveCount(2);
+    await expect(requests).toContainText("Hubungi admin melalui kontak WhatsApp yang digunakan situs");
+    await expect(requests).toContainText("Admin perlu mengonfirmasi cakupan dan tindak lanjut permintaan Anda.");
+    await expect(page.getByRole("link", { name: "Hubungi admin tentang privasi" })).toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText("Pesan awal ini tidak menyertakan isian formulir pendaftaran.");
+    const relatedLinks = page.getByRole("navigation", { name: "Tautan terkait privasi" });
+    await expect(relatedLinks.getByRole("link", { name: "Ke formulir pendaftaran", exact: true })).toHaveAttribute("href", "/pendaftaran");
+    await expect(relatedLinks.getByRole("link", { name: "Lokasi & kontak", exact: true })).toHaveAttribute("href", "/kontak");
     await page.goto(`${baseURL}/pendaftaran`);
     await expect(page.locator("main").getByRole("link", { name: "Kebijakan Privasi", exact: true })).toHaveAttribute("href", "/kebijakan-privasi");
     await expect(page.locator("footer").getByRole("link", { name: "Kebijakan Privasi", exact: true })).toHaveAttribute("href", "/kebijakan-privasi");
