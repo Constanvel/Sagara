@@ -162,6 +162,12 @@ for (const query of ["layanan=invalid&paket=invalid", "layanan=&paket="]) {
 
 test("client query navigation preserves entered data, selections and both consent stages", async ({ page }) => {
   await page.goto("/pendaftaran?layanan=bayi&paket=modern");
+  // Server-rendered inputs are editable before React attaches their change handlers.
+  // Wait for an observable state change, not the already-preselected package or a timeout.
+  await page.getByRole("button", { name: "Pilih Paket Top Seller", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Pilih Paket Top Seller", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Pilih Paket Modern", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Pilih Paket Modern", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.getByLabel("Tanggal yang diinginkan").fill(valid.date);
   await page.getByLabel("Waktu yang diinginkan", { exact: true }).fill(valid.time);
   await page.getByLabel("Nama orang tua / wali").fill(valid.guardian);
@@ -169,6 +175,7 @@ test("client query navigation preserves entered data, selections and both consen
   await page.getByLabel("Usia (tahun)").fill(valid.age);
   await page.getByLabel("Nomor WhatsApp", { exact: true }).fill(valid.whatsapp);
   await page.getByRole("checkbox").check();
+  await expect(page.getByLabel("Tanggal yang diinginkan")).toHaveValue(valid.date);
   await page.evaluate(() => window.history.pushState(null, "", "/pendaftaran?layanan=dewasa&paket=top-sealer"));
   await expect(page).toHaveURL(/layanan=dewasa&paket=top-sealer$/);
   await expect(page.getByLabel("Layanan", { exact: true })).toHaveValue("bayi");
