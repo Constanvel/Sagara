@@ -141,7 +141,7 @@ export function ConsultationSection() {
         </div>
         <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto">
           <Link href="/pendaftaran" className={`cta-motion ${action} inline-flex w-full items-center justify-center gap-3 border-white bg-white text-primary`}><Asset name="imgArrowRight.svg" width={19} height={19} className="shrink-0" />Daftar khitan</Link>
-          <ContactAction className={`${action} w-full border-white bg-transparent text-white`}><Asset name="imgMessageCircle2.svg" width={19} height={19} className="shrink-0" />Mulai konsultasi</ContactAction>
+          <ContactAction className={`${action} w-full border-white bg-white text-primary`}><Asset name="imgMessageCircle2.svg" width={19} height={19} className="shrink-0" />Mulai konsultasi</ContactAction>
         </div>
       </div>
     </section>
