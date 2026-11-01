@@ -45,6 +45,14 @@ export function serializeJsonLd(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
+export const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "SAGARA",
+  alternateName: "SAGARA Rumah Sunat Modern Banteran",
+  url: absoluteUrl("/"),
+};
+
 // Optional facts must be verified and visible, never inferred from the map pin.
 // Keep Organization: hours belong to a justified Place/LocalBusiness model, not this entity.
 // Verified hours are retained in contact data but deliberately not emitted here.
